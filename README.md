@@ -42,10 +42,12 @@ cd server
 
 ## 📁 Project Structure
 
+```
 music-workstation/
 ├── web/        # React + Tone.js app
 ├── server/     # Spring Boot API
 ├── .github/    # CI/CD and templates
+```
 
 ---
 
