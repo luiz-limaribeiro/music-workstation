@@ -36,31 +36,62 @@ export default function Sequencer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState(120)
 
+  const sequence = useRef<Tone.Sequence>(null)
+
+  useEffect(() => {
+    sequence.current = new Tone.Sequence((time, col) => {
+      if (pattern[0][col]) kick.triggerAttackRelease("C1", "16n", time);
+      if (pattern[1][col]) snare.triggerAttackRelease("16n", time);
+      if (pattern[2][col]) hihat.triggerAttackRelease("16n", time);
+    }, Array.from({ length: 16 }, (_, i) => i), "16n")
+
+    return () => {
+      sequence.current?.dispose()
+    }
+  }, [])
+
+  // sync the sequence with the "pattern" state
+  useEffect(() => {
+    if (!sequence.current)
+      return
+    
+    // the callback runs for each column at the correct time
+    sequence.current.callback = (time, col) => {
+      if (pattern[0][col]) kick.triggerAttackRelease("C1", "16n", time);
+      if (pattern[1][col]) snare.triggerAttackRelease("16n", time);
+      if (pattern[2][col]) hihat.triggerAttackRelease("16n", time);
+    }
+  }, [pattern])
+
+  // sync the Tone bpm with the "bpm" state
+  useEffect(() => {
+    Tone.getTransport().bpm.value = bpm
+  }, [bpm])
+
   function toggleStep(trackId: number, stepId: number) {
     let newSequence = [...pattern];
     newSequence[trackId][stepId] = newSequence[trackId][stepId] ? 0 : 1;
     setPattern(newSequence);
   }
 
-  function togglePlay() {
-    setIsPlaying(!isPlaying);
+  async function togglePlay() {
+    if (Tone.getContext().state !== 'running') {
+      await Tone.start()
+    }
+
+    if (isPlaying) {
+      Tone.getTransport().stop()
+      setIsPlaying(false)
+    } else {
+      sequence.current?.start(0);
+      Tone.getTransport().start()
+      setIsPlaying(true)
+    }
   }
 
   function changeBpm(event: React.WheelEvent) {
     let newBpm = bpm + -(event.deltaY / 100)
     setBpm(Math.max(20, Math.min(newBpm, 240)))
-  }
-
-  function playKick() {
-    kick.triggerAttackRelease("C1", "16n")
-  }
-
-  function playSnare() {
-    snare.triggerAttackRelease("16n")
-  }
-
-  function playHiHat() {
-    hihat.triggerAttackRelease("16n")
   }
 
   return (
