@@ -1,7 +1,29 @@
-import { useState } from "react";
+import * as Tone from 'tone'
+import { useEffect, useRef, useState } from "react";
 import "./Sequencer.css";
 
 const tracks = ["kick", "snare", "hihat"];
+
+const kick = new Tone.MembraneSynth().toDestination();
+const snare = new Tone.NoiseSynth({
+  noise: { type: "white" },
+  envelope: {
+    attack: 0.001,
+    decay: 0.2,
+    sustain: 0,
+    release: 0.1,
+  }
+}).toDestination();
+const hihat = new Tone.NoiseSynth({
+  noise: { type: "white" },
+  envelope: {
+    attack: 0.001,
+    decay: 0.05,
+    sustain: 0,
+    release: 0.01,
+  }
+}).toDestination();
+
 const initialSequence = [
   Array(16).fill(0),
   Array(16).fill(0),
@@ -10,14 +32,14 @@ const initialSequence = [
 const stepsColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
 export default function Sequencer() {
-  const [sequence, setSequence] = useState<any[][]>(initialSequence);
+  const [pattern, setPattern] = useState<any[][]>(initialSequence);
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState(120)
 
   function toggleStep(trackId: number, stepId: number) {
-    let newSequence = [...sequence];
+    let newSequence = [...pattern];
     newSequence[trackId][stepId] = newSequence[trackId][stepId] ? 0 : 1;
-    setSequence(newSequence);
+    setPattern(newSequence);
   }
 
   function togglePlay() {
@@ -27,6 +49,18 @@ export default function Sequencer() {
   function changeBpm(event: React.WheelEvent) {
     let newBpm = bpm + -(event.deltaY / 100)
     setBpm(Math.max(20, Math.min(newBpm, 240)))
+  }
+
+  function playKick() {
+    kick.triggerAttackRelease("C1", "16n")
+  }
+
+  function playSnare() {
+    snare.triggerAttackRelease("16n")
+  }
+
+  function playHiHat() {
+    hihat.triggerAttackRelease("16n")
   }
 
   return (
@@ -41,7 +75,7 @@ export default function Sequencer() {
         <div key={trackId} className="track-row">
           <span>{track}</span>
           <div className="steps">
-            {sequence[trackId].map((step, stepId) => (
+            {pattern[trackId].map((step, stepId) => (
               <div
                 key={stepId}
                 className={`step
