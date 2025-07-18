@@ -1,40 +1,11 @@
 .sequencer {
-  background-color: black;
+  background-color: #111;
+  border: 2px solid #FFF2;
   color: white;
   padding: 4rem;
   border-radius: 10px;
 }
 
-.track-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.steps {
-  display: flex;
-}
-
-.step {
-  width: 2rem;
-  height: 3rem;
-  background-color: #2a2a3a;
-  border: 1px solid #1123;
-  cursor: pointer;
-}
-
-.step.other-color {
-  background-color: #334;
-}
-
-.step.active {
-  background-color: pink;
-}
-
-.step.current {
-  filter: brightness(1.2);
-}
 
 .controls {
   display: flex;

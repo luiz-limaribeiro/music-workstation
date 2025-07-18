@@ -1,6 +1,7 @@
 import * as Tone from "tone";
 import { useEffect, useRef, useState } from "react";
 import "./Sequencer.css";
+import TrackRow from "./TrackRow";
 
 const tracks = ["kick", "snare", "hihat"];
 
@@ -29,10 +30,9 @@ const initialSequence = [
   Array(16).fill(0),
   Array(16).fill(0),
 ];
-const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
 export default function Sequencer() {
-  const [pattern, setPattern] = useState<any[][]>(initialSequence);
+  const [pattern, setPattern] = useState<number[][]>(initialSequence);
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState(120);
   const [currentStep, setCurrentStep] = useState(0);
@@ -110,22 +110,15 @@ export default function Sequencer() {
           {isPlaying ? "stop" : "start"}
         </button>
       </div>
-      {tracks.map((track, trackId) => (
-        <div key={trackId} className="track-row">
-          <span>{track}</span>
-          <div className="steps">
-            {pattern[trackId].map((step, stepId) => (
-              <div
-                key={stepId}
-                className={`step
-                  ${stepColors.includes(stepId) ? "other-color" : ""}
-                  ${step ? "active" : ""}
-                  ${currentStep === stepId ? "current" : ""}`}
-                onClick={() => toggleStep(trackId, stepId)}
-              ></div>
-            ))}
-          </div>
-        </div>
+      {tracks.map((track, trackIndex) => (
+        <TrackRow
+          key={trackIndex}
+          index={trackIndex}
+          name={track}
+          sequence={pattern[trackIndex]}
+          currentStep={currentStep}
+          toggleStep={toggleStep}
+        />
       ))}
     </div>
   );
