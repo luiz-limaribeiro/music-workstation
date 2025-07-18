@@ -2,6 +2,7 @@ import * as Tone from "tone";
 import { useEffect, useRef, useState } from "react";
 import "./Sequencer.css";
 import TrackRow from "./TrackRow";
+import Controls from "./Controls";
 
 const tracks = ["kick", "snare", "hihat"];
 
@@ -88,6 +89,7 @@ export default function Sequencer() {
     if (isPlaying) {
       Tone.getTransport().stop();
       setIsPlaying(false);
+      setCurrentStep(0);
     } else {
       sequence.current?.start(0);
       Tone.getTransport().start();
@@ -95,21 +97,14 @@ export default function Sequencer() {
     }
   }
 
-  function changeBpm(event: React.WheelEvent) {
-    let newBpm = bpm - event.deltaY / 100;
-    setBpm(Math.max(20, Math.min(newBpm, 240)));
-  }
-
   return (
     <div className="sequencer">
-      <div className="controls">
-        <span className="bpm-label" onWheel={changeBpm}>
-          BPM: {bpm}
-        </span>
-        <button className="play-button" onClick={togglePlay}>
-          {isPlaying ? "stop" : "start"}
-        </button>
-      </div>
+      <Controls
+        bpm={bpm}
+        isPlaying={isPlaying}
+        onChangeBpm={(newBpm) => setBpm(newBpm)}
+        onTogglePlay={togglePlay}
+      />
       {tracks.map((track, trackIndex) => (
         <TrackRow
           key={trackIndex}
@@ -117,7 +112,7 @@ export default function Sequencer() {
           name={track}
           sequence={pattern[trackIndex]}
           currentStep={currentStep}
-          toggleStep={toggleStep}
+          onToggleStep={toggleStep}
         />
       ))}
     </div>

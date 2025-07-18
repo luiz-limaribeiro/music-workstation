@@ -5,19 +5,3 @@
   padding: 4rem;
   border-radius: 10px;
 }
-
-
-.controls {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-  gap: 1rem;
-}
-
-.play-button {
-  padding: .2rem;
-}
-
-.bpm-label {
-  cursor: s-resize;
-}

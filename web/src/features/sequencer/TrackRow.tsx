@@ -7,7 +7,7 @@ interface Props {
   name: string;
   sequence: number[];
   currentStep: number;
-  toggleStep: (trackId: number, stepId: number) => void;
+  onToggleStep: (trackId: number, stepId: number) => void;
 }
 
 export default function TrackRow({
@@ -15,7 +15,7 @@ export default function TrackRow({
   name,
   sequence,
   currentStep,
-  toggleStep,
+  onToggleStep,
 }: Props) {
   return (
     <div className="track-row">
@@ -28,7 +28,7 @@ export default function TrackRow({
                   ${stepColors.includes(stepIndex) ? "other-color" : ""}
                   ${step ? "active" : ""}
                   ${currentStep === stepIndex ? "current" : ""}`}
-            onClick={() => toggleStep(index, stepIndex)}
+            onClick={() => onToggleStep(index, stepIndex)}
           ></div>
         ))}
       </div>
