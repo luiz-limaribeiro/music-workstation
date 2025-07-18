@@ -32,6 +32,10 @@
   background-color: pink;
 }
 
+.step.current {
+  filter: brightness(1.2);
+}
+
 .controls {
   display: flex;
   justify-content: center;
