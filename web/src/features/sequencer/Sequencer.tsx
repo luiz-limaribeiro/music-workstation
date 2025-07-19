@@ -38,14 +38,16 @@ export default function Sequencer() {
   const [bpm, setBpm] = useState(120);
   const [currentStep, setCurrentStep] = useState(0);
 
+  const [velocities, setVelocities] = useState<number[]>([1, 1, 1])
+
   const sequence = useRef<Tone.Sequence>(null);
 
   useEffect(() => {
     sequence.current = new Tone.Sequence(
       (time, col) => {
-        if (pattern[0][col]) kick.triggerAttackRelease("C1", "16n", time);
-        if (pattern[1][col]) snare.triggerAttackRelease("16n", time);
-        if (pattern[2][col]) hihat.triggerAttackRelease("16n", time);
+        if (pattern[0][col]) kick.triggerAttackRelease("C1", "16n", time, velocities[0]);
+        if (pattern[1][col]) snare.triggerAttackRelease("16n", time, velocities[1]);
+        if (pattern[2][col]) hihat.triggerAttackRelease("16n", time, velocities[2]);
         setCurrentStep(col);
       },
       Array.from({ length: 16 }, (_, i) => i),
@@ -63,12 +65,12 @@ export default function Sequencer() {
 
     // the callback runs for each column at the correct time
     sequence.current.callback = (time, col) => {
-      if (pattern[0][col]) kick.triggerAttackRelease("C1", "16n", time);
-      if (pattern[1][col]) snare.triggerAttackRelease("16n", time);
-      if (pattern[2][col]) hihat.triggerAttackRelease("16n", time);
+      if (pattern[0][col]) kick.triggerAttackRelease("C1", "16n", time, velocities[0]);
+      if (pattern[1][col]) snare.triggerAttackRelease("16n", time, velocities[1]);
+      if (pattern[2][col]) hihat.triggerAttackRelease("16n", time, velocities[2]);
       setCurrentStep(col);
     };
-  }, [pattern]);
+  }, [pattern, velocities]);
 
   // sync the Tone bpm with the "bpm" state
   useEffect(() => {
@@ -97,6 +99,12 @@ export default function Sequencer() {
     }
   }
 
+  function changeVelocity(trackIndex: number, velocity: number) {
+    let newVelocities = [...velocities]
+    newVelocities[trackIndex] = velocity
+    setVelocities(newVelocities)
+  }
+
   return (
     <div className="sequencer">
       <Controls
@@ -113,6 +121,7 @@ export default function Sequencer() {
           sequence={pattern[trackIndex]}
           currentStep={currentStep}
           onToggleStep={toggleStep}
+          onChangeVelocity={changeVelocity}
         />
       ))}
     </div>
