@@ -3,17 +3,17 @@ import "./TrackRow.css";
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
 interface Props {
-  index: number;
+  id: number;
   name: string;
   velocity: number;
   sequence: number[];
   currentStep: number;
   onToggleStep: (trackId: number, stepId: number) => void;
-  onChangeVelocity: (trackIndex: number, volume: number) => void;
+  onChangeVelocity: (trackId: number, volume: number) => void;
 }
 
 export default function TrackRow({
-  index,
+  id,
   name,
   velocity,
   sequence,
@@ -23,7 +23,7 @@ export default function TrackRow({
 }: Props) {
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
-    onChangeVelocity(index, newVelocity);
+    onChangeVelocity(id, newVelocity);
   }
 
   return (
@@ -47,7 +47,7 @@ export default function TrackRow({
                   ${stepColors.includes(stepIndex) ? "other-color" : ""}
                   ${step ? "active" : ""}
                   ${currentStep === stepIndex ? "current" : ""}`}
-            onClick={() => onToggleStep(index, stepIndex)}
+            onClick={() => onToggleStep(id, stepIndex)}
           ></div>
         ))}
       </div>

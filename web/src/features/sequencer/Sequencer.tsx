@@ -4,8 +4,6 @@ import "./Sequencer.css";
 import TrackRow from "./TrackRow";
 import Controls from "./Controls";
 
-const tracks = ["kick", "snare", "hihat"];
-
 const kick = new Tone.MembraneSynth().toDestination();
 const snare = new Tone.NoiseSynth({
   noise: { type: "white" },
@@ -26,28 +24,58 @@ const hihat = new Tone.NoiseSynth({
   },
 }).toDestination();
 
-const initialSequence = [
-  Array(16).fill(0),
-  Array(16).fill(0),
-  Array(16).fill(0),
+type TrackData = {
+  id: number;
+  name: string;
+  velocity: number;
+  pattern: number[];
+  play: (time: number, velocity: number) => void;
+};
+
+const initialTracks: TrackData[] = [
+  {
+    id: 1,
+    name: "kick",
+    velocity: 1.0,
+    pattern: Array(16).fill(0),
+    play: (time, velocity) => {
+      kick.triggerAttackRelease("C1", "16n", time, velocity);
+    },
+  },
+  {
+    id: 2,
+    name: "snare",
+    velocity: 1.0,
+    pattern: Array(16).fill(0),
+    play: (time, velocity) => {
+      snare.triggerAttackRelease("16n", time, velocity);
+    },
+  },
+  {
+    id: 3,
+    name: "hihat",
+    velocity: 1.0,
+    pattern: Array(16).fill(0),
+    play: (time, velocity) => {
+      hihat.triggerAttackRelease("16n", time, velocity);
+    },
+  },
 ];
 
 export default function Sequencer() {
-  const [pattern, setPattern] = useState<number[][]>(initialSequence);
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState(120);
   const [currentStep, setCurrentStep] = useState(0);
-
-  const [velocities, setVelocities] = useState<number[]>([1, 1, 1])
+  const [tracks, setTracks] = useState<TrackData[]>(initialTracks);
 
   const sequence = useRef<Tone.Sequence>(null);
 
   useEffect(() => {
     sequence.current = new Tone.Sequence(
       (time, col) => {
-        if (pattern[0][col]) kick.triggerAttackRelease("C1", "16n", time, velocities[0]);
-        if (pattern[1][col]) snare.triggerAttackRelease("16n", time, velocities[1]);
-        if (pattern[2][col]) hihat.triggerAttackRelease("16n", time, velocities[2]);
+        tracks.forEach(track => {
+          if (track.pattern[col]) track.play(time, track.velocity);
+        });
         setCurrentStep(col);
       },
       Array.from({ length: 16 }, (_, i) => i),
@@ -65,12 +93,12 @@ export default function Sequencer() {
 
     // the callback runs for each column at the correct time
     sequence.current.callback = (time, col) => {
-      if (pattern[0][col]) kick.triggerAttackRelease("C1", "16n", time, velocities[0]);
-      if (pattern[1][col]) snare.triggerAttackRelease("16n", time, velocities[1]);
-      if (pattern[2][col]) hihat.triggerAttackRelease("16n", time, velocities[2]);
+      tracks.forEach(track => {
+        if (track.pattern[col]) track.play(time, track.velocity);
+      });
       setCurrentStep(col);
     };
-  }, [pattern, velocities]);
+  }, [tracks]);
 
   // sync the Tone bpm with the "bpm" state
   useEffect(() => {
@@ -78,9 +106,17 @@ export default function Sequencer() {
   }, [bpm]);
 
   function toggleStep(trackId: number, stepId: number) {
-    let newSequence = [...pattern];
-    newSequence[trackId][stepId] = newSequence[trackId][stepId] ? 0 : 1;
-    setPattern(newSequence);
+    const track = tracks.find(track => track.id === trackId)
+    if (!track) return;
+
+    const newPattern = [...track.pattern];
+    newPattern[stepId] = newPattern[stepId] ? 0 : 1;
+
+    setTracks((prev) =>
+      prev.map(track =>
+        track.id === trackId ? { ...track, pattern: newPattern } : track
+      )
+    );
   }
 
   async function togglePlay() {
@@ -99,10 +135,12 @@ export default function Sequencer() {
     }
   }
 
-  function changeVelocity(trackIndex: number, velocity: number) {
-    let newVelocities = [...velocities]
-    newVelocities[trackIndex] = velocity
-    setVelocities(newVelocities)
+  function changeVelocity(trackId: number, velocity: number) {
+    setTracks((prev) =>
+      prev.map(track =>
+        track.id === trackId ? { ...track, velocity: velocity } : track
+      )
+    );
   }
 
   return (
@@ -116,10 +154,10 @@ export default function Sequencer() {
       {tracks.map((track, trackIndex) => (
         <TrackRow
           key={trackIndex}
-          index={trackIndex}
-          name={track}
-          velocity={velocities[trackIndex]}
-          sequence={pattern[trackIndex]}
+          id={track.id}
+          name={track.name}
+          velocity={track.velocity}
+          sequence={track.pattern}
           currentStep={currentStep}
           onToggleStep={toggleStep}
           onChangeVelocity={changeVelocity}
