@@ -118,6 +118,7 @@ export default function Sequencer() {
           key={trackIndex}
           index={trackIndex}
           name={track}
+          velocity={velocities[trackIndex]}
           sequence={pattern[trackIndex]}
           currentStep={currentStep}
           onToggleStep={toggleStep}

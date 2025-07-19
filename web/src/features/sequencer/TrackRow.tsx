@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./TrackRow.css";
 
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
@@ -6,6 +5,7 @@ const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 interface Props {
   index: number;
   name: string;
+  velocity: number;
   sequence: number[];
   currentStep: number;
   onToggleStep: (trackId: number, stepId: number) => void;
@@ -15,16 +15,15 @@ interface Props {
 export default function TrackRow({
   index,
   name,
+  velocity,
   sequence,
   currentStep,
   onToggleStep,
   onChangeVelocity,
 }: Props) {
-  const [velocity, setVelocity] = useState(1);
-
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
-    setVelocity(parseFloat(event.target.value));
-    onChangeVelocity(index, velocity);
+    const newVelocity = parseFloat(event.target.value);
+    onChangeVelocity(index, newVelocity);
   }
 
   return (
