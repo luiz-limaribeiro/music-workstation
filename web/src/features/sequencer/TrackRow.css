@@ -88,18 +88,3 @@ input[type="range"]::-ms-track {
 .mute-unmute input.muted {
   background: #d3d3d388;
 }
-
-.solo-button button {
-  width: 30px;
-  height: 30px;
-  border-radius: 9999px;
-  border: none;
-  cursor: pointer;
-  background-color: #2a2a3a;
-  font-size: 12px;
-}
-
-.solo-button button.solo {
-  background-color: #334;
-  color: #d3d3d388;
-}

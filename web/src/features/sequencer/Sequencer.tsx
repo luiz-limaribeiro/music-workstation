@@ -127,12 +127,8 @@ export default function Sequencer() {
       {tracks.map((track, trackIndex) => (
         <TrackRow
           key={trackIndex}
-          id={track.id}
-          name={track.name}
-          velocity={track.velocity}
-          sequence={track.pattern}
+          track={track}
           currentStep={currentStep}
-          muted={track.muted}
           onToggleStep={toggleStep}
           onChangeVelocity={changeVelocity}
           onMute={onMuteUnmute}

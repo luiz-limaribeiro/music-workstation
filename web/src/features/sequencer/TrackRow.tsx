@@ -1,30 +1,25 @@
+import type { TrackData } from "./trackData";
 import "./TrackRow.css";
 
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
 interface Props {
-  id: number;
-  name: string;
-  velocity: number;
-  sequence: number[];
+  track: TrackData;
   currentStep: number;
-  muted: boolean;
   onToggleStep: (trackId: number, stepId: number) => void;
   onChangeVelocity: (trackId: number, volume: number) => void;
   onMute: (trackId: number) => void;
 }
 
 export default function TrackRow({
-  id,
-  name,
-  velocity,
-  sequence,
+  track,
   currentStep,
-  muted,
   onToggleStep,
   onChangeVelocity,
   onMute,
 }: Props) {
+  const { id, name, pattern, velocity, muted } = track;
+
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
     onChangeVelocity(id, newVelocity);
@@ -51,7 +46,7 @@ export default function TrackRow({
         />
       </div>
       <div className="steps">
-        {sequence.map((step, stepIndex) => (
+        {pattern.map((step, stepIndex) => (
           <div
             key={stepIndex}
             className={`step
