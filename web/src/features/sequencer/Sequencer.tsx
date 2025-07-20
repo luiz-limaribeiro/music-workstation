@@ -1,8 +1,10 @@
 import * as Tone from "tone";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import "./Sequencer.css";
 import TrackRow from "./TrackRow";
 import Controls from "./Controls";
+import type { TrackData } from "./trackData";
+import { trackReducer } from "./trackReducer";
 
 const kick = new Tone.MembraneSynth().toDestination();
 const snare = new Tone.NoiseSynth({
@@ -23,14 +25,6 @@ const hihat = new Tone.NoiseSynth({
     release: 0.01,
   },
 }).toDestination();
-
-type TrackData = {
-  id: number;
-  name: string;
-  velocity: number;
-  pattern: number[];
-  play: (time: number, velocity: number) => void;
-};
 
 const initialTracks: TrackData[] = [
   {
@@ -66,14 +60,15 @@ export default function Sequencer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState(120);
   const [currentStep, setCurrentStep] = useState(0);
-  const [tracks, setTracks] = useState<TrackData[]>(initialTracks);
+
+  const [tracks, dispatch] = useReducer(trackReducer, initialTracks);
 
   const sequence = useRef<Tone.Sequence>(null);
 
   useEffect(() => {
     sequence.current = new Tone.Sequence(
       (time, col) => {
-        tracks.forEach(track => {
+        tracks.forEach((track) => {
           if (track.pattern[col]) track.play(time, track.velocity);
         });
         setCurrentStep(col);
@@ -93,7 +88,7 @@ export default function Sequencer() {
 
     // the callback runs for each column at the correct time
     sequence.current.callback = (time, col) => {
-      tracks.forEach(track => {
+      tracks.forEach((track) => {
         if (track.pattern[col]) track.play(time, track.velocity);
       });
       setCurrentStep(col);
@@ -106,17 +101,13 @@ export default function Sequencer() {
   }, [bpm]);
 
   function toggleStep(trackId: number, stepId: number) {
-    const track = tracks.find(track => track.id === trackId)
+    const track = tracks.find((track) => track.id === trackId);
     if (!track) return;
 
     const newPattern = [...track.pattern];
     newPattern[stepId] = newPattern[stepId] ? 0 : 1;
 
-    setTracks((prev) =>
-      prev.map(track =>
-        track.id === trackId ? { ...track, pattern: newPattern } : track
-      )
-    );
+    dispatch({ type: "UPDATE_PATTERN", id: trackId, pattern: newPattern });
   }
 
   async function togglePlay() {
@@ -136,11 +127,7 @@ export default function Sequencer() {
   }
 
   function changeVelocity(trackId: number, velocity: number) {
-    setTracks((prev) =>
-      prev.map(track =>
-        track.id === trackId ? { ...track, velocity: velocity } : track
-      )
-    );
+    dispatch({ type: "SET_VELOCITY", id: trackId, velocity: velocity });
   }
 
   return (
