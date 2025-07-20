@@ -3,7 +3,7 @@ import { useEffect, useReducer, useRef, useState } from "react";
 import "./Sequencer.css";
 import TrackRow from "./TrackRow";
 import Controls from "./Controls";
-import type { TrackData } from "./trackData";
+import { newTrackData, type TrackData } from "./trackData";
 import { trackReducer } from "./trackReducer";
 
 const kick = new Tone.MembraneSynth().toDestination();
@@ -27,33 +27,15 @@ const hihat = new Tone.NoiseSynth({
 }).toDestination();
 
 const initialTracks: TrackData[] = [
-  {
-    id: 1,
-    name: "kick",
-    velocity: 1.0,
-    pattern: Array(16).fill(0),
-    play: (time, velocity) => {
-      kick.triggerAttackRelease("C1", "16n", time, velocity);
-    },
-  },
-  {
-    id: 2,
-    name: "snare",
-    velocity: 1.0,
-    pattern: Array(16).fill(0),
-    play: (time, velocity) => {
-      snare.triggerAttackRelease("16n", time, velocity);
-    },
-  },
-  {
-    id: 3,
-    name: "hihat",
-    velocity: 1.0,
-    pattern: Array(16).fill(0),
-    play: (time, velocity) => {
-      hihat.triggerAttackRelease("16n", time, velocity);
-    },
-  },
+  newTrackData("kick", (time, velocity) =>
+    kick.triggerAttackRelease("C1", "16n", time, velocity)
+  ),
+  newTrackData("snare", (time, velocity) =>
+    snare.triggerAttackRelease("16n", time, velocity)
+  ),
+  newTrackData("hihat", (time, velocity) =>
+    hihat.triggerAttackRelease("16n", time, velocity)
+  ),
 ];
 
 export default function Sequencer() {
@@ -89,7 +71,7 @@ export default function Sequencer() {
     // the callback runs for each column at the correct time
     sequence.current.callback = (time, col) => {
       tracks.forEach((track) => {
-        if (track.pattern[col]) track.play(time, track.velocity);
+        if (!track.muted && track.pattern[col]) track.play(time, track.velocity);
       });
       setCurrentStep(col);
     };
@@ -130,6 +112,10 @@ export default function Sequencer() {
     dispatch({ type: "SET_VELOCITY", id: trackId, velocity: velocity });
   }
 
+  function onMuteUnmute(trackId: number) {
+    dispatch({ type: "TOGGLE_MUTE", id: trackId });
+  }
+
   return (
     <div className="sequencer">
       <Controls
@@ -146,8 +132,10 @@ export default function Sequencer() {
           velocity={track.velocity}
           sequence={track.pattern}
           currentStep={currentStep}
+          muted={track.muted}
           onToggleStep={toggleStep}
           onChangeVelocity={changeVelocity}
+          onMute={onMuteUnmute}
         />
       ))}
     </div>

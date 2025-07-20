@@ -2,7 +2,8 @@ import type { TrackData } from "./trackData";
 
 export type TrackAction =
   | { type: "UPDATE_PATTERN"; id: number; pattern: number[] }
-  | { type: "SET_VELOCITY"; id: number; velocity: number };
+  | { type: "SET_VELOCITY"; id: number; velocity: number }
+  | { type: "TOGGLE_MUTE"; id: number };
 
 export function trackReducer(
   state: TrackData[],
@@ -16,6 +17,10 @@ export function trackReducer(
     case "SET_VELOCITY":
       return state.map((track) =>
         track.id === action.id ? { ...track, velocity: action.velocity } : track
+      );
+    case "TOGGLE_MUTE":
+      return state.map((track) =>
+        track.id === action.id ? { ...track, muted: !track.muted } : track
       );
     default:
       return state;

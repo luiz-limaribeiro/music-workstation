@@ -8,8 +8,10 @@ interface Props {
   velocity: number;
   sequence: number[];
   currentStep: number;
+  muted: boolean;
   onToggleStep: (trackId: number, stepId: number) => void;
   onChangeVelocity: (trackId: number, volume: number) => void;
+  onMute: (trackId: number) => void;
 }
 
 export default function TrackRow({
@@ -18,8 +20,10 @@ export default function TrackRow({
   velocity,
   sequence,
   currentStep,
+  muted,
   onToggleStep,
   onChangeVelocity,
+  onMute,
 }: Props) {
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
@@ -29,6 +33,13 @@ export default function TrackRow({
   return (
     <div className="track-row">
       <span>{name}</span>
+      <div className="mute-unmute">
+        <input
+          type="button"
+          className={muted ? "muted" : ""}
+          onClick={() => onMute(id)}
+        />
+      </div>
       <div className="velocity-input">
         <input
           type="range"
