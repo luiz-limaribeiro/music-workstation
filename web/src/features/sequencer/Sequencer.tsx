@@ -5,37 +5,12 @@ import TrackRow from "./TrackRow";
 import Controls from "./Controls";
 import { newTrackData, type TrackData } from "./trackData";
 import { trackReducer } from "./trackReducer";
-
-const kick = new Tone.MembraneSynth().toDestination();
-const snare = new Tone.NoiseSynth({
-  noise: { type: "white" },
-  envelope: {
-    attack: 0.001,
-    decay: 0.2,
-    sustain: 0,
-    release: 0.1,
-  },
-}).toDestination();
-const hihat = new Tone.NoiseSynth({
-  noise: { type: "white" },
-  envelope: {
-    attack: 0.001,
-    decay: 0.05,
-    sustain: 0,
-    release: 0.01,
-  },
-}).toDestination();
+import { drums } from "./synthPresets";
 
 const initialTracks: TrackData[] = [
-  newTrackData("kick", (time, velocity) =>
-    kick.triggerAttackRelease("C1", "16n", time, velocity)
-  ),
-  newTrackData("snare", (time, velocity) =>
-    snare.triggerAttackRelease("16n", time, velocity)
-  ),
-  newTrackData("hihat", (time, velocity) =>
-    hihat.triggerAttackRelease("16n", time, velocity)
-  ),
+  newTrackData("kick", drums.kick),
+  newTrackData("snare", drums.snare),
+  newTrackData("hihat", drums.hihat),
 ];
 
 export default function Sequencer() {

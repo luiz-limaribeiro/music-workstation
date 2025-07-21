@@ -21,7 +21,7 @@
 }
 
 .step.active {
-  background-color: pink;
+  background-color: rgb(251, 143, 255);
 }
 
 .step.current {

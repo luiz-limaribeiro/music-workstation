@@ -15,7 +15,7 @@ export default function Controls({
   onTogglePlay,
 }: Props) {
   function onWheel(event: React.WheelEvent) {
-    let newBpm = bpm - event.deltaY / 100;
+    const newBpm = bpm - event.deltaY / 100;
     onChangeBpm(Math.max(20, Math.min(newBpm, 240)));
   }
 
