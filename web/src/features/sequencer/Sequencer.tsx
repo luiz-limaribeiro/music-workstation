@@ -17,7 +17,6 @@ export default function Sequencer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState(120);
   const [currentStep, setCurrentStep] = useState(0);
-  const [trackListVisible, setTrackListVisible] = useState(false);
 
   const [tracks, dispatch] = useReducer(trackReducer, initialTracks);
 
@@ -93,12 +92,8 @@ export default function Sequencer() {
     dispatch({ type: "TOGGLE_MUTE", id: trackId });
   }
 
-  function addTrack(
-    name: string,
-    play: (time: number, velocity: number) => void
-  ) {
-    dispatch({ type: "ADD_TRACK", name: name, play: play });
-    setTrackListVisible(false)
+  function addTrack() {
+    dispatch({ type: "ADD_TRACK" });
   }
 
   return (
@@ -117,24 +112,21 @@ export default function Sequencer() {
           onToggleStep={toggleStep}
           onChangeVelocity={changeVelocity}
           onMute={onMuteUnmute}
+          onSampleSelect={(trackName, play) => {
+            dispatch({
+              type: "UPDATE_TRACK_SAMPLE",
+              payload: {
+                id: track.id,
+                name: trackName,
+                play: play
+              }
+            })
+          }}
         />
       ))}
       <div className="add-track">
-        <button onClick={() => setTrackListVisible(!trackListVisible)} />
+        <button onClick={() => addTrack()} />
       </div>
-      {trackListVisible && (
-        <div className="sample-list">
-          <h3>Samples</h3>
-          <hr />
-          <ul>
-            {Object.entries(drums).map(([key, value]) => (
-              <li key={key}>
-                <span onClick={() => addTrack(key, value)}>{key}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 }

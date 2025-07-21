@@ -4,10 +4,14 @@ export type TrackAction =
   | { type: "UPDATE_PATTERN"; id: number; pattern: number[] }
   | { type: "SET_VELOCITY"; id: number; velocity: number }
   | { type: "TOGGLE_MUTE"; id: number }
+  | { type: "ADD_TRACK" }
   | {
-      type: "ADD_TRACK";
-      name: string;
-      play: (time: number, velocity: number) => void;
+      type: "UPDATE_TRACK_SAMPLE";
+      payload: {
+        id: number;
+        name: string;
+        play: (time: number, velocity: number) => void;
+      };
     };
 
 export function trackReducer(
@@ -28,7 +32,13 @@ export function trackReducer(
         track.id === action.id ? { ...track, muted: !track.muted } : track
       );
     case "ADD_TRACK":
-      return [...state, newTrackData(action.name, action.play)];
+      return [...state, newTrackData("<empty>", () => {})];
+    case "UPDATE_TRACK_SAMPLE":
+      return state.map((track) =>
+        track.id === action.payload.id
+          ? { ...track, name: action.payload.name, play: action.payload.play }
+          : track
+      );
     default:
       return state;
   }

@@ -1,5 +1,7 @@
+import { useState } from "react";
 import type { TrackData } from "./trackData";
 import "./TrackRow.css";
+import SampleList from "./SampleList";
 
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
@@ -9,6 +11,10 @@ interface Props {
   onToggleStep: (trackId: number, stepId: number) => void;
   onChangeVelocity: (trackId: number, volume: number) => void;
   onMute: (trackId: number) => void;
+  onSampleSelect: (
+    trackName: string,
+    play: (time: number, velocity: number) => void
+  ) => void;
 }
 
 export default function TrackRow({
@@ -17,8 +23,11 @@ export default function TrackRow({
   onToggleStep,
   onChangeVelocity,
   onMute,
+  onSampleSelect,
 }: Props) {
   const { id, name, pattern, velocity, muted } = track;
+
+  const [showSampleList, setShowSampleList] = useState(false);
 
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
@@ -27,7 +36,9 @@ export default function TrackRow({
 
   return (
     <div className="track-row">
-      <span>{name}</span>
+      <span className="track-name" onClick={() => setShowSampleList(true)}>
+        {name}
+      </span>
       <div className="mute-unmute">
         <input
           type="button"
@@ -57,6 +68,7 @@ export default function TrackRow({
           ></div>
         ))}
       </div>
+      {showSampleList && <SampleList selectedSample={track.name} onSampleSelect={onSampleSelect} onClose={() => setShowSampleList(false)} />}
     </div>
   );
 }

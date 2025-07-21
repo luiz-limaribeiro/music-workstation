@@ -4,6 +4,19 @@
   gap: 1rem;
 }
 
+.track-name {
+  cursor: pointer;
+  width: 80px;
+  padding: .2rem;
+  border: 1px solid transparent;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-name:hover {
+  border: 1px solid white;
+}
+
 .steps {
   display: flex;
 }
