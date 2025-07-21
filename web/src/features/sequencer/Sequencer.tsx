@@ -17,6 +17,7 @@ export default function Sequencer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState(120);
   const [currentStep, setCurrentStep] = useState(0);
+  const [trackListVisible, setTrackListVisible] = useState(false);
 
   const [tracks, dispatch] = useReducer(trackReducer, initialTracks);
 
@@ -46,7 +47,8 @@ export default function Sequencer() {
     // the callback runs for each column at the correct time
     sequence.current.callback = (time, col) => {
       tracks.forEach((track) => {
-        if (!track.muted && track.pattern[col]) track.play(time, track.velocity);
+        if (!track.muted && track.pattern[col])
+          track.play(time, track.velocity);
       });
       setCurrentStep(col);
     };
@@ -91,6 +93,14 @@ export default function Sequencer() {
     dispatch({ type: "TOGGLE_MUTE", id: trackId });
   }
 
+  function addTrack(
+    name: string,
+    play: (time: number, velocity: number) => void
+  ) {
+    dispatch({ type: "ADD_TRACK", name: name, play: play });
+    setTrackListVisible(false)
+  }
+
   return (
     <div className="sequencer">
       <Controls
@@ -109,6 +119,22 @@ export default function Sequencer() {
           onMute={onMuteUnmute}
         />
       ))}
+      <div className="add-track">
+        <button onClick={() => setTrackListVisible(!trackListVisible)} />
+      </div>
+      {trackListVisible && (
+        <div className="sample-list">
+          <h3>Samples</h3>
+          <hr />
+          <ul>
+            {Object.entries(drums).map(([key, value]) => (
+              <li key={key}>
+                <span onClick={() => addTrack(key, value)}>{key}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

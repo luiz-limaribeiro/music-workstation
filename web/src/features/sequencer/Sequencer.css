@@ -3,5 +3,59 @@
   border: 2px solid #FFF2;
   color: white;
   padding: 4rem;
+  padding-bottom: 2rem;
   border-radius: 10px;
+  position: relative;
+}
+
+.add-track {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.add-track button {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.sample-list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #20313a;
+  color: #cff;
+  padding: .4rem 1rem;
+  padding-right: 4rem;
+  width: 280px;
+  height: 100%;
+}
+
+
+.sample-list h3 {
+  margin-bottom: .4rem;
+  cursor: default;
+}
+
+.sample-list hr {
+  width: 280px;
+  position: absolute;
+  left: 0;
+}
+
+.sample-list ul {
+  list-style: none;
+  margin-top: 1rem;
+  width: 262px;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #334 transparent;
+}
+
+.sample-list span {
+  font-weight: 500;
+  letter-spacing: .1ch;
+  cursor: pointer;
 }
