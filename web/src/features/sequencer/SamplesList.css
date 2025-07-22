@@ -3,9 +3,9 @@
   top: 0;
   left: 0;
   z-index: 1;
-  background: #20313aaa;
+  background: #233a;
   backdrop-filter: blur(10px);
-  color: #cff;
+  color: #eee;
   padding: .4rem .4rem;
   padding-right: 4rem;
   width: 280px;
@@ -21,7 +21,7 @@
 
 .sample-list hr {
   border: none;
-  background: #cffd;
+  background: #eeed;
   height: 1px;
   width: 280px;
   position: absolute;
@@ -45,8 +45,8 @@
 }
 
 .selected {
-  background-color: #cff;
-  color: #20313a;
+  background-color: #eee;
+  color: #233;
 }
 
 .close-button {
@@ -56,6 +56,6 @@
   margin: .8rem 1rem;
   background: transparent;
   border: none;
-  color: #cff;
+  color: #eee;
   cursor: pointer;
 }

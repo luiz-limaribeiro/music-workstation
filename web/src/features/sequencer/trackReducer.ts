@@ -5,8 +5,10 @@ export type TrackAction =
   | { type: "SET_VELOCITY"; id: number; velocity: number }
   | { type: "TOGGLE_MUTE"; id: number }
   | { type: "ADD_TRACK" }
+  | { type: "CLEAR"; id: number }
+  | { type: "DELETE"; id: number }
   | {
-      type: "UPDATE_TRACK_SAMPLE";
+      type: "UPDATE_SAMPLE";
       payload: {
         id: number;
         name: string;
@@ -33,7 +35,19 @@ export function trackReducer(
       );
     case "ADD_TRACK":
       return [...state, newTrackData("<empty>", () => {})];
-    case "UPDATE_TRACK_SAMPLE":
+    case "CLEAR":
+      return state.map((track) =>
+        track.id === action.id
+          ? { ...track, pattern: Array(16).fill(0) }
+          : track
+      );
+    case "DELETE": {
+      const newState = state.filter((track) => track.id != action.id);
+      if (newState.length > 0) return newState;
+
+      return [newTrackData("<empty>", () => {})];
+    }
+    case "UPDATE_SAMPLE":
       return state.map((track) =>
         track.id === action.payload.id
           ? { ...track, name: action.payload.name, play: action.payload.play }

@@ -84,18 +84,6 @@ export default function Sequencer() {
     }
   }
 
-  function changeVelocity(trackId: number, velocity: number) {
-    dispatch({ type: "SET_VELOCITY", id: trackId, velocity: velocity });
-  }
-
-  function onMuteUnmute(trackId: number) {
-    dispatch({ type: "TOGGLE_MUTE", id: trackId });
-  }
-
-  function addTrack() {
-    dispatch({ type: "ADD_TRACK" });
-  }
-
   return (
     <div className="sequencer">
       <Controls
@@ -110,22 +98,30 @@ export default function Sequencer() {
           track={track}
           currentStep={currentStep}
           onToggleStep={toggleStep}
-          onChangeVelocity={changeVelocity}
-          onMute={onMuteUnmute}
+          onChangeVelocity={(newVelocity: number) =>
+            dispatch({
+              type: "SET_VELOCITY",
+              id: track.id,
+              velocity: newVelocity,
+            })
+          }
+          onMute={() => dispatch({ type: "TOGGLE_MUTE", id: track.id })}
+          onClear={() => dispatch({ type: "CLEAR", id: track.id })}
+          onDelete={() => dispatch({ type: "DELETE", id: track.id })}
           onSampleSelect={(trackName, play) => {
             dispatch({
-              type: "UPDATE_TRACK_SAMPLE",
+              type: "UPDATE_SAMPLE",
               payload: {
                 id: track.id,
                 name: trackName,
-                play: play
-              }
-            })
+                play: play,
+              },
+            });
           }}
         />
       ))}
       <div className="add-track">
-        <button onClick={() => addTrack()} />
+        <button onClick={() => dispatch({ type: "ADD_TRACK" })} />
       </div>
     </div>
   );

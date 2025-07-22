@@ -10,8 +10,10 @@ interface Props {
   track: TrackData;
   currentStep: number;
   onToggleStep: (trackId: number, stepId: number) => void;
-  onChangeVelocity: (trackId: number, volume: number) => void;
-  onMute: (trackId: number) => void;
+  onChangeVelocity: (volume: number) => void;
+  onMute: () => void;
+  onClear: () => void,
+  onDelete: () => void,
   onSampleSelect: (
     trackName: string,
     play: (time: number, velocity: number) => void
@@ -24,6 +26,8 @@ const TrackRow = React.memo(function TrackRow({
   onToggleStep,
   onChangeVelocity,
   onMute,
+  onClear,
+  onDelete,
   onSampleSelect,
 }: Props) {
   const { id, name, pattern, velocity, muted } = track;
@@ -33,7 +37,7 @@ const TrackRow = React.memo(function TrackRow({
 
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
-    onChangeVelocity(id, newVelocity);
+    onChangeVelocity(newVelocity);
   }
 
   function onSetSample() {
@@ -41,12 +45,14 @@ const TrackRow = React.memo(function TrackRow({
     setShowSampleList(true);
   }
 
-  function onClear() {
+  function clear() {
     setShowOptions(false);
+    onClear()
   }
 
-  function onDelete() {
+  function remove() {
     setShowOptions(false);
+    onDelete()
   }
 
   return (
@@ -58,7 +64,7 @@ const TrackRow = React.memo(function TrackRow({
         <input
           type="button"
           className={muted ? "muted" : ""}
-          onClick={() => onMute(id)}
+          onClick={() => onMute()}
         />
       </div>
       <div className="velocity-input">
@@ -86,8 +92,8 @@ const TrackRow = React.memo(function TrackRow({
       {showOptions && (
         <div className="options">
           <button onClick={onSetSample}>set sample</button>
-          <button onClick={onClear}>clear</button>
-          <button onClick={onDelete}>delete</button>
+          <button onClick={clear}>clear</button>
+          <button onClick={remove}>delete</button>
         </div>
       )}
       {showSampleList && (
