@@ -1,7 +1,7 @@
-import { newTrackData, type TrackData } from "./trackData";
+import { newTrackData, type Track } from "./track";
 
 export type TrackAction =
-  | { type: "UPDATE_PATTERN"; id: number; pattern: number[] }
+  | { type: "TOGGLE_STEP"; id: number; stepIndex: number }
   | { type: "SET_VELOCITY"; id: number; velocity: number }
   | { type: "TOGGLE_MUTE"; id: number }
   | { type: "ADD_TRACK" }
@@ -16,14 +16,20 @@ export type TrackAction =
       };
     };
 
-export function trackReducer(
-  state: TrackData[],
-  action: TrackAction
-): TrackData[] {
+export function trackReducer(state: Track[], action: TrackAction): Track[] {
   switch (action.type) {
-    case "UPDATE_PATTERN":
+    case "TOGGLE_STEP":
       return state.map((track) =>
-        track.id === action.id ? { ...track, pattern: action.pattern } : track
+        track.id === action.id
+          ? {
+              ...track,
+              pattern: track.pattern.map((step, i) =>
+                i === action.stepIndex
+                  ? { ...step, active: !step.active }
+                  : step
+              ),
+            }
+          : track
       );
     case "SET_VELOCITY":
       return state.map((track) =>
@@ -38,7 +44,7 @@ export function trackReducer(
     case "CLEAR":
       return state.map((track) =>
         track.id === action.id
-          ? { ...track, pattern: Array(16).fill(0) }
+          ? { ...track, pattern: Array(16).fill({ active: false }) }
           : track
       );
     case "DELETE": {

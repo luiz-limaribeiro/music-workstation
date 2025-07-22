@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { TrackData } from "./trackData";
+import type { Track } from "./track";
 import "./TrackRow.css";
 import SampleList from "./SampleList";
 import React from "react";
@@ -7,7 +7,7 @@ import React from "react";
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
 interface Props {
-  track: TrackData;
+  track: Track;
   currentStep: number;
   onToggleStep: (trackId: number, stepId: number) => void;
   onChangeVelocity: (volume: number) => void;
@@ -83,7 +83,7 @@ const TrackRow = React.memo(function TrackRow({
             key={stepIndex}
             className={`step
                   ${stepColors.includes(stepIndex) ? "other-color" : ""}
-                  ${step ? "active" : ""}
+                  ${step.active ? "active" : ""}
                   ${currentStep === stepIndex ? "current" : ""}`}
             onClick={() => onToggleStep(id, stepIndex)}
           ></div>

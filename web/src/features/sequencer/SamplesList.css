@@ -37,14 +37,21 @@
   scrollbar-color: #334 transparent;
 }
 
+.sample-list li {
+  cursor: pointer;
+}
+
+.sample-list li:hover {
+  background-color: #233;
+}
+
 .sample-list span {
   font-weight: 500;
   letter-spacing: .1ch;
-  cursor: pointer;
   padding-left: .2rem;
 }
 
-.selected {
+.sample-list li.selected {
   background-color: #eee;
   color: #233;
 }

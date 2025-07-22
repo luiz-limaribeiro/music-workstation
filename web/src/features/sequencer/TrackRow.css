@@ -124,5 +124,6 @@ input[type="range"]::-ms-track {
 }
 
 .options button:hover {
-  border: 1px solid #eeed;
+  background: #233;
+  color: #eee;
 }

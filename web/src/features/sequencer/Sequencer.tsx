@@ -3,11 +3,11 @@ import { useEffect, useReducer, useRef, useState } from "react";
 import "./Sequencer.css";
 import TrackRow from "./TrackRow";
 import Controls from "./Controls";
-import { newTrackData, type TrackData } from "./trackData";
+import { newTrackData, type Track } from "./track";
 import { trackReducer } from "./trackReducer";
 import { drums } from "./synthPresets";
 
-const initialTracks: TrackData[] = [
+const initialTracks: Track[] = [
   newTrackData("kick", drums.kick),
   newTrackData("snare", drums.snare),
   newTrackData("hihat", drums.hihat),
@@ -26,7 +26,7 @@ export default function Sequencer() {
     sequence.current = new Tone.Sequence(
       (time, col) => {
         tracks.forEach((track) => {
-          if (track.pattern[col]) track.play(time, track.velocity);
+          if (track.pattern[col].active) track.play(time, track.velocity);
         });
         setCurrentStep(col);
       },
@@ -46,7 +46,7 @@ export default function Sequencer() {
     // the callback runs for each column at the correct time
     sequence.current.callback = (time, col) => {
       tracks.forEach((track) => {
-        if (!track.muted && track.pattern[col])
+        if (!track.muted && track.pattern[col].active)
           track.play(time, track.velocity);
       });
       setCurrentStep(col);
@@ -57,16 +57,6 @@ export default function Sequencer() {
   useEffect(() => {
     Tone.getTransport().bpm.value = bpm;
   }, [bpm]);
-
-  function toggleStep(trackId: number, stepId: number) {
-    const track = tracks.find((track) => track.id === trackId);
-    if (!track) return;
-
-    const newPattern = [...track.pattern];
-    newPattern[stepId] = newPattern[stepId] ? 0 : 1;
-
-    dispatch({ type: "UPDATE_PATTERN", id: trackId, pattern: newPattern });
-  }
 
   async function togglePlay() {
     if (Tone.getContext().state !== "running") {
@@ -97,7 +87,9 @@ export default function Sequencer() {
           key={trackIndex}
           track={track}
           currentStep={currentStep}
-          onToggleStep={toggleStep}
+          onToggleStep={(trackId: number, stepIndex: number) =>
+            dispatch({ type: "TOGGLE_STEP", id: trackId, stepIndex: stepIndex })
+          }
           onChangeVelocity={(newVelocity: number) =>
             dispatch({
               type: "SET_VELOCITY",
