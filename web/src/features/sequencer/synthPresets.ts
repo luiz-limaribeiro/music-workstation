@@ -81,10 +81,10 @@ export const drums = {
     openHat.triggerAttackRelease("16n", time, velocity),
   clap: (time: number, velocity: number) =>
     clap.triggerAttackRelease("16n", time, velocity),
-  lowTom: (time: number, velocity: number) =>
+  highTom: (time: number, velocity: number) =>
     tom.triggerAttackRelease("C3", "16n", time, velocity),
   midTom: (time: number, velocity: number) =>
     tom.triggerAttackRelease("A2", "16n", time, velocity),
-  highTom: (time: number, velocity: number) =>
+  lowTom: (time: number, velocity: number) =>
     tom.triggerAttackRelease("F2", "16n", time, velocity),
 };

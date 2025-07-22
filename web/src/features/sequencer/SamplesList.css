@@ -3,7 +3,8 @@
   top: 0;
   left: 0;
   z-index: 1;
-  background: #20313a;
+  background: #20313aaa;
+  backdrop-filter: blur(10px);
   color: #cff;
   padding: .4rem .4rem;
   padding-right: 4rem;
@@ -19,6 +20,9 @@
 }
 
 .sample-list hr {
+  border: none;
+  background: #cffd;
+  height: 1px;
   width: 280px;
   position: absolute;
   left: 0;

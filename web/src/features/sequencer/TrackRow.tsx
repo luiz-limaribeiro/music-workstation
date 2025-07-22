@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { TrackData } from "./trackData";
 import "./TrackRow.css";
 import SampleList from "./SampleList";
+import React from "react";
 
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
@@ -17,7 +18,7 @@ interface Props {
   ) => void;
 }
 
-export default function TrackRow({
+const TrackRow = React.memo(function TrackRow({
   track,
   currentStep,
   onToggleStep,
@@ -28,15 +29,29 @@ export default function TrackRow({
   const { id, name, pattern, velocity, muted } = track;
 
   const [showSampleList, setShowSampleList] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
 
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
     onChangeVelocity(id, newVelocity);
   }
 
+  function onSetSample() {
+    setShowOptions(false);
+    setShowSampleList(true);
+  }
+
+  function onClear() {
+    setShowOptions(false);
+  }
+
+  function onDelete() {
+    setShowOptions(false);
+  }
+
   return (
     <div className="track-row">
-      <span className="track-name" onClick={() => setShowSampleList(true)}>
+      <span className="track-name" onClick={() => setShowOptions(!showOptions)}>
         {name}
       </span>
       <div className="mute-unmute">
@@ -68,7 +83,22 @@ export default function TrackRow({
           ></div>
         ))}
       </div>
-      {showSampleList && <SampleList selectedSample={track.name} onSampleSelect={onSampleSelect} onClose={() => setShowSampleList(false)} />}
+      {showOptions && (
+        <div className="options">
+          <button onClick={onSetSample}>set sample</button>
+          <button onClick={onClear}>clear</button>
+          <button onClick={onDelete}>delete</button>
+        </div>
+      )}
+      {showSampleList && (
+        <SampleList
+          selectedSample={track.name}
+          onSampleSelect={onSampleSelect}
+          onClose={() => setShowSampleList(false)}
+        />
+      )}
     </div>
   );
-}
+});
+
+export default TrackRow;
