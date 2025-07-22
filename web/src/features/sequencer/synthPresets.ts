@@ -67,24 +67,24 @@ const clap = new Tone.NoiseSynth({
 const tom = new Tone.MembraneSynth().toDestination()
 
 export const drums = {
-  kick: (time: number, velocity: number) =>
-    kick.triggerAttackRelease("C1", "16n", time, velocity),
-  hardKick: (time: number, velocity: number) =>
-    hardKick.triggerAttackRelease("C1", "16n", time, velocity),
-  snare: (time: number, velocity: number) =>
-    snare.triggerAttackRelease("16n", time, velocity),
-  snappySnare: (time: number, velocity: number) =>
-    snappySnare.triggerAttackRelease("16n", time, velocity),
-  hihat: (time: number, velocity: number) =>
-    hihat.triggerAttackRelease("16n", time, velocity),
-  openHat: (time: number, velocity: number) =>
-    openHat.triggerAttackRelease("16n", time, velocity),
-  clap: (time: number, velocity: number) =>
-    clap.triggerAttackRelease("16n", time, velocity),
-  highTom: (time: number, velocity: number) =>
-    tom.triggerAttackRelease("C3", "16n", time, velocity),
-  midTom: (time: number, velocity: number) =>
-    tom.triggerAttackRelease("A2", "16n", time, velocity),
-  lowTom: (time: number, velocity: number) =>
-    tom.triggerAttackRelease("F2", "16n", time, velocity),
+  kick: (time: number, velocity: number, stepVelocity: number = 1) =>
+    kick.triggerAttackRelease("C1", "16n", time, velocity * stepVelocity),
+  hardKick: (time: number, velocity: number, stepVelocity: number = 1) =>
+    hardKick.triggerAttackRelease("C1", "16n", time, velocity * stepVelocity),
+  snare: (time: number, velocity: number, stepVelocity: number = 1) =>
+    snare.triggerAttackRelease("16n", time, velocity * stepVelocity),
+  snappySnare: (time: number, velocity: number, stepVelocity: number = 1) =>
+    snappySnare.triggerAttackRelease("16n", time, velocity * stepVelocity),
+  hihat: (time: number, velocity: number, stepVelocity: number = 1) =>
+    hihat.triggerAttackRelease("16n", time, velocity * stepVelocity),
+  openHat: (time: number, velocity: number, stepVelocity: number = 1) =>
+    openHat.triggerAttackRelease("16n", time, velocity * stepVelocity),
+  clap: (time: number, velocity: number, stepVelocity: number = 1) =>
+    clap.triggerAttackRelease("16n", time, velocity * stepVelocity),
+  highTom: (time: number, velocity: number, stepVelocity: number = 1) =>
+    tom.triggerAttackRelease("C3", "16n", time, velocity * stepVelocity),
+  midTom: (time: number, velocity: number, stepVelocity: number = 1) =>
+    tom.triggerAttackRelease("A2", "16n", time, velocity * stepVelocity),
+  lowTom: (time: number, velocity: number, stepVelocity: number = 1) =>
+    tom.triggerAttackRelease("F2", "16n", time, velocity * stepVelocity),
 };

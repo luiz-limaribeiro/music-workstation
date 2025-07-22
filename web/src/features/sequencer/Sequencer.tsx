@@ -26,7 +26,8 @@ export default function Sequencer() {
     sequence.current = new Tone.Sequence(
       (time, col) => {
         tracks.forEach((track) => {
-          if (track.pattern[col].active) track.play(time, track.velocity);
+          if (track.pattern[col].active)
+            track.play(time, track.velocity, track.pattern[col].velocity);
         });
         setCurrentStep(col);
       },
@@ -47,7 +48,7 @@ export default function Sequencer() {
     sequence.current.callback = (time, col) => {
       tracks.forEach((track) => {
         if (!track.muted && track.pattern[col].active)
-          track.play(time, track.velocity);
+          track.play(time, track.velocity, track.pattern[col].velocity);
       });
       setCurrentStep(col);
     };
@@ -87,29 +88,7 @@ export default function Sequencer() {
           key={trackIndex}
           track={track}
           currentStep={currentStep}
-          onToggleStep={(trackId: number, stepIndex: number) =>
-            dispatch({ type: "TOGGLE_STEP", id: trackId, stepIndex: stepIndex })
-          }
-          onChangeVelocity={(newVelocity: number) =>
-            dispatch({
-              type: "SET_VELOCITY",
-              id: track.id,
-              velocity: newVelocity,
-            })
-          }
-          onMute={() => dispatch({ type: "TOGGLE_MUTE", id: track.id })}
-          onClear={() => dispatch({ type: "CLEAR", id: track.id })}
-          onDelete={() => dispatch({ type: "DELETE", id: track.id })}
-          onSampleSelect={(trackName, play) => {
-            dispatch({
-              type: "UPDATE_SAMPLE",
-              payload: {
-                id: track.id,
-                name: trackName,
-                play: play,
-              },
-            });
-          }}
+          dispatch={dispatch}
         />
       ))}
       <div className="add-track">

@@ -1,3 +1,4 @@
+import { newStep } from "./step";
 import { newTrackData, type Track } from "./track";
 
 export type TrackAction =
@@ -9,11 +10,15 @@ export type TrackAction =
   | { type: "DELETE"; id: number }
   | {
       type: "UPDATE_SAMPLE";
-      payload: {
-        id: number;
-        name: string;
-        play: (time: number, velocity: number) => void;
-      };
+      id: number;
+      name: string;
+      play: (time: number, velocity: number) => void;
+    }
+  | {
+      type: "SET_STEP_VELOCITY";
+      id: number;
+      stepIndex: number;
+      velocity: number;
     };
 
 export function trackReducer(state: Track[], action: TrackAction): Track[] {
@@ -44,7 +49,7 @@ export function trackReducer(state: Track[], action: TrackAction): Track[] {
     case "CLEAR":
       return state.map((track) =>
         track.id === action.id
-          ? { ...track, pattern: Array(16).fill({ active: false }) }
+          ? { ...track, pattern: Array(16).fill(newStep()) }
           : track
       );
     case "DELETE": {
@@ -55,8 +60,21 @@ export function trackReducer(state: Track[], action: TrackAction): Track[] {
     }
     case "UPDATE_SAMPLE":
       return state.map((track) =>
-        track.id === action.payload.id
-          ? { ...track, name: action.payload.name, play: action.payload.play }
+        track.id === action.id
+          ? { ...track, name: action.name, play: action.play }
+          : track
+      );
+    case "SET_STEP_VELOCITY":
+      return state.map((track) =>
+        track.id === action.id
+          ? {
+              ...track,
+              pattern: track.pattern.map((step, i) =>
+                i === action.stepIndex
+                  ? { ...step, velocity: action.velocity }
+                  : step
+              ),
+            }
           : track
       );
     default:

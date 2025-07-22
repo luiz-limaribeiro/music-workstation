@@ -1,34 +1,22 @@
-import { useState } from "react";
+import { useState, type ActionDispatch } from "react";
 import type { Track } from "./track";
 import "./TrackRow.css";
 import SampleList from "./SampleList";
 import React from "react";
+import type { TrackAction } from "./trackReducer";
 
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
 interface Props {
   track: Track;
   currentStep: number;
-  onToggleStep: (trackId: number, stepId: number) => void;
-  onChangeVelocity: (volume: number) => void;
-  onMute: () => void;
-  onClear: () => void,
-  onDelete: () => void,
-  onSampleSelect: (
-    trackName: string,
-    play: (time: number, velocity: number) => void
-  ) => void;
+  dispatch: ActionDispatch<[action: TrackAction]>;
 }
 
 const TrackRow = React.memo(function TrackRow({
   track,
   currentStep,
-  onToggleStep,
-  onChangeVelocity,
-  onMute,
-  onClear,
-  onDelete,
-  onSampleSelect,
+  dispatch,
 }: Props) {
   const { id, name, pattern, velocity, muted } = track;
 
@@ -37,7 +25,11 @@ const TrackRow = React.memo(function TrackRow({
 
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
-    onChangeVelocity(newVelocity);
+    dispatch({
+      type: "SET_VELOCITY",
+      id: id,
+      velocity: newVelocity,
+    });
   }
 
   function onSetSample() {
@@ -47,12 +39,12 @@ const TrackRow = React.memo(function TrackRow({
 
   function clear() {
     setShowOptions(false);
-    onClear()
+    dispatch({ type: "CLEAR", id: id });
   }
 
   function remove() {
     setShowOptions(false);
-    onDelete()
+    dispatch({ type: "DELETE", id: id });
   }
 
   return (
@@ -64,7 +56,7 @@ const TrackRow = React.memo(function TrackRow({
         <input
           type="button"
           className={muted ? "muted" : ""}
-          onClick={() => onMute()}
+          onClick={() => dispatch({ type: "TOGGLE_MUTE", id: id })}
         />
       </div>
       <div className="velocity-input">
@@ -85,7 +77,7 @@ const TrackRow = React.memo(function TrackRow({
                   ${stepColors.includes(stepIndex) ? "other-color" : ""}
                   ${step.active ? "active" : ""}
                   ${currentStep === stepIndex ? "current" : ""}`}
-            onClick={() => onToggleStep(id, stepIndex)}
+            onClick={() => dispatch({ type: "TOGGLE_STEP", id: id, stepIndex: stepIndex })}
           ></div>
         ))}
       </div>
@@ -98,8 +90,15 @@ const TrackRow = React.memo(function TrackRow({
       )}
       {showSampleList && (
         <SampleList
-          selectedSample={track.name}
-          onSampleSelect={onSampleSelect}
+          selectedSample={name}
+          onSampleSelect={(trackName, play) => {
+            dispatch({
+              type: "UPDATE_SAMPLE",
+              id: id,
+              name: trackName,
+              play: play,
+            });
+          }}
           onClose={() => setShowSampleList(false)}
         />
       )}
