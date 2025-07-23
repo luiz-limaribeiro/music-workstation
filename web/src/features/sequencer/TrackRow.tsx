@@ -1,4 +1,4 @@
-import { useState, type ActionDispatch } from "react";
+import { useState, type ActionDispatch, type WheelEvent } from "react";
 import type { Track } from "./track";
 import "./TrackRow.css";
 import SampleList from "./SampleList";
@@ -47,6 +47,24 @@ const TrackRow = React.memo(function TrackRow({
     dispatch({ type: "DELETE", id: id });
   }
 
+  function onChangeStepVelocity(
+    e: WheelEvent,
+    stepVelocity: number,
+    stepIndex: number
+  ) {
+    const value = stepVelocity - e.deltaY / 1000;
+    const factor = Math.pow(10, 1);
+    const velocity = Math.round((value + Number.EPSILON) * factor) / factor;
+
+    dispatch({
+      type: "SET_STEP_VELOCITY",
+      id: id,
+      stepIndex: stepIndex,
+      velocity: Math.max(0, Math.min(velocity, 1)),
+    });
+
+  }
+
   return (
     <div className="track-row">
       <span className="track-name" onClick={() => setShowOptions(!showOptions)}>
@@ -77,7 +95,16 @@ const TrackRow = React.memo(function TrackRow({
                   ${stepColors.includes(stepIndex) ? "other-color" : ""}
                   ${step.active ? "active" : ""}
                   ${currentStep === stepIndex ? "current" : ""}`}
-            onClick={() => dispatch({ type: "TOGGLE_STEP", id: id, stepIndex: stepIndex })}
+            style={{
+              opacity: `${step.active ? Math.max(0.2, Math.min(step.velocity, 1)) : 1}`
+            }}
+            onClick={() =>
+              dispatch({ type: "TOGGLE_STEP", id: id, stepIndex: stepIndex })
+            }
+            onWheel={(e: WheelEvent) => {
+              if (step.active)
+                onChangeStepVelocity(e, step.velocity, stepIndex);
+            }}
           ></div>
         ))}
       </div>

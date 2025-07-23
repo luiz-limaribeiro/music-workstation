@@ -1,6 +1,6 @@
 export type Step = {
   active: boolean;
-  velocity?: number;
+  velocity: number;
 }
 
 export function newStep(): Step {
