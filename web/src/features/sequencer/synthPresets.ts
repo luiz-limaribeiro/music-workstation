@@ -77,7 +77,11 @@ function createPlayer(
 
     for (let i = 0; i < repeatCount; ++i) {
       const scheduledTime = time + i * substepDuration;
-      synth.triggerAttackRelease(note, substepDuration, scheduledTime, velocity * stepVelocity)
+
+      if (note)
+        synth.triggerAttackRelease(note, substepDuration, scheduledTime, velocity * stepVelocity)
+      else
+        synth.triggerAttackRelease(duration, scheduledTime, velocity * stepVelocity)
     }
   }
 }
