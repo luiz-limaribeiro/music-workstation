@@ -17,3 +17,12 @@
 .step.current {
   filter: brightness(1.2);
 }
+
+.repeat-bar {
+  width: 80%;
+  justify-self: center;
+  height: 4px;
+  background-color: #2a2a3a;
+  border-radius: 9999px;
+  margin-top: 1px;
+}

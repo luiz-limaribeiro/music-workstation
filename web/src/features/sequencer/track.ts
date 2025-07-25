@@ -6,7 +6,7 @@ export type Track = {
   velocity: number;
   pattern: Step[];
   muted: boolean;
-  play: (time: number, velocity: number, stepVelocity?: number) => void;
+  play: (time: number, velocity: number, stepVelocity: number, stepRepeatValue: number) => void;
 };
 
 let currentId = 0

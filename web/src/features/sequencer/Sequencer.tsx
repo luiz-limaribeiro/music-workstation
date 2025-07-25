@@ -27,7 +27,7 @@ export default function Sequencer() {
       (time, col) => {
         tracks.forEach((track) => {
           if (track.pattern[col].active)
-            track.play(time, track.velocity, track.pattern[col].velocity);
+            track.play(time, track.velocity, track.pattern[col].velocity, track.pattern[col].repeatValue);
         });
         setCurrentStep(col);
       },
@@ -48,7 +48,7 @@ export default function Sequencer() {
     sequence.current.callback = (time, col) => {
       tracks.forEach((track) => {
         if (!track.muted && track.pattern[col].active)
-          track.play(time, track.velocity, track.pattern[col].velocity);
+          track.play(time, track.velocity, track.pattern[col].velocity, track.pattern[col].repeatValue);
       });
       setCurrentStep(col);
     };

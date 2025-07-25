@@ -19,6 +19,12 @@ export type TrackAction =
       id: number;
       stepIndex: number;
       velocity: number;
+    }
+  | {
+      type: "SET_STEP_REPEAT_VALUE";
+      id: number;
+      stepIndex: number;
+      repeatValue: number;
     };
 
 export function trackReducer(state: Track[], action: TrackAction): Track[] {
@@ -72,6 +78,19 @@ export function trackReducer(state: Track[], action: TrackAction): Track[] {
               pattern: track.pattern.map((step, i) =>
                 i === action.stepIndex
                   ? { ...step, velocity: action.velocity }
+                  : step
+              ),
+            }
+          : track
+      );
+    case "SET_STEP_REPEAT_VALUE":
+      return state.map((track) =>
+        track.id === action.id
+          ? {
+              ...track,
+              pattern: track.pattern.map((step, i) =>
+                i === action.stepIndex
+                  ? { ...step, repeatValue: action.repeatValue }
                   : step
               ),
             }

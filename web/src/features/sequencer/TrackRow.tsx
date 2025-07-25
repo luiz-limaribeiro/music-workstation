@@ -77,6 +77,7 @@ const TrackRow = React.memo(function TrackRow({
             currentStep={currentStep}
             active={step.active}
             velocity={step.velocity}
+            repeatValue={step.repeatValue}
             dispatch={dispatch}
           />
         ))}
