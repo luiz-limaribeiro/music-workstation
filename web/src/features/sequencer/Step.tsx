@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, type ActionDispatch } from "react";
 import "./Step.css";
 import type { TrackAction } from "./trackReducer";
+import React from "react";
 
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
@@ -14,7 +15,7 @@ interface Props {
   dispatch: ActionDispatch<[action: TrackAction]>;
 }
 
-export default function Step({
+const Step = React.memo(function Step({
   trackId,
   stepIndex,
   currentStep,
@@ -27,7 +28,7 @@ export default function Step({
 
   const bars = Array.from({ length: repeatValue }, (_, index) => (
     <div key={index} className="repeat-bar"></div>
-  ))
+  ));
 
   const handleScroll = useCallback(
     (e: WheelEvent) => {
@@ -91,4 +92,6 @@ export default function Step({
       {active && bars}
     </div>
   );
-}
+});
+
+export default Step;
