@@ -21,33 +21,12 @@
   display: flex;
 }
 
-.step {
-  width: 2rem;
-  height: 3rem;
-  background-color: #2a2a3a;
-  border: 1px solid #1123;
-  cursor: pointer;
-}
-
-.step.other-color {
-  background-color: #334;
-}
-
-.step.active {
-  background-color: rgb(251, 143, 255);
-}
-
-.step.current {
-  filter: brightness(1.2);
-}
-
 .velocity-input {
   flex: 1;
 }
 
 input[type="range"] {
   float: right;
-  background-color: transparent;
   appearance: none;
   width: 100px;
 }
@@ -63,7 +42,6 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  appearance: none;
   background: #334;
   height: 8px;
 }
@@ -79,9 +57,8 @@ input[type="range"]::-ms-thumb {
 }
 
 input[type="range"]::-ms-track {
-  appearance: none;
   background: #334;
-  width: 4px;
+  height: 8px;
 }
 
 .mute-unmute {
@@ -111,6 +88,7 @@ input[type="range"]::-ms-track {
   margin-left: 4rem;
   margin-top: 4rem;
   border: 1px solid #eee2;
+  z-index: 1;
 }
 
 .options button {

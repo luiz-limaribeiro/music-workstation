@@ -22,6 +22,8 @@ export default function Step({
   dispatch,
 }: Props) {
   function changeVelocity(e: React.WheelEvent) {
+    if (!active) return;
+
     const value = velocity - e.deltaY / 1000;
     const factor = Math.pow(10, 1);
     const newVelocity = Math.round((value + Number.EPSILON) * factor) / factor;
@@ -46,6 +48,7 @@ export default function Step({
       }}
       onClick={() => dispatch({ type: "TOGGLE_STEP", id: trackId, stepIndex })}
       onWheel={(e: React.WheelEvent) => changeVelocity(e)}
-    ></div>
+    >
+    </div>
   );
 }

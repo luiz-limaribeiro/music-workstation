@@ -6,6 +6,10 @@
   padding-bottom: 2rem;
   border-radius: 10px;
   position: relative;
+  margin: 8rem 0;
+  max-height: 64vh;
+  min-height: 64vh;
+  overflow-y: scroll;
 }
 
 .add-track {
@@ -19,4 +23,8 @@
   height: 42px;
   border-radius: 50%;
   cursor: pointer;
+}
+
+.sequencer::-webkit-scrollbar {
+  display: none;
 }
