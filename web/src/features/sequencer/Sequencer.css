@@ -1,0 +1,33 @@
+.sequencer {
+  background-color: #111;
+  border: 2px solid #FFF2;
+  color: white;
+  padding: 4rem;
+  padding-bottom: 2rem;
+  border-radius: 10px;
+  position: relative;
+  margin: 8rem 0;
+  max-height: 64vh;
+  min-height: 64vh;
+  overflow-y: scroll;
+}
+
+.add-track {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.add-track button {
+  cursor: pointer;
+  padding: .6rem 1rem;
+  background: transparent;
+  border: 1px solid #FFF2;
+  border-radius: 10px;
+  color: white;
+  font-family: 'Roboto Mono Variable', sans-serif;
+}
+
+.sequencer::-webkit-scrollbar {
+  display: none;
+}
