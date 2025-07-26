@@ -1,4 +1,3 @@
-import type React from "react";
 import "./Controls.css";
 import { useCallback, useEffect, useRef } from "react";
 

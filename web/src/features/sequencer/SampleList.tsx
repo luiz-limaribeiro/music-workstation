@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./SamplesList.css";
+import "./SampleList.css";
 import { drums } from "./synthPresets";
 
 interface Props {

@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   z-index: 1;
-  background: #233a;
+  background: #1a2424aa;
   backdrop-filter: blur(10px);
   color: #eee;
   padding: .4rem .4rem;
@@ -17,6 +17,7 @@
   margin-left: .2rem;
   margin-bottom: .4rem;
   cursor: default;
+  color: #A0A0A0;
 }
 
 .sample-list hr {
@@ -42,7 +43,7 @@
 }
 
 .sample-list li:hover {
-  background-color: #233;
+  background-color: #2a3434;
 }
 
 .sample-list span {
@@ -52,7 +53,7 @@
 }
 
 .sample-list li.selected {
-  background-color: #eee;
+  background-color: #ddd;
   color: #233;
 }
 
@@ -65,4 +66,5 @@
   border: none;
   color: #eee;
   cursor: pointer;
+  font-weight: bold;
 }

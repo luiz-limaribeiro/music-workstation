@@ -83,7 +83,7 @@ input[type="range"]::-ms-track {
   position: absolute;
   display: flex;
   flex-direction: column;
-  background: #233a;
+  background: #1a2424aa;
   backdrop-filter: blur(10px);
   margin-left: 4rem;
   margin-top: 4rem;
@@ -94,7 +94,7 @@ input[type="range"]::-ms-track {
 .options button {
   background: transparent;
   border: none;
-  color: #eeed;
+  color: #eeee;
   text-align: start;
   padding: .6rem .4rem;
   border: 1px solid transparent;
@@ -102,6 +102,6 @@ input[type="range"]::-ms-track {
 }
 
 .options button:hover {
-  background: #233;
+  background: #1a2424;
   color: #eee;
 }

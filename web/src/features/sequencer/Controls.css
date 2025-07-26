@@ -1,14 +1,23 @@
 .controls {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-bottom: 1rem;
   gap: 1rem;
 }
 
 .play-button {
-  padding: .2rem;
+  padding: .6rem;
+  border: 1px solid #FFF2;
+  border-radius: 10px;
+  background: transparent;
+  color: white;
+  font-family: 'Roboto Mono', monospace;
+  cursor: pointer;
+  width: 4rem;
 }
 
 .bpm-label {
   cursor: s-resize;
+  font-family: 'Roboto Mono', monospace;
 }
