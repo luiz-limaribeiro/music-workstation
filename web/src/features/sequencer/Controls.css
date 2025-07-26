@@ -12,12 +12,12 @@
   border-radius: 10px;
   background: transparent;
   color: white;
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'Roboto Mono Variable', monospace;
   cursor: pointer;
   width: 4rem;
 }
 
 .bpm-label {
   cursor: s-resize;
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'Roboto Mono Variable', monospace;
 }
