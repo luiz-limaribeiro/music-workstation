@@ -38,14 +38,18 @@ cd server
 ./mvnw spring-boot:run
 ```
 
-## Deployment
+---
+
+## 🌐 Deployment
 
 Deployed via rsync to a VPS (Hostinger) under:
 musicworkstation.lagama.site
 
 CI/CD is handled with GitHub Actions upon merge to main.
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```
 music-workstation/
@@ -54,11 +58,19 @@ music-workstation/
 ├── .github/    # CI/CD and templates
 ```
 
+---
+
 ## 🤝 Contributing
 
 See CONTRIBUTING.md for commit guidelines and branching rules.
 
-## License
+---
 
-MIT
-This project uses fonts licensed under the SIL Open Font License. See NOTICE.md for font details.
+## 📄 License
+
+MIT. This project uses fonts licensed under the SIL Open Font License. See NOTICE.md for font details.
+
+---
+
+## 📅 Roadmap
+Check TODO.md for upcoming features.
