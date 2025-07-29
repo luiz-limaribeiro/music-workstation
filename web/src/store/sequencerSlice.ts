@@ -1,10 +1,10 @@
-import { create } from "zustand";
-import { newTrackData, type DrumTrack } from "./sequencer/drumTrack";
-import { drums } from "./sequencer/synthPresets";
-import { newStep } from "./sequencer/step";
+import type { StateCreator } from "zustand";
+import { newTrackData, type DrumTrack } from "../features/sequencer/drumTrack";
+import type { AppState } from "./store";
+import { drums } from "../features/sequencer/synthPresets";
+import { newStep } from "../features/sequencer/step";
 
-type AppState = {
-  // Sequencer slice
+export interface SequencerSlice {
   drumTracks: DrumTrack[];
   toggleStep: (trackId: number, stepIndex: number) => void;
   addDrumTrack: () => void;
@@ -27,18 +27,14 @@ type AppState = {
     name: string,
     play: (time: number, velocity: number) => void
   ) => void;
+}
 
-  // Transport slice
-  isPlaying: boolean;
-  bpm: number;
-  currentStep: number;
-  setIsPlaying: (isPlaying: boolean) => void;
-  setBpm: (bpm: number) => void;
-  setCurrentStep: (step: number) => void;
-};
-
-export const useAppStore = create<AppState>((set) => ({
-  // Sequencer slice
+export const createSequencerSlice: StateCreator<
+  AppState,
+  [],
+  [],
+  SequencerSlice
+> = (set) => ({
   drumTracks: [
     newTrackData("kick", drums.kick),
     newTrackData("snare", drums.snare),
@@ -184,12 +180,4 @@ export const useAppStore = create<AppState>((set) => ({
         drumTracks: newDrumTracks,
       };
     }),
-
-  // Transport slice
-  isPlaying: false,
-  bpm: 120,
-  currentStep: 0,
-  setIsPlaying: (isPlaying) => set({ isPlaying }),
-  setBpm: (bpm) => set({ bpm: bpm < 30 ? 30 : bpm > 240 ? 240 : bpm }),
-  setCurrentStep: (step) => set({ currentStep: step }),
-}));
+});

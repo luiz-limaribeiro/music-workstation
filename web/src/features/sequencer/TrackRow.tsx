@@ -4,24 +4,24 @@ import "./TrackRow.css";
 import SampleList from "./SampleList.tsx";
 import React from "react";
 import Step from "./Step.tsx";
-import { useAppStore } from "../store.ts";
+import { useStore } from "../../store/store.ts";
 
 interface Props {
   track: DrumTrack;
-  currentStep: number;
 }
 
-const TrackRow = React.memo(function TrackRow({ track, currentStep }: Props) {
+const TrackRow = React.memo(function TrackRow({ track }: Props) {
   const { id, name, pattern, velocity, muted } = track;
 
   const [showSampleList, setShowSampleList] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
-  const setTrackVelocity = useAppStore((state) => state.setTrackVelocity);
-  const clearPattern = useAppStore((state) => state.clearPattern);
-  const removeTrack = useAppStore((state) => state.removeDrumTrack);
-  const toggleMute = useAppStore((state) => state.toggleMute);
-  const setSample = useAppStore((state) => state.setSample);
+  const setTrackVelocity = useStore((state) => state.setTrackVelocity);
+  const clearPattern = useStore((state) => state.clearPattern);
+  const removeTrack = useStore((state) => state.removeDrumTrack);
+  const toggleMute = useStore((state) => state.toggleMute);
+  const setSample = useStore((state) => state.setSample);
+  const currentStep = useStore((state) => state.currentStep);
 
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);

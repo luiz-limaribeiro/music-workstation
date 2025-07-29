@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import "./Step.css";
 import React from "react";
-import { useAppStore } from "../store";
+import { useStore } from "../../store/store";
 
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
@@ -23,9 +23,9 @@ const Step = React.memo(function Step({
   repeatValue,
 }: Props) {
   const stepRef = useRef<HTMLDivElement | null>(null);
-  const toggleStep = useAppStore((state) => state.toggleStep);
-  const setStepVelocity = useAppStore((state) => state.setStepVelocity);
-  const setRepeatValue = useAppStore((state) => state.setRepeatValue);
+  const toggleStep = useStore((state) => state.toggleStep);
+  const setStepVelocity = useStore((state) => state.setStepVelocity);
+  const setRepeatValue = useStore((state) => state.setRepeatValue);
 
   const bars = Array.from({ length: repeatValue }, (_, index) => (
     <div key={index} className="repeat-bar"></div>

@@ -1,12 +1,12 @@
-import { useAppStore } from "../store";
+import { useStore } from "../../store/store";
 import "./Controls.css";
 import { useCallback, useEffect, useRef } from "react";
 
 export default function Controls() {
-  const isPlaying = useAppStore((state) => state.isPlaying);
-  const bpm = useAppStore((state) => state.bpm);
-  const setIsPlaying = useAppStore((state) => state.setIsPlaying);
-  const setBpm = useAppStore((state) => state.setBpm);
+  const isPlaying = useStore((state) => state.isPlaying);
+  const bpm = useStore((state) => state.bpm);
+  const setIsPlaying = useStore((state) => state.setIsPlaying);
+  const setBpm = useStore((state) => state.setBpm);
 
   const bpmRef = useRef<HTMLSpanElement | null>(null);
 
