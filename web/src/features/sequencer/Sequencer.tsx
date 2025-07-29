@@ -1,31 +1,24 @@
 import * as Tone from "tone";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Sequencer.css";
 import TrackRow from "./TrackRow";
 import Controls from "./Controls";
-import { newTrackData, type Track } from "./track";
-import { trackReducer } from "./trackReducer";
-import { drums } from "./synthPresets";
-
-const initialTracks: Track[] = [
-  newTrackData("kick", drums.kick),
-  newTrackData("snare", drums.snare),
-  newTrackData("hihat", drums.hihat),
-];
+import { useAppStore } from "./sequencerStore";
 
 export default function Sequencer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState(120);
   const [currentStep, setCurrentStep] = useState(0);
 
-  const [tracks, dispatch] = useReducer(trackReducer, initialTracks);
+  const newTracks = useAppStore((state) => state.drumTracks);
+  const addTrack = useAppStore((state) => state.addTrack);
 
   const sequence = useRef<Tone.Sequence>(null);
 
   useEffect(() => {
     sequence.current = new Tone.Sequence(
       (time, col) => {
-        tracks.forEach((track) => {
+        newTracks.forEach((track) => {
           if (track.pattern[col].active)
             track.play(
               time,
@@ -51,7 +44,7 @@ export default function Sequencer() {
 
     // the callback runs for each column at the correct time
     sequence.current.callback = (time, col) => {
-      tracks.forEach((track) => {
+      newTracks.forEach((track) => {
         if (!track.muted && track.pattern[col].active)
           track.play(
             time,
@@ -62,7 +55,7 @@ export default function Sequencer() {
       });
       setCurrentStep(col);
     };
-  }, [tracks]);
+  }, [newTracks]);
 
   // sync the Tone bpm with the "bpm" state
   useEffect(() => {
@@ -93,16 +86,15 @@ export default function Sequencer() {
         onChangeBpm={(newBpm) => setBpm(newBpm)}
         onTogglePlay={togglePlay}
       />
-      {tracks.map((track, trackIndex) => (
+      {newTracks.map((track, trackIndex) => (
         <TrackRow
           key={trackIndex}
           track={track}
           currentStep={currentStep}
-          dispatch={dispatch}
         />
       ))}
       <div className="add-track">
-        <button onClick={() => dispatch({ type: "ADD_TRACK" })}>add track</button>
+        <button onClick={addTrack}>add track</button>
       </div>
     </div>
   );
