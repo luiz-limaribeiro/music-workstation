@@ -1,12 +1,13 @@
 import { create } from "zustand";
-import { newTrackData, type DrumTrack } from "./drumTrack";
-import { drums } from "./synthPresets";
-import { newStep } from "./step";
+import { newTrackData, type DrumTrack } from "./sequencer/drumTrack";
+import { drums } from "./sequencer/synthPresets";
+import { newStep } from "./sequencer/step";
 
-type DrumTracks = {
+type AppState = {
+  // Sequencer slice
   drumTracks: DrumTrack[];
   toggleStep: (trackId: number, stepIndex: number) => void;
-  addTrack: () => void;
+  addDrumTrack: () => void;
   setStepVelocity: (
     trackId: number,
     stepIndex: number,
@@ -19,16 +20,25 @@ type DrumTracks = {
   ) => void;
   setTrackVelocity: (trackId: number, velocity: number) => void;
   clearPattern: (trackId: number) => void;
-  removeTrack: (trackId: number) => void;
+  removeDrumTrack: (trackId: number) => void;
   toggleMute: (trackId: number) => void;
   setSample: (
     trackId: number,
     name: string,
     play: (time: number, velocity: number) => void
   ) => void;
+
+  // Transport slice
+  isPlaying: boolean;
+  bpm: number;
+  currentStep: number;
+  setIsPlaying: (isPlaying: boolean) => void;
+  setBpm: (bpm: number) => void;
+  setCurrentStep: (step: number) => void;
 };
 
-export const useAppStore = create<DrumTracks>((set) => ({
+export const useAppStore = create<AppState>((set) => ({
+  // Sequencer slice
   drumTracks: [
     newTrackData("kick", drums.kick),
     newTrackData("snare", drums.snare),
@@ -55,7 +65,7 @@ export const useAppStore = create<DrumTracks>((set) => ({
         drumTracks: newDrumTracks,
       };
     }),
-  addTrack: () =>
+  addDrumTrack: () =>
     set((state) => ({
       drumTracks: [...state.drumTracks, newTrackData("<empty>", () => {})],
     })),
@@ -129,7 +139,7 @@ export const useAppStore = create<DrumTracks>((set) => ({
         drumTracks: newDrumTracks,
       };
     }),
-  removeTrack: (trackId) =>
+  removeDrumTrack: (trackId) =>
     set((state) => {
       const trackIndex = state.drumTracks.findIndex(
         (track) => track.id === trackId
@@ -174,4 +184,12 @@ export const useAppStore = create<DrumTracks>((set) => ({
         drumTracks: newDrumTracks,
       };
     }),
+
+  // Transport slice
+  isPlaying: false,
+  bpm: 120,
+  currentStep: 0,
+  setIsPlaying: (isPlaying) => set({ isPlaying }),
+  setBpm: (bpm) => set({ bpm: bpm < 30 ? 30 : bpm > 240 ? 240 : bpm }),
+  setCurrentStep: (step) => set({ currentStep: step }),
 }));

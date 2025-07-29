@@ -1,4 +1,4 @@
-import Sequencer from "./features/sequencer/Sequencer"
+import Sequencer from "./sequencer/Sequencer"
 import './App.css'
 
 function App() {

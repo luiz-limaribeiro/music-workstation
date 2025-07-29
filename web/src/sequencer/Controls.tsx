@@ -1,27 +1,21 @@
+import { useAppStore } from "../store";
 import "./Controls.css";
 import { useCallback, useEffect, useRef } from "react";
 
-interface Props {
-  bpm: number;
-  isPlaying: boolean;
-  onChangeBpm: (newBpm: number) => void;
-  onTogglePlay: () => void;
-}
+export default function Controls() {
+  const isPlaying = useAppStore((state) => state.isPlaying);
+  const bpm = useAppStore((state) => state.bpm);
+  const setIsPlaying = useAppStore((state) => state.setIsPlaying);
+  const setBpm = useAppStore((state) => state.setBpm);
 
-export default function Controls({
-  bpm,
-  isPlaying,
-  onChangeBpm,
-  onTogglePlay,
-}: Props) {
   const bpmRef = useRef<HTMLSpanElement | null>(null);
 
   const handleWheel = useCallback((event: WheelEvent) => {
     event.preventDefault();
     
     const newBpm = bpm - event.deltaY / 100;
-    onChangeBpm(Math.max(20, Math.min(newBpm, 240)));
-  }, [onChangeBpm, bpm]);
+    setBpm(Math.max(20, Math.min(newBpm, 240)));
+  }, [bpm, setBpm]);
 
   useEffect(() => {
     const bpmElement = bpmRef.current;
@@ -39,7 +33,7 @@ export default function Controls({
       <span ref={bpmRef} className="bpm-label">
         BPM: {bpm}
       </span>
-      <button className="play-button" onClick={onTogglePlay}>
+      <button className="play-button" onClick={() => setIsPlaying(!isPlaying)}>
         {isPlaying ? "stop" : "start"}
       </button>
     </div>

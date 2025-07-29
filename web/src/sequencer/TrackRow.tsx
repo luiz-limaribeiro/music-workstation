@@ -1,10 +1,10 @@
 import { useState } from "react";
 import type { DrumTrack } from "./drumTrack.ts";
 import "./TrackRow.css";
-import SampleList from "./SampleList";
+import SampleList from "./SampleList.tsx";
 import React from "react";
 import Step from "./Step.tsx";
-import { useAppStore } from "./sequencerStore.ts";
+import { useAppStore } from "../store.ts";
 
 interface Props {
   track: DrumTrack;
@@ -19,7 +19,7 @@ const TrackRow = React.memo(function TrackRow({ track, currentStep }: Props) {
 
   const setTrackVelocity = useAppStore((state) => state.setTrackVelocity);
   const clearPattern = useAppStore((state) => state.clearPattern);
-  const removeTrack = useAppStore((state) => state.removeTrack);
+  const removeTrack = useAppStore((state) => state.removeDrumTrack);
   const toggleMute = useAppStore((state) => state.toggleMute);
   const setSample = useAppStore((state) => state.setSample);
 

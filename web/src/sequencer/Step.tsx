@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import "./Step.css";
 import React from "react";
-import { useAppStore } from "./sequencerStore";
+import { useAppStore } from "../store";
 
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 

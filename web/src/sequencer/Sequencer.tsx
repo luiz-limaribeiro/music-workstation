@@ -1,17 +1,18 @@
 import * as Tone from "tone";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "./Sequencer.css";
 import TrackRow from "./TrackRow";
 import Controls from "./Controls";
-import { useAppStore } from "./sequencerStore";
+import { useAppStore } from "../store";
 
 export default function Sequencer() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [bpm, setBpm] = useState(120);
-  const [currentStep, setCurrentStep] = useState(0);
+  const isPlaying = useAppStore((state) => state.isPlaying);
+  const bpm = useAppStore((state) => state.bpm);
+  const currentStep = useAppStore((state) => state.currentStep);
+  const setCurrentStep = useAppStore((state) => state.setCurrentStep);
 
   const newTracks = useAppStore((state) => state.drumTracks);
-  const addTrack = useAppStore((state) => state.addTrack);
+  const addTrack = useAppStore((state) => state.addDrumTrack);
 
   const sequence = useRef<Tone.Sequence>(null);
 
@@ -55,43 +56,36 @@ export default function Sequencer() {
       });
       setCurrentStep(col);
     };
-  }, [newTracks]);
+  }, [newTracks, setCurrentStep]);
 
   // sync the Tone bpm with the "bpm" state
   useEffect(() => {
     Tone.getTransport().bpm.value = bpm;
   }, [bpm]);
 
-  async function togglePlay() {
-    if (Tone.getContext().state !== "running") {
-      await Tone.start();
+  // start/stop sequence on isPlaying change
+  useEffect(() => {
+    async function handlePlayback() {
+      if (Tone.getContext().state !== "running") {
+        await Tone.start();
+      }
+      if (isPlaying) {
+        Tone.getTransport().start();
+        sequence.current?.start(0);
+      } else {
+        Tone.getTransport().stop();
+        sequence.current?.stop();
+        setCurrentStep(0);
+      }
     }
-
-    if (isPlaying) {
-      Tone.getTransport().stop();
-      setIsPlaying(false);
-      setCurrentStep(0);
-    } else {
-      sequence.current?.start(0);
-      Tone.getTransport().start();
-      setIsPlaying(true);
-    }
-  }
+    handlePlayback();
+  }, [isPlaying, setCurrentStep]);
 
   return (
     <div className="sequencer">
-      <Controls
-        bpm={bpm}
-        isPlaying={isPlaying}
-        onChangeBpm={(newBpm) => setBpm(newBpm)}
-        onTogglePlay={togglePlay}
-      />
+      <Controls />
       {newTracks.map((track, trackIndex) => (
-        <TrackRow
-          key={trackIndex}
-          track={track}
-          currentStep={currentStep}
-        />
+        <TrackRow key={trackIndex} track={track} currentStep={currentStep} />
       ))}
       <div className="add-track">
         <button onClick={addTrack}>add track</button>
