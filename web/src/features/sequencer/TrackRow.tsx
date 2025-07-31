@@ -1,34 +1,31 @@
-import { useState, type ActionDispatch } from "react";
-import type { Track } from "./track";
+import { useState } from "react";
+import type { DrumTrack } from "./drumTrack.ts";
 import "./TrackRow.css";
-import SampleList from "./SampleList";
+import SampleList from "./SampleList.tsx";
 import React from "react";
-import type { TrackAction } from "./trackReducer";
 import Step from "./Step.tsx";
+import { useStore } from "../../store/store.ts";
 
 interface Props {
-  track: Track;
-  currentStep: number;
-  dispatch: ActionDispatch<[action: TrackAction]>;
+  track: DrumTrack;
 }
 
-const TrackRow = React.memo(function TrackRow({
-  track,
-  currentStep,
-  dispatch,
-}: Props) {
+const TrackRow = React.memo(function TrackRow({ track }: Props) {
   const { id, name, pattern, velocity, muted } = track;
 
   const [showSampleList, setShowSampleList] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
+  const setTrackVelocity = useStore((state) => state.setTrackVelocity);
+  const clearPattern = useStore((state) => state.clearPattern);
+  const removeTrack = useStore((state) => state.removeDrumTrack);
+  const toggleMute = useStore((state) => state.toggleMute);
+  const setSample = useStore((state) => state.setSample);
+  const currentStep = useStore((state) => state.currentStep);
+
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
-    dispatch({
-      type: "SET_VELOCITY",
-      id: id,
-      velocity: newVelocity,
-    });
+    setTrackVelocity(track.id, newVelocity);
   }
 
   function onSetSample() {
@@ -38,12 +35,12 @@ const TrackRow = React.memo(function TrackRow({
 
   function clear() {
     setShowOptions(false);
-    dispatch({ type: "CLEAR", id: id });
+    clearPattern(track.id);
   }
 
   function remove() {
     setShowOptions(false);
-    dispatch({ type: "DELETE", id: id });
+    removeTrack(track.id);
   }
 
   return (
@@ -55,7 +52,7 @@ const TrackRow = React.memo(function TrackRow({
         <input
           type="button"
           className={muted ? "muted" : ""}
-          onClick={() => dispatch({ type: "TOGGLE_MUTE", id: id })}
+          onClick={() => toggleMute(track.id)}
         />
       </div>
       <div className="velocity-input">
@@ -78,7 +75,6 @@ const TrackRow = React.memo(function TrackRow({
             active={step.active}
             velocity={step.velocity}
             repeatValue={step.repeatValue}
-            dispatch={dispatch}
           />
         ))}
       </div>
@@ -93,12 +89,7 @@ const TrackRow = React.memo(function TrackRow({
         <SampleList
           selectedSample={name}
           onSampleSelect={(trackName, play) => {
-            dispatch({
-              type: "UPDATE_SAMPLE",
-              id: id,
-              name: trackName,
-              play: play,
-            });
+            setSample(track.id, trackName, play);
           }}
           onClose={() => setShowSampleList(false)}
         />

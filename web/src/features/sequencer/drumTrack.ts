@@ -1,6 +1,6 @@
 import { newStep, type Step } from "./step";
 
-export type Track = {
+export type DrumTrack = {
   id: number;
   name: string;
   velocity: number;
@@ -11,7 +11,7 @@ export type Track = {
 
 let currentId = 0
 
-export function newTrackData(name: string, play: (time: number, velocity: number) => void): Track {
+export function newTrackData(name: string, play: (time: number, velocity: number) => void): DrumTrack {
   currentId += 1
 
   return {

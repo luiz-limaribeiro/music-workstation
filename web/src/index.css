@@ -21,3 +21,8 @@
 button {
   font-family: 'Inter Variable', sans-serif;
 }
+
+body.grabbing-cursor,
+body.grabbing-cursor * {
+  cursor: grabbing !important;
+}
