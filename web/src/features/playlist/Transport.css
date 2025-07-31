@@ -1,0 +1,26 @@
+.transport {
+  width: 100vw;
+  height: 3rem;
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background-color: var(--timeline-bg);
+  z-index: 1000;
+  font-family: 'Roboto Mono Variable', monospace;
+}
+
+.transport button {
+  color: white;
+  background-color: transparent;
+  border: 1px solid #FFF5;
+  padding: .2rem .4rem;
+  cursor: pointer;
+  font-family: 'Roboto Mono Variable', monospace;
+}
+
+.transport button:active {
+  background-color: #FFF2;
+}

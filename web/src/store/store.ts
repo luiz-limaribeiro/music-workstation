@@ -1,10 +1,12 @@
 import { create } from "zustand";
 import { createSequencerSlice, type SequencerSlice } from "./sequencerSlice";
-import { createPlaybackEngineSlice, type PlaybackSlice } from "./playbackEngineSlice";
+import { createTransportSlice, type TransportSlice } from "./transportSlice";
+import { createPlaylistSlice, type PlaylistSlice } from "./playlistSlice";
 
-export type AppState = SequencerSlice & PlaybackSlice;
+export type AppState = SequencerSlice & TransportSlice & PlaylistSlice;
 
 export const useStore = create<AppState>()((...a) => ({
   ...createSequencerSlice(...a),
-  ...createPlaybackEngineSlice(...a),
+  ...createTransportSlice(...a),
+  ...createPlaylistSlice(...a)
 }));

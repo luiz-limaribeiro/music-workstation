@@ -2,7 +2,7 @@ import * as Tone from "tone";
 import { type StateCreator } from "zustand";
 import type { AppState } from "./store";
 
-export interface PlaybackSlice {
+export interface TransportSlice {
   isPlaying: boolean;
   bpm: number;
   currentStep: number;
@@ -13,11 +13,11 @@ export interface PlaybackSlice {
   setCurrentStep: (step: number) => void;
 }
 
-export const createPlaybackEngineSlice: StateCreator<
+export const createTransportSlice: StateCreator<
   AppState,
   [],
   [],
-  PlaybackSlice
+  TransportSlice
 > = (set) => ({
   isPlaying: false,
   bpm: 120,

@@ -1,0 +1,86 @@
+.track {
+  height: 3rem;
+  background-color: var(--track-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  border-top: 1px solid #112;
+  padding-left: 1rem;
+}
+
+.track .title {
+  font-size: .9rem;
+  max-width: 4rem;
+  text-wrap: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.track .mute-unmute {
+  width: 8px;
+  height: 20px;
+  border-radius: 9999px;
+  cursor: pointer;
+  background-color: cyan;
+  border: none;
+}
+
+.track .mute-unmute.muted {
+  background-color: #eee;
+}
+
+.track .solo-button {
+  font-size: 11px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  background-color: transparent;
+  color: #ccca;
+}
+
+.track .solo-button.solo {
+  color: black;
+  background-color: #eee;
+}
+
+.track .clips {
+  background-color: #223;
+  flex: 1;
+  display: grid;
+  height: 3rem;
+}
+
+.options {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: #1a2424aa;
+  backdrop-filter: blur(10px);
+  margin-left: 4rem;
+  margin-top: 4rem;
+  border: 1px solid #eee2;
+  z-index: 1;
+}
+
+.options button {
+  background: transparent;
+  border: none;
+  color: #eeee;
+  text-align: start;
+  padding: .6rem .4rem;
+  border: 1px solid transparent;
+  width: 5rem;
+  cursor: pointer;
+}
+
+.options button:hover {
+  background: #1a2424;
+  color: #eee;
+}

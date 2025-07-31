@@ -1,8 +1,7 @@
 import * as Tone from "tone";
-import Sequencer from "./features/sequencer/Sequencer";
 import { useEffect, useRef } from "react";
-import "./App.css";
 import { useStore } from "./store/store";
+import Playlist from "./features/playlist/Playlist";
 
 function App() {
   const isPlaying = useStore((state) => state.isPlaying);
@@ -78,9 +77,7 @@ function App() {
     handlePlayback();
   }, [isPlaying, setCurrentStep]);
   return (
-    <main>
-      <Sequencer />
-    </main>
+    <Playlist />
   );
 }
 
