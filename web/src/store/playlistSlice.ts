@@ -14,15 +14,11 @@ export interface PlaylistSlice {
   addClip: (trackId: number, clip: ClipData) => void;
   moveClip: (trackId: number, clipId: number, startStep: number) => void;
 
-  updateSequencerTracks: (newSequencerTracks: SequencerTrack[]) => void;
-
-  showSequencer: boolean;
-  setShowSequencer: (show: boolean) => void;
-
-  selectedClipIndex: number;
-  selectedTrackIndex: number;
-  selectClip: (trackId: number, clipId: number) => void;
-  unselectClip: () => void;
+  updateSequencerTracks: (
+    trackId: number,
+    clipId: number,
+    newSequencerTracks: SequencerTrack[]
+  ) => void;
 }
 
 export const createPlaylistSlice: StateCreator<
@@ -82,35 +78,19 @@ export const createPlaylistSlice: StateCreator<
       });
       return { tracks: updatedTracks };
     }),
-  updateSequencerTracks: (newSequencerTracks) =>
-    set((state) => {
-      const { selectedTrackIndex, selectedClipIndex, tracks } = state;
-      const updatedTracks = [...tracks];
-      updatedTracks[selectedTrackIndex].clips[
-        selectedClipIndex
-      ].sequencerTracks = newSequencerTracks;
-      return { tracks: updatedTracks };
-    }),
-  clips: [],
-  showSequencer: false,
-  setShowSequencer: (show) => set({ showSequencer: show }),
-  selectedClipIndex: -1,
-  selectedTrackIndex: -1,
-  selectClip: (trackId, clipId) =>
-    set((state) => {
-      const trackIndex = state.tracks.findIndex((t) => t.id === trackId);
-      const clipIndex = state.tracks[trackIndex].clips.findIndex(
-        (c) => c.id === clipId
-      );
-
-      return {
-        selectedTrackIndex: trackIndex,
-        selectedClipIndex: clipIndex,
-      };
-    }),
-  unselectClip: () =>
-    set({
-      selectedTrackIndex: -1,
-      selectedClipIndex: -1,
-    }),
+  updateSequencerTracks: (trackId, clipId, newSequencerTracks) =>
+    set((state) => ({
+      tracks: state.tracks.map((track) =>
+        track.id === trackId
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId
+                  ? { ...clip, sequencerTracks: newSequencerTracks }
+                  : clip
+              ),
+            }
+          : track
+      )
+    })),
 });

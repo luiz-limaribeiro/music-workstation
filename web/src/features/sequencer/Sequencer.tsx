@@ -3,34 +3,33 @@ import TrackRow from "./TrackRow";
 import { useStore } from "../../store/store";
 import { useEffect, useReducer } from "react";
 import { sequencerReducer } from "./sequencerReducer";
+import type { SequencerTrack } from "./sequencerTrackData";
 
-export default function Sequencer() {
-  const trackIndex = useStore((state) => state.selectedTrackIndex);
-  const clipIndex = useStore((state) => state.selectedClipIndex);
-  const tracks = useStore((state) => state.tracks);
+interface Props {
+  trackId: number;
+  clipId: number;
+  trackName: string;
+  sequencerTracks: SequencerTrack[];
+  onCloseEditor: () => void;
+}
 
-  const setShowSequencer = useStore((state) => state.setShowSequencer);
-  const unselectClip = useStore((state) => state.unselectClip);
-  const updateSequencerTracks = useStore(state => state.updateSequencerTracks)
+export default function Sequencer({ trackId, clipId,  trackName, sequencerTracks, onCloseEditor }: Props) {
+  const updateSequencerTracks = useStore(
+    (state) => state.updateSequencerTracks
+  );
 
-  const sequencerTracks = tracks[trackIndex].clips[clipIndex].sequencerTracks;
   const [seqTracks, dispatch] = useReducer(sequencerReducer, sequencerTracks);
 
   useEffect(() => {
-    updateSequencerTracks(seqTracks)
-  }, [seqTracks, updateSequencerTracks])
-
-  function handleDone() {
-    unselectClip()
-    setShowSequencer(false);
-  }
+    updateSequencerTracks(trackId, clipId, seqTracks);
+  }, [updateSequencerTracks, trackId, clipId, seqTracks]);
 
   return (
     <div className="sequencer-container">
       <div className="sequencer">
         <div className="sequencer-header">
-          <h3>{tracks[trackIndex].name}</h3>
-          <button onClick={handleDone}>done</button>
+          <h3>{trackName}</h3>
+          <button onClick={onCloseEditor}>done</button>
         </div>
         {seqTracks.map((track) => (
           <TrackRow key={track.id} sequencerTrack={track} dispatch={dispatch} />

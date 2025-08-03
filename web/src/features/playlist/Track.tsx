@@ -18,37 +18,39 @@ export default function Track({ track, totalSteps }: Props) {
 
   const [showOptions, setShowOptions] = useState(false);
 
+  const { name, id, panning, velocity, muted, solo, clips } = track
+
   return (
     <div className="track">
       <span className="title" onMouseDown={() => setShowOptions(!showOptions)}>
-        {track.name}
+        {name}
       </span>
       <button
-        className={`mute-unmute ${track.muted ? "muted" : ""}`}
-        onClick={() => toggleMuted(track.id)}
+        className={`mute-unmute ${muted ? "muted" : ""}`}
+        onClick={() => toggleMuted(id)}
       />
       <button
-        className={`solo-button ${track.solo ? "solo" : ""}`}
-        onClick={() => toggleSolo(track.id)}
+        className={`solo-button ${solo ? "solo" : ""}`}
+        onClick={() => toggleSolo(id)}
       >
         solo
       </button>
       <Knob
-        value={track.panning}
-        onValueChange={(newValue) => setPanning(track.id, newValue)}
+        value={panning}
+        onValueChange={(newValue) => setPanning(id, newValue)}
         mode="pan"
       />
       <Knob
-        value={track.velocity}
-        onValueChange={(newValue) => setVelocity(track.id, newValue)}
+        value={velocity}
+        onValueChange={(newValue) => setVelocity(id, newValue)}
         mode="velocity"
       />
       <div
         className="clips"
         style={{ gridTemplateColumns: `repeat(${totalSteps}, 1fr)` }}
       >
-        {track.clips.map((clip) => (
-          <Clip key={clip.id} trackId={track.id} clipData={clip} />
+        {clips.map((clip) => (
+          <Clip key={clip.id} trackId={id} trackName={name} clipData={clip} />
         ))}
       </div>
       {showOptions && (
