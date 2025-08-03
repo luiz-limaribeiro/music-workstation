@@ -16,8 +16,6 @@ export default function Track({ track, totalSteps }: Props) {
   const toggleMuted = useStore((state) => state.toggleTrackMuted);
   const toggleSolo = useStore((state) => state.toggleTrackSolo);
 
-  const clips = useStore((state) => state.clips);
-
   const [showOptions, setShowOptions] = useState(false);
 
   return (
@@ -49,14 +47,12 @@ export default function Track({ track, totalSteps }: Props) {
         className="clips"
         style={{ gridTemplateColumns: `repeat(${totalSteps}, 1fr)` }}
       >
-        {clips
-          .filter((c) => c.trackId === track.id)
-          .map((clip) => (
-            <Clip key={clip.id} clipData={clip} />
-          ))}
+        {track.clips.map((clip) => (
+          <Clip key={clip.id} trackId={track.id} clipData={clip} />
+        ))}
       </div>
       {showOptions && (
-        <div className="options">
+        <div className="track-options">
           <button>rename</button>
           <button>clear</button>
           <button>delete</button>

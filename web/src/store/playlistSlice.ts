@@ -1,7 +1,8 @@
 import type { StateCreator } from "zustand";
 import type { AppState } from "./store";
-import type { ClipData } from "../features/playlist/clipData";
 import type { TrackData } from "../features/playlist/trackData";
+import type { ClipData } from "../features/playlist/clipData";
+import type { SequencerTrack } from "../features/sequencer/sequencerTrackData";
 
 export interface PlaylistSlice {
   tracks: TrackData[];
@@ -10,10 +11,18 @@ export interface PlaylistSlice {
   setTrackPanning: (trackId: number, panning: number) => void;
   toggleTrackMuted: (trackId: number) => void;
   toggleTrackSolo: (trackId: number) => void;
+  addClip: (trackId: number, clip: ClipData) => void;
+  moveClip: (trackId: number, clipId: number, startStep: number) => void;
 
-  clips: ClipData[];
-  addClip: (clip: ClipData) => void;
-  moveClip: (clipId: number, startStep: number) => void;
+  updateSequencerTracks: (newSequencerTracks: SequencerTrack[]) => void;
+
+  showSequencer: boolean;
+  setShowSequencer: (show: boolean) => void;
+
+  selectedClipIndex: number;
+  selectedTrackIndex: number;
+  selectClip: (trackId: number, clipId: number) => void;
+  unselectClip: () => void;
 }
 
 export const createPlaylistSlice: StateCreator<
@@ -48,19 +57,60 @@ export const createPlaylistSlice: StateCreator<
         track.id === trackId ? { ...track, solo: !track.solo } : track
       ),
     })),
-  clips: [],
-  addClip: (clip) => set((state) => ({ clips: [...state.clips, clip] })),
+  addClip: (trackId, clip) =>
+    set((state) => {
+      const trackIndex = state.tracks.findIndex(
+        (track) => track.id === trackId
+      );
+      if (trackIndex === -1) return state;
+
+      const updatedTracks = state.tracks.map((track, index) => {
+        if (index === trackIndex) {
+          return { ...track, clips: [...track.clips, clip] };
+        }
+        return track;
+      });
+      return { tracks: updatedTracks };
+    }),
   moveClip: (clipId, startStep) =>
     set((state) => {
-      const clipIndex = state.clips.findIndex((clip) => clip.id === clipId);
-      if (clipIndex === -1) return state;
-
-      const updatedClips = state.clips.map((clip, index) => {
-        if (index === clipIndex) {
-          return { ...clip, startStep };
-        }
-        return clip;
+      const updatedTracks = state.tracks.map((track) => {
+        const updatedClips = track.clips.map((clip) =>
+          clip.id === clipId ? { ...clip, startStep } : clip
+        );
+        return { ...track, clips: updatedClips };
       });
-      return { clips: updatedClips };
+      return { tracks: updatedTracks };
+    }),
+  updateSequencerTracks: (newSequencerTracks) =>
+    set((state) => {
+      const { selectedTrackIndex, selectedClipIndex, tracks } = state;
+      const updatedTracks = [...tracks];
+      updatedTracks[selectedTrackIndex].clips[
+        selectedClipIndex
+      ].sequencerTracks = newSequencerTracks;
+      return { tracks: updatedTracks };
+    }),
+  clips: [],
+  showSequencer: false,
+  setShowSequencer: (show) => set({ showSequencer: show }),
+  selectedClipIndex: -1,
+  selectedTrackIndex: -1,
+  selectClip: (trackId, clipId) =>
+    set((state) => {
+      const trackIndex = state.tracks.findIndex((t) => t.id === trackId);
+      const clipIndex = state.tracks[trackIndex].clips.findIndex(
+        (c) => c.id === clipId
+      );
+
+      return {
+        selectedTrackIndex: trackIndex,
+        selectedClipIndex: clipIndex,
+      };
+    }),
+  unselectClip: () =>
+    set({
+      selectedTrackIndex: -1,
+      selectedClipIndex: -1,
     }),
 });

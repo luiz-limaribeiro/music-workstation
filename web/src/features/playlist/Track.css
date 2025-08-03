@@ -10,7 +10,7 @@
 }
 
 .track .title {
-  font-size: .9rem;
+  font-size: .8rem;
   max-width: 4rem;
   text-wrap: nowrap;
   overflow-x: hidden;
@@ -43,6 +43,7 @@
   border: none;
   background-color: transparent;
   color: #ccca;
+  font-family: 'Roboto Mono Variable', monospace;
 }
 
 .track .solo-button.solo {
@@ -57,7 +58,7 @@
   height: 3rem;
 }
 
-.options {
+.track-options {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -69,7 +70,7 @@
   z-index: 1;
 }
 
-.options button {
+.track-options button {
   background: transparent;
   border: none;
   color: #eeee;
@@ -80,7 +81,7 @@
   cursor: pointer;
 }
 
-.options button:hover {
+.track-options button:hover {
   background: #1a2424;
   color: #eee;
 }

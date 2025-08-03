@@ -1,83 +1,71 @@
 import * as Tone from "tone";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useStore } from "./store/store";
 import Playlist from "./features/playlist/Playlist";
+import Sequencer from "./features/sequencer/Sequencer";
 
 function App() {
   const isPlaying = useStore((state) => state.isPlaying);
   const bpm = useStore((state) => state.bpm);
+  const clips = useStore((state) => state.clips);
+  const instruments = useStore((state) => state.instruments);
+  const showSequencer = useStore((state) => state.showSequencer);
   const setCurrentStep = useStore((state) => state.setCurrentStep);
 
-  const drumTracks = useStore((state) => state.drumTracks);
+  function scheduleClips() {
+    clips.forEach((clip) => {
+      const instrument = instruments.find((i) => i.id === clip.instrumentId);
 
-  const sequence = useRef<Tone.Sequence>(null);
+      if (!instrument) {
+        console.warn("intrument not found");
+        return;
+      }
 
-  useEffect(() => {
-    sequence.current = new Tone.Sequence(
-      (time, col) => {
-        drumTracks.forEach((track) => {
-          if (track.pattern[col].active)
-            track.play(
-              time,
-              track.velocity,
-              track.pattern[col].velocity,
-              track.pattern[col].repeatValue
-            );
+      const startTime = Tone.Time(`${clip.startStep}n`).toSeconds();
+
+      Tone.getTransport().schedule((time) => {
+        clip.pattern.forEach((step, i) => {
+          if (step.active) {
+            const stepTime = time + Tone.Time(`${i}n`).toSeconds();
+            Tone.getTransport().scheduleOnce((t) => {
+              instrument.play(t, step.velocity, step.repeatValue);
+            }, stepTime);
+          }
         });
-        setCurrentStep(col);
-      },
-      Array.from({ length: 16 }, (_, i) => i),
-      "16n"
-    );
+      }, startTime);
+    });
+  }
 
-    return () => {
-      sequence.current?.dispose();
-    };
-  }, []);
-
-  // sync the sequence with the "pattern" state
   useEffect(() => {
-    if (!sequence.current) return;
-
-    // the callback runs for each column at the correct time
-    sequence.current.callback = (time, col) => {
-      drumTracks.forEach((track) => {
-        if (!track.muted && track.pattern[col].active)
-          track.play(
-            time,
-            track.velocity,
-            track.pattern[col].velocity,
-            track.pattern[col].repeatValue
-          );
-      });
-      setCurrentStep(col);
-    };
-  }, [drumTracks, setCurrentStep]);
+    scheduleClips();
+  }, [clips]);
 
   // sync the Tone bpm with the "bpm" state
   useEffect(() => {
     Tone.getTransport().bpm.value = bpm;
   }, [bpm]);
 
-  // start/stop sequence on isPlaying change
+  // start/stop playback when "isPlaying" changes
   useEffect(() => {
     async function handlePlayback() {
-      if (Tone.getContext().state !== "running") {
-        await Tone.start();
-      }
+      if (Tone.getContext().state !== "running") await Tone.start();
+
       if (isPlaying) {
         Tone.getTransport().start();
-        sequence.current?.start(0);
       } else {
         Tone.getTransport().stop();
-        sequence.current?.stop();
         setCurrentStep(0);
       }
     }
     handlePlayback();
   }, [isPlaying, setCurrentStep]);
+
   return (
-    <Playlist />
+    <main>
+      <Playlist />
+
+      {showSequencer && <Sequencer />}
+    </main>
   );
 }
 

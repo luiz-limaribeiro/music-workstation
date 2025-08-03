@@ -72,7 +72,7 @@ function createPlayer(
   duration: string = "16n"
 ) {
   const stepDurationSec = Tone.Time(duration).toSeconds()
-  return (time: number, velocity: number, stepVelocity: number = 1, repeatValue: number = 1) => {
+  return (time: number, velocity: number = 1, stepVelocity: number = 1, repeatValue: number = 1) => {
     const substepDuration = stepDurationSec / repeatValue;
 
     for (let i = 0; i < repeatValue; ++i) {

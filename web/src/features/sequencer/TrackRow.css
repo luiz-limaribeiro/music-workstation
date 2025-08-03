@@ -61,11 +61,11 @@ input[type="range"]::-ms-track {
   height: 8px;
 }
 
-.mute-unmute {
+.mute-unmute-instrument {
   flex: 1;
 }
 
-.mute-unmute input {
+.mute-unmute-instrument input {
   float: right;
   width: 10px;
   height: 20px;
@@ -75,7 +75,7 @@ input[type="range"]::-ms-track {
   cursor: pointer;
 }
 
-.mute-unmute input.muted {
+.mute-unmute-instrument input.muted {
   background: #d3d3d388;
 }
 

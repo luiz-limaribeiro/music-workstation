@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, type ActionDispatch } from "react";
 import "./Step.css";
 import React from "react";
-import { useStore } from "../../store/store";
+import type { SequencerAction } from "./sequencerReducer";
 
 const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
 
@@ -12,6 +12,7 @@ interface Props {
   active: boolean;
   velocity: number;
   repeatValue: number;
+  dispatch: ActionDispatch<[action: SequencerAction]>;
 }
 
 const Step = React.memo(function Step({
@@ -21,11 +22,9 @@ const Step = React.memo(function Step({
   active,
   velocity,
   repeatValue,
+  dispatch,
 }: Props) {
   const stepRef = useRef<HTMLDivElement | null>(null);
-  const toggleStep = useStore((state) => state.toggleStep);
-  const setStepVelocity = useStore((state) => state.setStepVelocity);
-  const setRepeatValue = useStore((state) => state.setRepeatValue);
 
   const bars = Array.from({ length: repeatValue }, (_, index) => (
     <div key={index} className="repeat-bar"></div>
@@ -40,7 +39,12 @@ const Step = React.memo(function Step({
         const value = repeatValue + e.deltaY / 100;
         const newRepeatValue = Math.max(1, Math.min(value, 8));
 
-        setRepeatValue(trackId, stepIndex, newRepeatValue);
+        dispatch({
+          type: "SET_STEP_REPEAT_VALUE",
+          trackId,
+          stepIndex,
+          repeatValue: newRepeatValue,
+        });
 
         return;
       }
@@ -50,17 +54,14 @@ const Step = React.memo(function Step({
       const newVelocity =
         Math.round((value + Number.EPSILON) * factor) / factor;
 
-      setStepVelocity(trackId, stepIndex, newVelocity);
+      dispatch({
+        type: "SET_STEP_VELOCITY",
+        trackId,
+        stepIndex,
+        velocity: newVelocity,
+      });
     },
-    [
-      active,
-      stepIndex,
-      trackId,
-      velocity,
-      repeatValue,
-      setStepVelocity,
-      setRepeatValue,
-    ]
+    [active, stepIndex, trackId, velocity, repeatValue, dispatch]
   );
 
   useEffect(() => {
@@ -86,7 +87,7 @@ const Step = React.memo(function Step({
       style={{
         opacity: `${active ? Math.max(0.2, Math.min(velocity, 1)) : 1}`,
       }}
-      onClick={() => toggleStep(trackId, stepIndex)}
+      onClick={() => dispatch({ type: "TOGGLE_STEP", trackId, stepIndex })}
     >
       {active && bars}
     </div>

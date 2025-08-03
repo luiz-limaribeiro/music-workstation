@@ -1,24 +1,58 @@
+.sequencer-container {
+  z-index: 1001;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  background-color: #1124;
+  backdrop-filter: blur(10px);
+}
+
 .sequencer {
   background-color: #111;
   border: 2px solid #FFF2;
   color: white;
   padding: 4rem;
+  padding-top: 3rem;
   padding-bottom: 2rem;
   border-radius: 10px;
   position: relative;
-  margin: 8rem 0;
+  margin: 6rem 12.6rem;
   max-height: 64vh;
   min-height: 64vh;
   overflow-y: scroll;
 }
 
-.add-track {
+.sequencer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sequencer-header h3 {
+  font-family: 'Roboto Mono Variable', sans-serif;
+  font-size: 1.5rem;
+  color: #FFF3;
+}
+
+.sequencer-header button {
+  cursor: pointer;
+  padding: .6rem 1rem;
+  background: transparent;
+  border: 1px solid #FFF2;
+  border-radius: 10px;
+  color: white;
+  font-family: 'Roboto Mono Variable', sans-serif;
+}
+
+.add-instrument {
   display: flex;
   justify-content: center;
   margin-top: 2rem;
 }
 
-.add-track button {
+.add-instrument button {
   cursor: pointer;
   padding: .6rem 1rem;
   background: transparent;

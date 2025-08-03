@@ -2,15 +2,14 @@ import { useEffect } from "react";
 import "./Playlist.css";
 import Timeline from "./Timeline";
 import { useStore } from "../../store/store";
-import type { TrackData } from "./trackData";
 import Transport from "./Transport";
 import Track from "./Track";
+import { newClipData } from "./clipData";
+import { newTrackData } from "./trackData";
 
 const stepsPerBar = 16;
 const bars = 4;
-const totalSteps = stepsPerBar * bars;
-
-let trackCount = 2;
+const totalSteps = (stepsPerBar * bars) * 2;
 
 export default function Playlist() {
   const tracks = useStore((state) => state.tracks)
@@ -18,34 +17,14 @@ export default function Playlist() {
   const addClip = useStore((state) => state.addClip);
 
   useEffect(() => {
-    addTrack({ id: 1, name: "Track 1", panning: 0, velocity: 1, mute: false, solo: false })
-    addTrack({ id: 2, name: "Track 2", panning: 0, velocity: 1, mute: false, solo: false })
-    addClip({
-      id: 1,
-      trackId: 1,
-      startStep: 0,
-      length: 4,
-      pattern: Array(16).fill({ active: false, velocity: 1, repeatValue: 1 }),
-    });
-    addClip({
-      id: 2,
-      trackId: 2,
-      startStep: 4,
-      length: 8,
-      pattern: Array(16).fill({ active: false, velocity: 1, repeatValue: 1 }),
-    });
+    addTrack({ id: 1, name: "Track 1", panning: 0, velocity: 1, muted: false, solo: false, clips: [] });
+    addTrack({ id: 2, name: "Track 2", panning: 0, velocity: 1, muted: false, solo: false, clips: [] });
+    addClip(1, newClipData(0, 16));
+    addClip(2, newClipData(16, 16));
   }, []);
 
   function handleAddTrack() {
-    trackCount += 1;
-    const newTrack: TrackData = {
-      id: trackCount,
-      name: `Track ${trackCount}`,
-      panning: 0,
-      velocity: 1,
-      mute: false,
-      solo: false,
-    };
+    const newTrack = newTrackData('Track ' + Math.random().toFixed(2))
     addTrack(newTrack)
   }
 

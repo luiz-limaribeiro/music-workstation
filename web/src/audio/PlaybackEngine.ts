@@ -7,7 +7,7 @@ export class PlaybackEngine {
   init(patternLength: number) {
     this.sequence = new Tone.Sequence(
       (time, col) => {
-        const drumTracks = useStore.getState().drumTracks;
+        const drumTracks = useStore.getState().instruments;
         drumTracks.forEach((track) => {
           if (track.pattern[col].active)
             track.play(
@@ -27,7 +27,7 @@ export class PlaybackEngine {
   setCallback() {
     if (!this.sequence) return;
     this.sequence.callback = (time, col) => {
-      const drumTracks = useStore.getState().drumTracks;
+      const drumTracks = useStore.getState().instruments;
       drumTracks.forEach((track) => {
         if (!track.muted && track.pattern[col].active)
           track.play(
