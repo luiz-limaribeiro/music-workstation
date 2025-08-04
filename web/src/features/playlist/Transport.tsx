@@ -10,17 +10,17 @@ export default function Transport() {
   const startPlayback = useStore((state) => state.startPlayback);
   const stopPlayback = useStore((state) => state.stopPlayback);
 
-  const lastBpm = useRef(0);
+  const previousBpm = useRef(0);
 
   function handleMouseMove(event: MouseEvent) {
-    lastBpm.current += event.movementX;
-    lastBpm.current = Math.max(1, Math.min(999, lastBpm.current));
-    setBpm(Math.round(lastBpm.current));
+    previousBpm.current += event.movementX;
+    previousBpm.current = Math.max(1, Math.min(999, previousBpm.current));
+    setBpm(Math.round(previousBpm.current));
   }
 
   function handleMouseDown() {
+    previousBpm.current = bpm;
     document.body.classList.add("grabbing-cursor");
-    lastBpm.current = bpm;
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
   }

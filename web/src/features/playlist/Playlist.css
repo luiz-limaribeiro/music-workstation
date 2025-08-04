@@ -9,6 +9,7 @@
   min-height: 100vh;
   color: white;
   padding-top: 2rem;
+  user-select: none;
 }
 
 .tracks {

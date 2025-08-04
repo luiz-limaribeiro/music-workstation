@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Knob from "../../common/Knob";
 import { useStore } from "../../store/store";
 import Clip from "./Clip";
@@ -16,12 +16,22 @@ export default function Track({ track, totalSteps }: Props) {
   const toggleMuted = useStore((state) => state.toggleTrackMuted);
   const toggleSolo = useStore((state) => state.toggleTrackSolo);
 
+  const trackRowRef = useRef<HTMLDivElement>(null)
+
+  const [gridCellWidth, setGridCellWidth] = useState(0)
   const [showOptions, setShowOptions] = useState(false);
 
   const { name, id, panning, velocity, muted, solo, clips } = track
 
+  useEffect(() => {
+    if (trackRowRef.current) {
+      const width = trackRowRef.current.offsetWidth;
+      setGridCellWidth(width / totalSteps)
+    }
+  }, [])
+
   return (
-    <div className="track">
+    <div className="track" ref={trackRowRef}>
       <span className="title" onMouseDown={() => setShowOptions(!showOptions)}>
         {name}
       </span>
@@ -50,7 +60,7 @@ export default function Track({ track, totalSteps }: Props) {
         style={{ gridTemplateColumns: `repeat(${totalSteps}, 1fr)` }}
       >
         {clips.map((clip) => (
-          <Clip key={clip.id} trackId={id} trackName={name} clipData={clip} />
+          <Clip key={clip.id} trackId={id} trackName={name} clipData={clip} gridCellWidth={gridCellWidth} />
         ))}
       </div>
       {showOptions && (

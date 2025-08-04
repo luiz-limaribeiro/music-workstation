@@ -13,12 +13,13 @@ export interface PlaylistSlice {
   toggleTrackSolo: (trackId: number) => void;
   addClip: (trackId: number, clip: ClipData) => void;
   moveClip: (trackId: number, clipId: number, startStep: number) => void;
-
   updateSequencerTracks: (
     trackId: number,
     clipId: number,
     newSequencerTracks: SequencerTrack[]
   ) => void;
+  selectedClipId: number;
+  selectClip: (clipId: number) => void;
 }
 
 export const createPlaylistSlice: StateCreator<
@@ -68,16 +69,19 @@ export const createPlaylistSlice: StateCreator<
       });
       return { tracks: updatedTracks };
     }),
-  moveClip: (clipId, startStep) =>
-    set((state) => {
-      const updatedTracks = state.tracks.map((track) => {
-        const updatedClips = track.clips.map((clip) =>
-          clip.id === clipId ? { ...clip, startStep } : clip
-        );
-        return { ...track, clips: updatedClips };
-      });
-      return { tracks: updatedTracks };
-    }),
+  moveClip: (trackId, clipId, startStep) =>
+    set((state) => ({
+      tracks: state.tracks.map((track) =>
+        track.id === trackId
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId ? { ...clip, startStep: startStep } : clip
+              ),
+            }
+          : track
+      ),
+    })),
   updateSequencerTracks: (trackId, clipId, newSequencerTracks) =>
     set((state) => ({
       tracks: state.tracks.map((track) =>
@@ -91,6 +95,8 @@ export const createPlaylistSlice: StateCreator<
               ),
             }
           : track
-      )
+      ),
     })),
+  selectedClipId: -1,
+  selectClip: (clipId) => set({ selectedClipId: clipId }),
 });

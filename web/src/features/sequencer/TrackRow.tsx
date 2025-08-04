@@ -38,13 +38,13 @@ const TrackRow = React.memo(function TrackRow({
   }
 
   function clear() {
-    setShowOptions(false);
     dispatch({ type: "CLEAR", trackId: id });
+    setShowOptions(false);
   }
 
   function remove() {
-    setShowOptions(false);
     dispatch({ type: "DELETE", trackId: id });
+    setShowOptions(false);
   }
 
   return (
@@ -53,7 +53,13 @@ const TrackRow = React.memo(function TrackRow({
         {name}
       </span>
       <div className="mute-unmute-instrument">
-        <input type="button" className={muted ? "muted" : ""} />
+        <input
+          type="button"
+          className={muted ? "muted" : ""}
+          onClick={() => {
+            dispatch({ type: "TOGGLE_MUTED", trackId: id });
+          }}
+        />
       </div>
       <div className="velocity-input">
         <input
@@ -89,8 +95,14 @@ const TrackRow = React.memo(function TrackRow({
       {showSampleList && (
         <SampleList
           selectedSample={name}
-          onSampleSelect={() => {
+          onSampleSelect={(sampleName, play) => {
             onSetSample();
+            dispatch({
+              type: "SET_SAMPLE",
+              trackId: id,
+              name: sampleName,
+              play,
+            });
           }}
           onClose={() => setShowSampleList(false)}
         />
