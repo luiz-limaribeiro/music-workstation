@@ -2,32 +2,26 @@ import { useCallback, useEffect, useRef } from "react";
 import "./Step.css";
 import React from "react";
 
-const stepColors = [0, 1, 2, 3, 8, 9, 10, 11];
-
 interface Props {
-  trackId: number;
-  stepIndex: number;
+  stepId: number;
+  sequencerTrackId: number;
   currentStep: number;
   active: boolean;
   velocity: number;
   repeatValue: number;
-  toggleStep: (trackId: number, stepIndex: number) => void;
+  toggleStep: (stepId: number) => void;
   setRepeatValue: (
-    trackId: number,
-    stepIndex: number,
+    stepId: number,
     repeatValue: number
   ) => void;
   setStepVelocity: (
-    trackId: number,
-    stepIndex: number,
+    stepId: number,
     velocity: number
   ) => void;
 }
 
 function Step({
-  trackId,
-  stepIndex,
-  currentStep,
+  stepId,
   active,
   velocity,
   repeatValue,
@@ -50,7 +44,7 @@ function Step({
         const value = repeatValue + e.deltaY / 100;
         const newRepeatValue = Math.max(1, Math.min(value, 8));
 
-        setRepeatValue(trackId, stepIndex, newRepeatValue);
+        setRepeatValue(stepId, newRepeatValue);
         return;
       }
 
@@ -58,17 +52,9 @@ function Step({
       const factor = Math.pow(10, 1);
       const newVelocity =
         Math.round((value + Number.EPSILON) * factor) / factor;
-      setStepVelocity(trackId, stepIndex, newVelocity);
+      setStepVelocity(stepId, newVelocity);
     },
-    [
-      active,
-      stepIndex,
-      trackId,
-      velocity,
-      repeatValue,
-      setRepeatValue,
-      setStepVelocity,
-    ]
+    [stepId, active, velocity, repeatValue, setRepeatValue, setStepVelocity]
   );
 
   useEffect(() => {
@@ -86,15 +72,11 @@ function Step({
   return (
     <div
       ref={stepRef}
-      key={stepIndex}
-      className={`step
-                  ${stepColors.includes(stepIndex) ? "other-color" : ""}
-                  ${active ? "active" : ""}
-                  ${currentStep === stepIndex ? "current" : ""}`}
+      className={`step ${active ? "active" : ""}`}
       style={{
         opacity: `${active ? Math.max(0.2, Math.min(velocity, 1)) : 1}`,
       }}
-      onClick={() => toggleStep(trackId, stepIndex)}
+     onClick={() => toggleStep(stepId)}
     >
       {active && bars}
     </div>

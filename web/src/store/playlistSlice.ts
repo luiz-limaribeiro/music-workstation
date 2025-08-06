@@ -3,6 +3,7 @@ import type { AppState } from "./store";
 import type { TrackData } from "../models/trackData";
 import type { ClipData } from "../models/clipData";
 import { newSequencerTrackData, type SequencerTrack } from "../models/sequencerTrackData";
+import { newStepData } from "../models/stepData";
 
 export interface PlaylistSlice {
   tracks: {
@@ -150,6 +151,22 @@ export const createPlaylistSlice: StateCreator<
         [newClipId]: [newSequencerTrackId]
       }
 
+      const newStepsById = { ...state.steps.byId };
+      const newStepsAllIds = [ ...state.steps.allIds ];
+      const newStepIdsForTrack = [];
+
+      for (let i = 0; i < 16; ++i) {
+        const newStep = newStepData();
+        newStepsById[newStep.id] = newStep;
+        newStepsAllIds.push(newStep.id);
+        newStepIdsForTrack.push(newStep.id);
+      }
+
+      const newSequencerTrackSteps = {
+        ...state.sequencerTrackSteps,
+        [newSequencerTrackId]: newStepIdsForTrack,
+      };
+
       return {
         clips: { byId: newById, allIds: newAllIds },
         trackClips: newTrackClips,
@@ -157,7 +174,9 @@ export const createPlaylistSlice: StateCreator<
           byId: newSequencerTracksById,
           allIds: newSequencerTracksAllIds
         },
-        clipSequencerTracks: newClipSequencerTracks
+        clipSequencerTracks: newClipSequencerTracks,
+        steps: { byId: newStepsById, allIds: newStepsAllIds },
+        sequencerTrackSteps: newSequencerTrackSteps,
       };
     }),
   moveClip: (clipId, startStep) =>

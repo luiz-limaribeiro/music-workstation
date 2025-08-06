@@ -15,7 +15,7 @@ function ClipContainer({ clipId, gridCellWidth, trackName }: Props) {
       clip: state.clips.byId[clipId],
       selectedClipId: state.selectedClipId,
       currentStep: state.currentStep,
-      sequencerTrackIds: state.sequencerTracks.allIds
+      sequencerTrackIds: state.clipSequencerTracks[clipId]
     }))
   );
 

@@ -1,14 +1,14 @@
 import { useState } from "react";
 import type { SequencerTrack } from "../../models/sequencerTrackData.ts";
-import "./DrumTrack.css";
+import "./SequencerTrack.css";
 import SampleList from "./SampleList.tsx";
 import React from "react";
-import Step from "./Step.tsx";
+import StepContainer from "./StepContainer.tsx";
 
 interface Props {
   clipId: number;
+  stepIds: number[];
   sequencerTrack: SequencerTrack;
-  currentStep: number;
   setTrackVelocity: (sequencerTrackId: number, velocity: number) => void;
   clearSequence: (sequencerTrackId: number) => void;
   deleteSequence: (clipId: number, sequencerTrackId: number) => void;
@@ -18,25 +18,19 @@ interface Props {
     name: string,
     play: (time: number, velocity: number) => void
   ) => void;
-  toggleStep: (sequencerTrackId: number, stepIndex: number) => void;
-  setStepVelocity: (sequencerTrackId: number, stepIndex: number, velocity: number) => void;
-  setStepRepeatValue: (sequencerTrackId: number, stepIndex: number, repeatValue: number) => void;
 }
 
-function DrumTrack({
+function SequencerTrack({
   clipId,
+  stepIds,
   sequencerTrack,
-  currentStep,
   setTrackVelocity,
   clearSequence,
   deleteSequence,
   toggleMuted,
   setSample,
-  toggleStep,
-  setStepVelocity,
-  setStepRepeatValue,
 }: Props) {
-  const { id, name, velocity, muted, pattern } = sequencerTrack;
+  const { id, name, velocity, muted } = sequencerTrack;
 
   const [showSampleList, setShowSampleList] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
@@ -86,18 +80,11 @@ function DrumTrack({
         />
       </div>
       <div className="steps">
-        {pattern.map((step, stepIndex) => (
-          <Step
-            key={stepIndex}
-            trackId={id}
-            stepIndex={stepIndex}
-            currentStep={currentStep}
-            active={step.active}
-            velocity={step.velocity}
-            repeatValue={step.repeatValue}
-            toggleStep={toggleStep}
-            setStepVelocity={setStepVelocity}
-            setRepeatValue={setStepRepeatValue}
+        {stepIds.map((id) => (
+          <StepContainer
+            key={id}
+            stepId={id}
+            sequencerTrackId={sequencerTrack.id}
           />
         ))}
       </div>
@@ -113,7 +100,7 @@ function DrumTrack({
           selectedSampleName={name}
           onSampleSelect={(sampleName, play) => {
             onSetSample();
-            setSample(id, sampleName, play)
+            setSample(id, sampleName, play);
           }}
           onClose={() => setShowSampleList(false)}
         />
@@ -122,4 +109,4 @@ function DrumTrack({
   );
 }
 
-export default React.memo(DrumTrack);
+export default React.memo(SequencerTrack);

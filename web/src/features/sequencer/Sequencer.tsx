@@ -1,5 +1,5 @@
 import { newSequencerTrackData, type SequencerTrack } from "../../models/sequencerTrackData";
-import DrumTrackContainer from "./DrumTrackContainer";
+import SequencerTrackContainer from "./SequencerTrackContainer";
 import "./Sequencer.css";
 
 interface Props {
@@ -25,7 +25,7 @@ export default function Sequencer({
           <button onClick={onCloseEditor}>done</button>
         </div>
         {sequencerTrackIds.map((id) => (
-          <DrumTrackContainer
+          <SequencerTrackContainer
             key={id}
             clipId={clipId}
             sequencerTrackId={id}

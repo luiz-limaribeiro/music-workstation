@@ -23,8 +23,8 @@ export default function Playlist() {
 
     addTrack({ id: -1, name: "Track 1", panning: 0, velocity: 1, muted: false, solo: false });
     addTrack({ id: -2, name: "Track 2", panning: 0, velocity: 1, muted: false, solo: false });
-    addClip(-1, newClipData(-1, 0, 16));
-    addClip(-2, newClipData(-2, 16, 16));
+    addClip(-1, newClipData(0, 16));
+    addClip(-2, newClipData(16, 16));
     isInitialized.current = true
   }, [addTrack, addClip]);
 

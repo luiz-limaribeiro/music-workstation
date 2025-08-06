@@ -1,5 +1,5 @@
 import React from "react";
-import DrumTrack from "./DrumTrack";
+import SequencerTrack from "./SequencerTrack";
 import { useStore } from "../../store/store";
 import { useShallow } from "zustand/shallow";
 
@@ -8,11 +8,11 @@ interface Props {
   sequencerTrackId: number;
 }
 
-function DrumTrackContainer({ clipId, sequencerTrackId }: Props) {
-  const { sequencerTrack, currentStep } = useStore(
-    useShallow((state) => ({
+function SequencerTrackContainer({ clipId, sequencerTrackId }: Props) {
+  const { sequencerTrack, stepIds } = useStore(
+    useShallow(state => ({
       sequencerTrack: state.sequencerTracks.byId[sequencerTrackId],
-      currentStep: state.currentStep,
+      stepIds: state.sequencerTrackSteps[sequencerTrackId]
     }))
   );
 
@@ -22,9 +22,6 @@ function DrumTrackContainer({ clipId, sequencerTrackId }: Props) {
     deleteSequence,
     toggleMuted,
     setSample,
-    toggleStep,
-    setStepVelocity,
-    setStepRepeatValue,
   } = useStore(
     useShallow((state) => ({
       setVelocity: state.setVelocity,
@@ -32,27 +29,21 @@ function DrumTrackContainer({ clipId, sequencerTrackId }: Props) {
       deleteSequence: state.deleteSequence,
       toggleMuted: state.toggleMuted,
       setSample: state.setSample,
-      toggleStep: state.toggleStep,
-      setStepVelocity: state.setStepVelocity,
-      setStepRepeatValue: state.setStepRepeatValue,
     }))
   );
 
   return (
-    <DrumTrack
+    <SequencerTrack
       clipId={clipId}
+      stepIds={stepIds}
       sequencerTrack={sequencerTrack}
-      currentStep={currentStep}
       setTrackVelocity={setVelocity}
       clearSequence={clearSequence}
       deleteSequence={deleteSequence}
       toggleMuted={toggleMuted}
       setSample={setSample}
-      toggleStep={toggleStep}
-      setStepVelocity={setStepVelocity}
-      setStepRepeatValue={setStepRepeatValue}
     />
   );
 }
 
-export default React.memo(DrumTrackContainer);
+export default React.memo(SequencerTrackContainer);

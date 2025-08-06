@@ -10,25 +10,14 @@ export interface SequencerSlice {
   };
   clipSequencerTracks: { [clipId: number]: number[] };
 
-  toggleStep: (trackId: number, stepIndex: number) => void;
-  setVelocity: (trackId: number, velocity: number) => void;
-  toggleMuted: (trackId: number) => void;
-  clearSequence: (trackId: number) => void;
-  deleteSequence: (clipId: number, trackId: number) => void;
   addSequencerTrack: (
     clipId: number,
     sequencerTrackData: SequencerTrack
   ) => void;
-  setStepVelocity: (
-    trackId: number,
-    stepIndex: number,
-    velocity: number
-  ) => void;
-  setStepRepeatValue: (
-    trackId: number,
-    stepIndex: number,
-    repeatValue: number
-  ) => void;
+  setVelocity: (trackId: number, velocity: number) => void;
+  toggleMuted: (trackId: number) => void;
+  clearSequence: (trackId: number) => void;
+  deleteSequence: (clipId: number, trackId: number) => void;
   setSample: (
     trackId: number,
     name: string,
@@ -44,22 +33,44 @@ export const createSequencerSlice: StateCreator<
 > = (set) => ({
   sequencerTracks: { byId: [], allIds: [] },
   clipSequencerTracks: {},
-  toggleStep: (trackId, stepIndex) =>
+  addSequencerTrack: (clipId, sequencerTrackData) =>
     set((state) => {
-      const trackToUpdate = state.sequencerTracks.byId[trackId];
+      const newTrackId = sequencerTrackData.id;
 
-      const newPattern = trackToUpdate.pattern.map((step, i) =>
-        i === stepIndex ? { ...step, active: !step.active } : step
-      );
+      const newById = {
+        ...state.sequencerTracks.byId,
+        [newTrackId]: sequencerTrackData,
+      };
+      const newAllIds = [...state.sequencerTracks.allIds, newTrackId];
+
+      const existingClipSequencerTracks =
+        state.clipSequencerTracks[clipId] || [];
+      const newClipSequencerTracks = {
+        ...state.clipSequencerTracks,
+        [clipId]: [...existingClipSequencerTracks, newTrackId],
+      };
+
+      const newStepsById = { ...state.steps.byId };
+      const newStepsAllIds = [ ...state.steps.allIds ];
+      const newStepIdsForTrack = [];
+
+      for (let i = 0; i < 16; ++i) {
+        const newStep = newStepData();
+        newStepsById[newStep.id] = newStep;
+        newStepsAllIds.push(newStep.id);
+        newStepIdsForTrack.push(newStep.id);
+      }
+
+      const newSequencerTrackSteps = {
+        ...state.sequencerTrackSteps,
+        [newTrackId]: newStepIdsForTrack,
+      };
 
       return {
-        sequencerTracks: {
-          ...state.sequencerTracks,
-          byId: {
-            ...state.sequencerTracks.byId,
-            [trackId]: { ...trackToUpdate, pattern: newPattern },
-          },
-        },
+        sequencerTracks: { byId: newById, allIds: newAllIds },
+        clipSequencerTracks: newClipSequencerTracks,
+        steps: { byId: newStepsById, allIds: newStepsAllIds },
+        sequencerTrackSteps: newSequencerTrackSteps,
       };
     }),
   setVelocity: (trackId, velocity) =>
@@ -104,64 +115,6 @@ export const createSequencerSlice: StateCreator<
       };
     }),
   deleteSequence: () => {},
-  addSequencerTrack: (clipId, sequencerTrackData) =>
-    set((state) => {
-      const newTrackId = sequencerTrackData.id;
-
-      const newById = {
-        ...state.sequencerTracks.byId,
-        [newTrackId]: sequencerTrackData,
-      };
-
-      const newAllIds = [...state.sequencerTracks.allIds, newTrackId];
-
-      const existingTrackIds = state.clipSequencerTracks[clipId] || [];
-      const newClipTracks = {
-        ...state.clipSequencerTracks,
-        [clipId]: [...existingTrackIds, newTrackId],
-      };
-
-      return {
-        sequencerTracks: {
-          byId: newById,
-          allIds: newAllIds,
-        },
-        clipSequencerTracks: newClipTracks,
-      };
-    }),
-  setStepVelocity: (trackId, stepIndex, velocity) => set((state) => {
-      const track = state.sequencerTracks.byId[trackId];
-      const newPattern = track.pattern.map((step, i) =>
-        i === stepIndex ? { ...step, velocity: velocity } : step
-      );
-
-      return {
-        sequencerTracks: {
-          ...state.sequencerTracks,
-          byId: {
-            ...state.sequencerTracks.byId,
-            [trackId]: { ...track, pattern: newPattern },
-          },
-        },
-      };
-  }),
-  setStepRepeatValue: (trackId, stepIndex, repeatValue) =>
-    set((state) => {
-      const track = state.sequencerTracks.byId[trackId];
-      const newPattern = track.pattern.map((step, i) =>
-        i === stepIndex ? { ...step, repeatValue: repeatValue } : step
-      );
-
-      return {
-        sequencerTracks: {
-          ...state.sequencerTracks,
-          byId: {
-            ...state.sequencerTracks.byId,
-            [trackId]: { ...track, pattern: newPattern },
-          },
-        },
-      };
-    }),
   setSample: (trackId, name, play) =>
     set((state) => ({
       sequencerTracks: {

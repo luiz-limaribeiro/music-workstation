@@ -1,11 +1,8 @@
-import { newStepData, type StepData } from "./stepData";
-
 export type SequencerTrack = {
   id: number;
   name: string;
   velocity: number;
   muted: boolean;
-  pattern: StepData[];
   play: (time: number, stepVelocity: number, stepRepeatValue: number) => void;
 };
 
@@ -17,7 +14,6 @@ export function newSequencerTrackData(name: string, play: (time: number) => void
     name,
     velocity: 1,
     muted: false,
-    pattern: Array(16).fill(newStepData()),
     play,
   }
 }
