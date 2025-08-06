@@ -1,24 +1,33 @@
 import type { StateCreator } from "zustand";
 import type { AppState } from "./store";
-import type { TrackData } from "../features/playlist/trackData";
-import type { ClipData } from "../features/playlist/clipData";
-import type { SequencerTrack } from "../features/sequencer/sequencerTrackData";
+import type { TrackData } from "../models/trackData";
+import type { ClipData } from "../models/clipData";
+import { newSequencerTrackData, type SequencerTrack } from "../models/sequencerTrackData";
 
 export interface PlaylistSlice {
-  tracks: TrackData[];
+  tracks: {
+    byId: { [id: number]: TrackData };
+    allIds: number[];
+  };
+  clips: {
+    byId: { [id: number]: ClipData };
+    allIds: number[];
+  };
+  trackClips: { [trackId: number]: number[] };
+
+  selectedClipId: number;
+
   addTrack: (track: TrackData) => void;
   setTrackVelocity: (trackId: number, velocity: number) => void;
   setTrackPanning: (trackId: number, panning: number) => void;
   toggleTrackMuted: (trackId: number) => void;
-  toggleTrackSolo: (trackId: number) => void;
+  toggleTrackSolo: (trackId: number) => void  ;
   addClip: (trackId: number, clip: ClipData) => void;
-  moveClip: (trackId: number, clipId: number, startStep: number) => void;
+  moveClip: (clipId: number, startStep: number) => void;
   updateSequencerTracks: (
-    trackId: number,
-    clipId: number,
+    sequencerTrackId: number,
     newSequencerTracks: SequencerTrack[]
   ) => void;
-  selectedClipId: number;
   selectClip: (clipId: number) => void;
 }
 
@@ -28,75 +37,142 @@ export const createPlaylistSlice: StateCreator<
   [],
   PlaylistSlice
 > = (set) => ({
-  tracks: [],
-  addTrack: (track) => set((state) => ({ tracks: [...state.tracks, track] })),
+  tracks: { byId: [], allIds: [] },
+  clips: { byId: [], allIds: [] },
+  trackClips: {},
+  selectedClipId: -1,
+  addTrack: (newTrackData) =>
+    set((state) => {
+      const newTrackId = newTrackData.id;
+
+      const newById = {
+        ...state.tracks.byId,
+        [newTrackId]: newTrackData,
+      };
+
+      const newAllIds = [...state.tracks.allIds, newTrackId];
+
+      const newTrackClips = {
+        ...state.trackClips,
+        [newTrackId]: [],
+      };
+
+      return {
+        tracks: {
+          byId: newById,
+          allIds: newAllIds,
+        },
+        trackClips: newTrackClips,
+      };
+    }),
   setTrackVelocity: (trackId, velocity) =>
     set((state) => ({
-      tracks: state.tracks.map((track) =>
-        track.id === trackId ? { ...track, velocity } : track
-      ),
+      tracks: {
+        ...state.tracks,
+        byId: {
+          ...state.tracks.byId,
+          [trackId]: {
+            ...state.tracks.byId[trackId],
+            velocity: velocity,
+          },
+        },
+      },
     })),
   setTrackPanning: (trackId, panning) =>
     set((state) => ({
-      tracks: state.tracks.map((track) =>
-        track.id === trackId ? { ...track, panning } : track
-      ),
+      tracks: {
+        ...state.tracks,
+        byId: {
+          ...state.tracks.byId,
+          [trackId]: {
+            ...state.tracks.byId[trackId],
+            panning: panning,
+          },
+        },
+      },
     })),
   toggleTrackMuted: (trackId) =>
-    set((state) => ({
-      tracks: state.tracks.map((track) =>
-        track.id === trackId ? { ...track, muted: !track.muted } : track
-      ),
-    })),
-  toggleTrackSolo: (trackId) =>
-    set((state) => ({
-      tracks: state.tracks.map((track) =>
-        track.id === trackId ? { ...track, solo: !track.solo } : track
-      ),
-    })),
-  addClip: (trackId, clip) =>
     set((state) => {
-      const trackIndex = state.tracks.findIndex(
-        (track) => track.id === trackId
-      );
-      if (trackIndex === -1) return state;
+      const track = state.tracks.byId[trackId];
 
-      const updatedTracks = state.tracks.map((track, index) => {
-        if (index === trackIndex) {
-          return { ...track, clips: [...track.clips, clip] };
-        }
-        return track;
-      });
-      return { tracks: updatedTracks };
+      return {
+        tracks: {
+          ...state.tracks,
+          byId: {
+            ...state.tracks.byId,
+            [trackId]: { ...track, muted: !track.muted },
+          },
+        },
+      };
     }),
-  moveClip: (trackId, clipId, startStep) =>
+  toggleTrackSolo: (trackId) =>
+    set((state) => {
+      const track = state.tracks.byId[trackId];
+
+      return {
+        tracks: {
+          ...state.tracks,
+          byId: {
+            ...state.tracks.byId,
+            [trackId]: { ...track, solo: !track.solo },
+          },
+        },
+      };
+    }),
+  addClip: (trackId, newClipData) =>
+    set((state) => {
+      const newClipId = newClipData.id;
+
+      const newById = {
+        ...state.clips.byId,
+        [newClipId]: newClipData,
+      };
+      const newAllIds = [...state.clips.allIds, newClipId];
+      const newTrackClips = {
+        ...state.trackClips,
+        [trackId]: [...state.trackClips[trackId] || [], newClipId],
+      };
+
+      const initialSequencerTrack = newSequencerTrackData("<empty>", () => {})
+      const newSequencerTrackId = initialSequencerTrack.id
+
+      const newSequencerTracksById = {
+        ...state.sequencerTracks.byId,
+        [newSequencerTrackId]: initialSequencerTrack
+      }
+      const newSequencerTracksAllIds = [
+        ...state.sequencerTracks.allIds,
+        newSequencerTrackId
+      ]
+
+      const newClipSequencerTracks = {
+        ...state.clipSequencerTracks,
+        [newClipId]: [newSequencerTrackId]
+      }
+
+      return {
+        clips: { byId: newById, allIds: newAllIds },
+        trackClips: newTrackClips,
+        sequencerTracks: {
+          byId: newSequencerTracksById,
+          allIds: newSequencerTracksAllIds
+        },
+        clipSequencerTracks: newClipSequencerTracks
+      };
+    }),
+  moveClip: (clipId, startStep) =>
     set((state) => ({
-      tracks: state.tracks.map((track) =>
-        track.id === trackId
-          ? {
-              ...track,
-              clips: track.clips.map((clip) =>
-                clip.id === clipId ? { ...clip, startStep: startStep } : clip
-              ),
-            }
-          : track
-      ),
+      clips: {
+        ...state.clips,
+        byId: {
+          ...state.clips.byId,
+          [clipId]: {
+            ...state.clips.byId[clipId],
+            startStep: startStep,
+          },
+        },
+      },
     })),
-  updateSequencerTracks: (trackId, clipId, newSequencerTracks) =>
-    set((state) => ({
-      tracks: state.tracks.map((track) =>
-        track.id === trackId
-          ? {
-              ...track,
-              clips: track.clips.map((clip) =>
-                clip.id === clipId
-                  ? { ...clip, sequencerTracks: newSequencerTracks }
-                  : clip
-              ),
-            }
-          : track
-      ),
-    })),
-  selectedClipId: -1,
+  updateSequencerTracks: () => {},
   selectClip: (clipId) => set({ selectedClipId: clipId }),
 });

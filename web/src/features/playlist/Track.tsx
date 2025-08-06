@@ -1,34 +1,41 @@
 import { useEffect, useRef, useState } from "react";
 import Knob from "../../common/Knob";
-import { useStore } from "../../store/store";
-import Clip from "./Clip";
 import "./Track.css";
-import type { TrackData } from "./trackData";
+import type { TrackData } from "../../models/trackData";
+import ClipContainer from "./ClipContainer";
 
 interface Props {
   track: TrackData;
+  clipIds: number[];
   totalSteps: number;
+  setVelocity: (trackId: number, velocity: number) => void;
+  setPanning: (trackId: number, panning: number) => void;
+  toggleMuted: (trackId: number) => void;
+  toggleSolo: (trackId: number) => void;
 }
 
-export default function Track({ track, totalSteps }: Props) {
-  const setVelocity = useStore((state) => state.setTrackVelocity);
-  const setPanning = useStore((state) => state.setTrackPanning);
-  const toggleMuted = useStore((state) => state.toggleTrackMuted);
-  const toggleSolo = useStore((state) => state.toggleTrackSolo);
+export default function Track({
+  track,
+  clipIds,
+  totalSteps,
+  setVelocity,
+  setPanning,
+  toggleMuted,
+  toggleSolo,
+}: Props) {
+  const trackRowRef = useRef<HTMLDivElement>(null);
 
-  const trackRowRef = useRef<HTMLDivElement>(null)
-
-  const [gridCellWidth, setGridCellWidth] = useState(0)
+  const [gridCellWidth, setGridCellWidth] = useState(0);
   const [showOptions, setShowOptions] = useState(false);
-
-  const { name, id, panning, velocity, muted, solo, clips } = track
 
   useEffect(() => {
     if (trackRowRef.current) {
       const width = trackRowRef.current.offsetWidth;
-      setGridCellWidth(width / totalSteps)
+      setGridCellWidth(width / totalSteps);
     }
-  }, [])
+  }, [totalSteps]);
+
+  const { name, id, panning, velocity, muted, solo } = track;
 
   return (
     <div className="track" ref={trackRowRef}>
@@ -59,8 +66,13 @@ export default function Track({ track, totalSteps }: Props) {
         className="clips"
         style={{ gridTemplateColumns: `repeat(${totalSteps}, 1fr)` }}
       >
-        {clips.map((clip) => (
-          <Clip key={clip.id} trackId={id} trackName={name} clipData={clip} gridCellWidth={gridCellWidth} />
+        {clipIds.map((id) => (
+          <ClipContainer
+            key={id}
+            clipId={id}
+            gridCellWidth={gridCellWidth}
+            trackName={track.name}
+          />
         ))}
       </div>
       {showOptions && (

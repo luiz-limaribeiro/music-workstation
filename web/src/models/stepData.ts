@@ -1,10 +1,10 @@
-export type Step = {
+export type StepData = {
   active: boolean;
   velocity: number;
   repeatValue: number;
 }
 
-export function newStep(): Step {
+export function newStepData(): StepData {
   return {
     active: false,
     velocity: 1.0,

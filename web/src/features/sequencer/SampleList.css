@@ -52,7 +52,7 @@
   padding-left: .2rem;
 }
 
-.sample-list li.selected {
+.sample-list li.selected-sample {
   background-color: #ddd;
   color: #233;
 }

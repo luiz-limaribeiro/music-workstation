@@ -1,82 +1,98 @@
 import { useCallback, useRef, useState } from "react";
 import Sequencer from "../sequencer/Sequencer";
 import "./Clip.css";
-import type { ClipData } from "./clipData";
-import { useStore } from "../../store/store";
+import React from "react";
+import type { ClipData } from "../../models/clipData";
+import type { SequencerTrack } from "../../models/sequencerTrackData";
 
 interface Props {
-  trackId: number;
+  clip: ClipData;
   trackName: string;
-  clipData: ClipData;
-  gridCellWidth: number
+  gridCellWidth: number;
+  selectedClipId: number;
+  currentStep: number;
+  sequencerTrackIds: number[]
+  selectClip: (clipId: number) => void;
+  moveClip: (clipId: number, startStep: number) => void;
+  addSequencerTrack: (clipId: number, sequencerTrackData: SequencerTrack) => void;
 }
 
-export default function Clip({ trackId, trackName, clipData, gridCellWidth }: Props) {
+function Clip({
+  clip,
+  trackName,
+  gridCellWidth,
+  selectedClipId,
+  sequencerTrackIds,
+  selectClip,
+  moveClip,
+  addSequencerTrack,
+}: Props) {
   const [showEditor, setShowEditor] = useState(false);
 
-  const selectedClipId = useStore((state) => state.selectedClipId);
-  const selectClip = useStore((state) => state.selectClip);
-  const moveClip = useStore((state) => state.moveClip);
-
-  const isDragging = useRef(false)
-  const startMouseX = useRef(0)
-  const startClipStep = useRef(0)
+  const isDragging = useRef(false);
+  const startMouseX = useRef(0);
+  const startClipStep = useRef(0);
 
   function handleMouseDown(event: React.MouseEvent<HTMLDivElement>) {
-    isDragging.current = true
-    selectClip(clipData.id)
+    isDragging.current = true;
+    selectClip(clip.id);
 
-    startMouseX.current = event.clientX
-    startClipStep.current = clipData.startStep
+    startMouseX.current = event.clientX;
+    startClipStep.current = clip.startStep;
 
     document.body.classList.add("grabbing-cursor");
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
   }
 
-  const handleMouseMove = useCallback((event: MouseEvent) => {
-    if (!isDragging) return;
+  const handleMouseMove = useCallback(
+    (event: MouseEvent) => {
+      if (!isDragging) return;
 
-    const currentX = event.clientX
-    const deltaX = currentX - startMouseX.current
+      const currentX = event.clientX;
+      const deltaX = currentX - startMouseX.current;
 
-    const deltaSteps = Math.round(deltaX / gridCellWidth)
+      const deltaSteps = Math.round(deltaX / gridCellWidth);
 
-    const newStartStep = startClipStep.current + deltaSteps
+      const newStartStep = startClipStep.current + deltaSteps;
 
-    const finalStartStep = Math.max(0, newStartStep)
+      const finalStartStep = Math.max(0, newStartStep);
 
-    moveClip(trackId, clipData.id, finalStartStep)
-  }, [clipData.id, gridCellWidth, isDragging, moveClip, trackId])
+      moveClip(clip.id, finalStartStep);
+    },
+    [clip.id, gridCellWidth, isDragging, moveClip]
+  );
 
   const handleMouseUp = useCallback(() => {
-    isDragging.current = false
+    isDragging.current = false;
     document.body.classList.remove("grabbing-cursor");
     window.removeEventListener("mousemove", handleMouseMove);
     window.removeEventListener("mouseup", handleMouseUp);
-  }, [handleMouseMove])
+  }, [handleMouseMove]);
 
   return (
     <div
       style={{
-        gridColumnStart: clipData.startStep + 1,
-        gridColumnEnd: `span ${clipData.length}`,
+        gridColumnStart: clip.startStep + 1,
+        gridColumnEnd: `span ${clip.length}`,
       }}
     >
       <div
-        className={`clip ${selectedClipId === clipData.id ? "selected" : ""}`}
+        className={`clip ${selectedClipId === clip.id ? "selected" : ""}`}
         onMouseDown={handleMouseDown}
         onDoubleClick={() => setShowEditor(true)}
       />
       {showEditor && (
         <Sequencer
-          trackId={trackId}
-          clipId={clipData.id}
+          clipId={clip.id}
           trackName={trackName}
-          sequencerTracks={clipData.sequencerTracks}
+          sequencerTrackIds={sequencerTrackIds}
           onCloseEditor={() => setShowEditor(false)}
+          addSequencerTrack={addSequencerTrack}
         />
       )}
     </div>
   );
 }
+
+export default React.memo(Clip)

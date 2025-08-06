@@ -6,11 +6,12 @@
 
 .track-name {
   cursor: pointer;
-  width: 80px;
   padding: .2rem;
   border: 1px solid transparent;
   overflow-x: hidden;
   text-overflow: ellipsis;
+  min-width: 5rem;
+  max-width: 5rem;
 }
 
 .track-name:hover {
@@ -19,10 +20,6 @@
 
 .steps {
   display: flex;
-}
-
-.velocity-input {
-  flex: 1;
 }
 
 input[type="range"] {

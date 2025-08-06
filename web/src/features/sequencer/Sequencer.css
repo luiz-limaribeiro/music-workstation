@@ -7,6 +7,8 @@
   left: 0;
   background-color: #1124;
   backdrop-filter: blur(10px);
+  display: grid;
+  place-content: center;
 }
 
 .sequencer {
@@ -18,9 +20,10 @@
   padding-bottom: 2rem;
   border-radius: 10px;
   position: relative;
-  margin: 6rem 12.6rem;
-  max-height: 64vh;
-  min-height: 64vh;
+  max-height: 32rem;
+  min-height: 32rem;
+  width: fit-content;
+  align-self: center;
   overflow-y: scroll;
 }
 

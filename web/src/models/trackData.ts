@@ -1,5 +1,3 @@
-import type { ClipData } from "./clipData";
-
 let nextId = 0;
 
 export type TrackData = {
@@ -9,7 +7,6 @@ export type TrackData = {
   velocity: number;
   muted: boolean;
   solo: boolean;
-  clips: ClipData[];
 };
 
 export function newTrackData(name: string) {
@@ -22,6 +19,5 @@ export function newTrackData(name: string) {
     velocity: 1,
     muted: false,
     solo: false,
-    clips: [],
   };
 }

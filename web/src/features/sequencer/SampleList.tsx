@@ -3,7 +3,7 @@ import "./SampleList.css";
 import { drums } from "./synthPresets";
 
 interface Props {
-  selectedSample?: string;
+  selectedSampleName: string;
   onSampleSelect: (
     sampleName: string,
     play: (time: number, velocity: number) => void
@@ -12,11 +12,11 @@ interface Props {
 }
 
 export default function SampleList({
-  selectedSample = "",
+  selectedSampleName = "",
   onSampleSelect,
   onClose,
 }: Props) {
-  const [selected, setSelected] = useState<string>(selectedSample);
+  const [selectedSample, setSelectedSample] = useState<string>(selectedSampleName);
 
   return (
     <div className="sample-list">
@@ -29,10 +29,10 @@ export default function SampleList({
         {Object.entries(drums).map(([key, value]) => (
           <li
             key={key}
-            className={key === selected ? "selected" : ""}
+            className={key === selectedSample ? "selected-sample" : ""}
             onClick={() => {
               onSampleSelect(key, value);
-              setSelected(key);
+              setSelectedSample(key);
             }}
           >
             <span>{key}</span>
