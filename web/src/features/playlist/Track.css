@@ -55,7 +55,9 @@
   background-color: #223;
   flex: 1;
   display: grid;
+  grid-template-rows: 1fr;
   height: 3rem;
+  position: relative;
 }
 
 .track-options {

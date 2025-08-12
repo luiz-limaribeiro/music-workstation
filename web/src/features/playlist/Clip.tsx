@@ -11,10 +11,13 @@ interface Props {
   gridCellWidth: number;
   selectedClipId: number;
   currentStep: number;
-  sequencerTrackIds: number[]
+  sequencerTrackIds: number[];
   selectClip: (clipId: number) => void;
   moveClip: (clipId: number, startStep: number) => void;
-  addSequencerTrack: (clipId: number, sequencerTrackData: SequencerTrack) => void;
+  addSequencerTrack: (
+    clipId: number,
+    sequencerTrackData: SequencerTrack
+  ) => void;
 }
 
 function Clip({
@@ -73,15 +76,13 @@ function Clip({
   return (
     <div
       style={{
-        gridColumnStart: clip.startStep + 1,
-        gridColumnEnd: `span ${clip.length}`,
+        left: clip.startStep * gridCellWidth,
+        width: clip.length * gridCellWidth,
       }}
+      className={`clip ${selectedClipId === clip.id ? "selected" : ""}`}
+      onMouseDown={handleMouseDown}
+      onDoubleClick={() => setShowEditor(true)}
     >
-      <div
-        className={`clip ${selectedClipId === clip.id ? "selected" : ""}`}
-        onMouseDown={handleMouseDown}
-        onDoubleClick={() => setShowEditor(true)}
-      />
       {showEditor && (
         <Sequencer
           clipId={clip.id}
@@ -95,4 +96,4 @@ function Clip({
   );
 }
 
-export default React.memo(Clip)
+export default React.memo(Clip);
