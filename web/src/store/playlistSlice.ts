@@ -2,7 +2,7 @@ import type { StateCreator } from "zustand";
 import type { AppState } from "./store";
 import type { TrackData } from "../models/trackData";
 import type { ClipData } from "../models/clipData";
-import { newSequencerTrackData, type SequencerTrack } from "../models/sequencerTrackData";
+import { newSequencerTrackData } from "../models/sequencerTrackData";
 import { newStepData } from "../models/stepData";
 
 export interface PlaylistSlice {
@@ -17,6 +17,7 @@ export interface PlaylistSlice {
   trackClips: { [trackId: number]: number[] };
 
   selectedClipId: number;
+  newClipGhost: { trackId: number; x: number } | null
 
   addTrack: (track: TrackData) => void;
   setTrackVelocity: (trackId: number, velocity: number) => void;
@@ -25,11 +26,9 @@ export interface PlaylistSlice {
   toggleTrackSolo: (trackId: number) => void  ;
   addClip: (trackId: number, clip: ClipData) => void;
   moveClip: (clipId: number, startStep: number) => void;
-  updateSequencerTracks: (
-    sequencerTrackId: number,
-    newSequencerTracks: SequencerTrack[]
-  ) => void;
   selectClip: (clipId: number) => void;
+  showNewClipButton: (trackId: number, x: number) => void;
+  hideNewClipButton: () => void;
 }
 
 export const createPlaylistSlice: StateCreator<
@@ -42,6 +41,7 @@ export const createPlaylistSlice: StateCreator<
   clips: { byId: [], allIds: [] },
   trackClips: {},
   selectedClipId: -1,
+  newClipGhost: null,
   addTrack: (newTrackData) =>
     set((state) => {
       const newTrackId = newTrackData.id;
@@ -192,6 +192,7 @@ export const createPlaylistSlice: StateCreator<
         },
       },
     })),
-  updateSequencerTracks: () => {},
   selectClip: (clipId) => set({ selectedClipId: clipId }),
+  showNewClipButton: (trackId, x) => set({ newClipGhost: { trackId, x }}),
+  hideNewClipButton: () => set({ newClipGhost: null })
 });

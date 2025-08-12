@@ -9,28 +9,57 @@ import TrackContainer from "./TrackContainer";
 
 const stepsPerBar = 16;
 const bars = 4;
-const totalSteps = (stepsPerBar * bars) * 2;
+const totalSteps = stepsPerBar * bars * 2;
 
 export default function Playlist() {
-  const isInitialized = useRef(false)
+  const isInitialized = useRef(false);
 
-  const tracks = useStore((state) => state.tracks.allIds)
-  const addTrack = useStore((state) => state.addTrack)
+  const tracks = useStore((state) => state.tracks.allIds);
+  const addTrack = useStore((state) => state.addTrack);
   const addClip = useStore((state) => state.addClip);
+  const hideAddClipButton = useStore((state) => state.hideNewClipButton);
 
   useEffect(() => {
-    if (isInitialized.current) return
+    const handleGlobalMouseDown = (e: MouseEvent) => {
+      if (e.target instanceof HTMLElement) {
+        if (!e.target.closest(".clips")) {
+          hideAddClipButton();
+        }
+      }
+    };
+    document.addEventListener("mousedown", handleGlobalMouseDown);
+    return () => {
+      document.removeEventListener("mousedown", handleGlobalMouseDown);
+    };
+  }, [hideAddClipButton]);
 
-    addTrack({ id: -1, name: "Track 1", panning: 0, velocity: 1, muted: false, solo: false });
-    addTrack({ id: -2, name: "Track 2", panning: 0, velocity: 1, muted: false, solo: false });
+  useEffect(() => {
+    if (isInitialized.current) return;
+
+    addTrack({
+      id: -1,
+      name: "Track 1",
+      panning: 0,
+      velocity: 1,
+      muted: false,
+      solo: false,
+    });
+    addTrack({
+      id: -2,
+      name: "Track 2",
+      panning: 0,
+      velocity: 1,
+      muted: false,
+      solo: false,
+    });
     addClip(-1, newClipData(0, 16));
     addClip(-2, newClipData(16, 16));
-    isInitialized.current = true
+    isInitialized.current = true;
   }, [addTrack, addClip]);
 
   function handleAddTrack() {
-    const newTrack = newTrackData('Track ' + Math.random().toFixed(2))
-    addTrack(newTrack)
+    const newTrack = newTrackData("Track " + Math.random().toFixed(2));
+    addTrack(newTrack);
   }
 
   return (
