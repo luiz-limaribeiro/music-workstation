@@ -9,7 +9,7 @@ import TrackContainer from "./TrackContainer";
 
 const stepsPerBar = 16;
 const bars = 4;
-const totalSteps = stepsPerBar * bars * 2;
+const totalSteps = stepsPerBar * bars * 4;
 
 export default function Playlist() {
   const isInitialized = useRef(false);

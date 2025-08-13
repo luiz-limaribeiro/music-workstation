@@ -92,7 +92,7 @@ export default function Track({
             const clipWidthInPixels = clipLengthInSteps * gridCellWidth;
 
             const relativeX = e.clientX - trackRect.left;
-            const adjustedX = relativeX - (clipWidthInPixels / 2);
+            const adjustedX = relativeX - (clipWidthInPixels / 2) - 150;
             const startStep = Math.max(0, Math.floor(adjustedX / gridCellWidth));
             addClip(id, newClipData(startStep, clipLengthInSteps));
           }}

@@ -9,6 +9,7 @@
   backdrop-filter: blur(10px);
   display: grid;
   place-content: center;
+  cursor: default;
 }
 
 .sequencer {

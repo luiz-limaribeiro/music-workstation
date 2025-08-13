@@ -4,8 +4,7 @@
   cursor: pointer;
   position: absolute;
   border-radius: 2px;
-  top: 50%;
-  transform: translateY(-50%);
+  border: 1px solid #223;
 }
 
 .selected {
