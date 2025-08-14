@@ -1,0 +1,26 @@
+.track {
+  height: 3rem;
+  background-color: var(--track-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  border-top: 1px solid #112;
+  padding-left: 1rem;
+}
+
+.tracks-container {
+  display: flex;
+}
+
+.track-controls-container {
+  width: 14em;
+  flex-shrink: 0;
+}
+
+.clips-timeline-container {
+  flex-grow: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}

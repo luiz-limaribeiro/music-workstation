@@ -17,6 +17,20 @@
   flex-direction: column;
 }
 
+.track {
+  display: flex;
+}
+
+.track-controls-container {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.clips-timeline.container {
+  flex-grow: 1;
+  overflow-x: auto;
+}
+
 .add-track {
   cursor: pointer;
   width: fit-content;

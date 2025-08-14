@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import "./Transport.css";
+import "./styles/Transport.css";
 import { useStore } from "../../store/store";
 
 export default function Transport() {

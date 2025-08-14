@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import Sequencer from "../sequencer/Sequencer";
-import "./Clip.css";
+import "./styles/Clip.css";
 import React from "react";
 import type { ClipData } from "../../models/clipData";
 import type { SequencerTrack } from "../../models/sequencerTrackData";

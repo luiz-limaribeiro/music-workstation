@@ -1,15 +1,14 @@
-.track {
-  height: 3rem;
-  background-color: var(--track-bg);
+.track-controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: .6rem;
-  border-top: 1px solid #112;
-  padding-left: 1rem;
+  padding: 0 .8em;
+  gap: 0.5rem;
+  background-color: #334;
+  height: 3em;
 }
 
-.track .title {
+.track-controls .title {
   font-size: .8rem;
   max-width: 4rem;
   text-wrap: nowrap;
@@ -20,7 +19,7 @@
   user-select: none;
 }
 
-.track .mute-unmute {
+.track-controls .mute-unmute {
   width: 8px;
   height: 20px;
   border-radius: 9999px;
@@ -29,11 +28,11 @@
   border: none;
 }
 
-.track .mute-unmute.muted {
+.track-controls .mute-unmute.muted {
   background-color: #eee;
 }
 
-.track .solo-button {
+.track-controls .solo-button {
   font-size: 11px;
   border-radius: 50%;
   width: 32px;
@@ -46,18 +45,9 @@
   font-family: 'Roboto Mono Variable', monospace;
 }
 
-.track .solo-button.solo {
+.track-controls .solo-button.solo {
   color: black;
   background-color: #eee;
-}
-
-.clips {
-  background-color: #223;
-  flex: 1;
-  display: grid;
-  grid-template-rows: 1fr;
-  height: 3rem;
-  position: relative;
 }
 
 .track-options {
@@ -86,19 +76,4 @@
 .track-options button:hover {
   background: #1a2424;
   color: #eee;
-}
-
-.add-clip-button {
-  position: absolute;
-  z-index: 2;
-  width: 3em;
-  height: 3em;
-  background-color: #eee;
-  border: none;
-  color: black;
-  padding: .2rem .4rem;
-  border-radius: 50%;
-  font-size: .7rem;
-  cursor: pointer;
-  user-select: none;
 }

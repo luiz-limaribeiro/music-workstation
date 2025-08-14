@@ -1,4 +1,4 @@
-import "./Timeline.css";
+import "./styles/Timeline.css";
 
 interface Props {
   totalSteps: number;
