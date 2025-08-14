@@ -17,18 +17,20 @@ export interface PlaylistSlice {
   trackClips: { [trackId: number]: number[] };
 
   selectedClipId: number;
-  newClipGhost: { trackId: number; x: number } | null
+  newClipGhost: { trackId: number; x: number } | null;
+  stepCount: number;
 
   addTrack: (track: TrackData) => void;
-  setTrackVelocity: (trackId: number, velocity: number) => void;
-  setTrackPanning: (trackId: number, panning: number) => void;
+  updateTrackVelocity: (trackId: number, velocity: number) => void;
+  updateTrackPanning: (trackId: number, panning: number) => void;
   toggleTrackMuted: (trackId: number) => void;
-  toggleTrackSolo: (trackId: number) => void  ;
+  toggleTrackSolo: (trackId: number) => void;
   addClip: (trackId: number, clip: ClipData) => void;
   moveClip: (clipId: number, startStep: number) => void;
   selectClip: (clipId: number) => void;
   showNewClipButton: (trackId: number, x: number) => void;
   hideNewClipButton: () => void;
+  updateStepCount: (count: number) => void;
 }
 
 export const createPlaylistSlice: StateCreator<
@@ -42,6 +44,7 @@ export const createPlaylistSlice: StateCreator<
   trackClips: {},
   selectedClipId: -1,
   newClipGhost: null,
+  stepCount: 32,
   addTrack: (newTrackData) =>
     set((state) => {
       const newTrackId = newTrackData.id;
@@ -66,7 +69,7 @@ export const createPlaylistSlice: StateCreator<
         trackClips: newTrackClips,
       };
     }),
-  setTrackVelocity: (trackId, velocity) =>
+  updateTrackVelocity: (trackId, velocity) =>
     set((state) => ({
       tracks: {
         ...state.tracks,
@@ -79,7 +82,7 @@ export const createPlaylistSlice: StateCreator<
         },
       },
     })),
-  setTrackPanning: (trackId, panning) =>
+  updateTrackPanning: (trackId, panning) =>
     set((state) => ({
       tracks: {
         ...state.tracks,
@@ -131,28 +134,28 @@ export const createPlaylistSlice: StateCreator<
       const newAllIds = [...state.clips.allIds, newClipId];
       const newTrackClips = {
         ...state.trackClips,
-        [trackId]: [...state.trackClips[trackId] || [], newClipId],
+        [trackId]: [...(state.trackClips[trackId] || []), newClipId],
       };
 
-      const initialSequencerTrack = newSequencerTrackData("<empty>", () => {})
-      const newSequencerTrackId = initialSequencerTrack.id
+      const initialSequencerTrack = newSequencerTrackData("<empty>", () => {});
+      const newSequencerTrackId = initialSequencerTrack.id;
 
       const newSequencerTracksById = {
         ...state.sequencerTracks.byId,
-        [newSequencerTrackId]: initialSequencerTrack
-      }
+        [newSequencerTrackId]: initialSequencerTrack,
+      };
       const newSequencerTracksAllIds = [
         ...state.sequencerTracks.allIds,
-        newSequencerTrackId
-      ]
+        newSequencerTrackId,
+      ];
 
       const newClipSequencerTracks = {
         ...state.clipSequencerTracks,
-        [newClipId]: [newSequencerTrackId]
-      }
+        [newClipId]: [newSequencerTrackId],
+      };
 
       const newStepsById = { ...state.steps.byId };
-      const newStepsAllIds = [ ...state.steps.allIds ];
+      const newStepsAllIds = [...state.steps.allIds];
       const newStepIdsForTrack = [];
 
       for (let i = 0; i < 16; ++i) {
@@ -172,7 +175,7 @@ export const createPlaylistSlice: StateCreator<
         trackClips: newTrackClips,
         sequencerTracks: {
           byId: newSequencerTracksById,
-          allIds: newSequencerTracksAllIds
+          allIds: newSequencerTracksAllIds,
         },
         clipSequencerTracks: newClipSequencerTracks,
         steps: { byId: newStepsById, allIds: newStepsAllIds },
@@ -193,6 +196,21 @@ export const createPlaylistSlice: StateCreator<
       },
     })),
   selectClip: (clipId) => set({ selectedClipId: clipId }),
-  showNewClipButton: (trackId, x) => set({ newClipGhost: { trackId, x }}),
-  hideNewClipButton: () => set({ newClipGhost: null })
+  showNewClipButton: (trackId, x) => set({ newClipGhost: { trackId, x } }),
+  hideNewClipButton: () => set({ newClipGhost: null }),
+  updateStepCount: (clipId) =>
+    set((state) => {
+      const clip = state.clips.byId[clipId];
+      const clipEndStep = clip.startStep + clip.length;
+      const currentStepCount = state.stepCount;
+
+      if (clipEndStep > currentStepCount) {
+        const newStepCount = Math.ceil(clipEndStep / 16) * 16;
+        return {
+          stepCount: newStepCount,
+        };
+      }
+
+      return state;
+    }),
 });

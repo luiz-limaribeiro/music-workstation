@@ -14,8 +14,8 @@ function TrackControls({ trackId }: Props) {
   const track = useStore((state) => state.tracks.byId[trackId]);
   const { name, muted, solo, velocity, panning } = track;
 
-  const setVelocity = useStore((state) => state.setTrackVelocity);
-  const setPanning = useStore((state) => state.setTrackPanning);
+  const setVelocity = useStore((state) => state.updateTrackVelocity);
+  const setPanning = useStore((state) => state.updateTrackPanning);
   const toggleMuted = useStore((state) => state.toggleTrackMuted);
   const toggleSolo = useStore((state) => state.toggleTrackSolo);
 

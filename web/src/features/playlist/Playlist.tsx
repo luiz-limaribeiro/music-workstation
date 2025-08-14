@@ -5,9 +5,9 @@ import Transport from "./Transport";
 import { newTrackData } from "../../models/trackData";
 import TracksContainer from "./TracksContainer";
 
-const stepsPerBar = 16;
-const bars = 80;
-const totalSteps = stepsPerBar * bars;
+const STEPS_PER_BAR = 16;
+const BARS = 80;
+const TOTAL_STEPS = STEPS_PER_BAR * BARS;
 
 export default function Playlist() {
   const trackIds = useStore((state) => state.tracks.allIds);
@@ -36,7 +36,7 @@ export default function Playlist() {
   return (
     <main className="playlist">
       <div className="tracks">
-        <TracksContainer totalSteps={totalSteps} />
+        <TracksContainer totalSteps={TOTAL_STEPS} />
         <button className="add-track" onClick={handleAddTrack}>
           add track
         </button>

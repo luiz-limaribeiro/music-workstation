@@ -19,11 +19,12 @@ function ClipContainer({ clipId, gridCellWidth, trackName }: Props) {
     }))
   );
 
-  const { selectClip, moveClip, addSequencerTrack } = useStore(
+  const { selectClip, moveClip, addSequencerTrack, updateStepCount } = useStore(
     useShallow((state) => ({
       selectClip: state.selectClip,
       moveClip: state.moveClip,
-      addSequencerTrack: state.addSequencerTrack
+      addSequencerTrack: state.addSequencerTrack,
+      updateStepCount: state.updateStepCount,
     }))
   );
 
@@ -38,6 +39,7 @@ function ClipContainer({ clipId, gridCellWidth, trackName }: Props) {
       selectClip={selectClip}
       moveClip={moveClip}
       addSequencerTrack={addSequencerTrack}
+      updateStepCount={updateStepCount}
     />
   );
 }

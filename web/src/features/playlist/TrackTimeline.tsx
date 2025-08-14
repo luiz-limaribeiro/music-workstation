@@ -4,13 +4,15 @@ import ClipContainer from "./ClipContainer";
 import { newClipData } from "../../models/clipData";
 import React from "react";
 import { useStore } from "../../store/store";
+import Timeline from "./Timeline";
 
 interface Props {
   trackId: number;
   totalSteps: number;
+  stepCount: number;
 }
 
-function TrackTimeline({ trackId, totalSteps }: Props) {
+function TrackTimeline({ trackId, totalSteps, stepCount }: Props) {
   const timelineRef = useRef<HTMLDivElement>(null);
   const [gridCellWidth, setGridCellWidth] = useState(0);
 
@@ -21,6 +23,7 @@ function TrackTimeline({ trackId, totalSteps }: Props) {
   const addClip = useStore((state) => state.addClip);
   const showNewClipButton = useStore((state) => state.showNewClipButton);
   const hideNewClipButton = useStore((state) => state.hideNewClipButton);
+  const updateStepCount = useStore((state) => state.updateStepCount)
 
   useEffect(() => {
     const calculateGridWidth = () => {
@@ -52,6 +55,15 @@ function TrackTimeline({ trackId, totalSteps }: Props) {
       onMouseDown={handleMouseDown}
       ref={timelineRef}
     >
+      <div
+        className="step-count-highlight"
+        style={{
+          left: 0,
+          width: stepCount * gridCellWidth,
+        }}
+      >
+        <Timeline totalSteps={stepCount} />
+      </div>
       {clipIds.map((id) => (
         <ClipContainer
           key={id}
@@ -76,7 +88,10 @@ function TrackTimeline({ trackId, totalSteps }: Props) {
               0,
               Math.floor(adjustedX / gridCellWidth)
             );
-            addClip(trackId, newClipData(startStep, clipLengthInSteps));
+
+            const newClip = newClipData(startStep, clipLengthInSteps)
+            addClip(trackId, newClip);
+            updateStepCount(newClip.id);
             hideNewClipButton();
           }}
           style={{ left: newClipGhost.x - 15 }}

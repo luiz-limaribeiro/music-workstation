@@ -17,7 +17,8 @@ export default function Timeline({ totalSteps }: Props) {
           className="timeline-step"
           key={i}
           style={{
-            height: i % 4 === 0 ? "16px" : "12px",
+            backgroundColor: i === 0 ? "transparent" : "#ccc2",
+            height: i % 64 === 0 ? "3rem" : i % 16 === 0 ? "16px" : "0px",
           }}
         />
       ))}

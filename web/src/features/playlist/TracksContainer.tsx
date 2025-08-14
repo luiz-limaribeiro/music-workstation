@@ -15,6 +15,7 @@ export default function TracksContainer({ totalSteps }: Props) {
   const scrollLeft = useRef(0);
 
   const trackIds = useStore((state) => state.tracks.allIds);
+  const stepCount = useStore((state) => state.stepCount);
 
   useEffect(() => {
     const timeline = timelineRef.current;
@@ -75,7 +76,12 @@ export default function TracksContainer({ totalSteps }: Props) {
       </div>
       <div className="clips-timeline-container" ref={timelineRef}>
         {trackIds.map((id) => (
-          <TrackTimeline key={id} trackId={id} totalSteps={totalSteps} />
+          <TrackTimeline
+            key={id}
+            trackId={id}
+            totalSteps={totalSteps}
+            stepCount={stepCount}
+          />
         ))}
       </div>
     </div>

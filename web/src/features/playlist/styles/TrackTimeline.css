@@ -6,8 +6,9 @@
 }
 
 .clips {
-  background-color: #223;
+  background-color: #1a1a2a;
   display: grid;
+  gap: 10px;
   height: 3rem;
   position: relative;
 }
@@ -27,4 +28,11 @@
   user-select: none;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.step-count-highlight {
+  height: 3rem;
+  background-color: #223;
+  position: absolute;
+  pointer-events: none;
 }

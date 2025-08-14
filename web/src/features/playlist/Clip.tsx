@@ -18,6 +18,7 @@ interface Props {
     clipId: number,
     sequencerTrackData: SequencerTrack
   ) => void;
+  updateStepCount: (clipId: number) => void;
 }
 
 function Clip({
@@ -29,6 +30,7 @@ function Clip({
   selectClip,
   moveClip,
   addSequencerTrack,
+  updateStepCount
 }: Props) {
   const [showEditor, setShowEditor] = useState(false);
 
@@ -37,6 +39,8 @@ function Clip({
   const startClipStep = useRef(0);
 
   function handleMouseDown(event: React.MouseEvent<HTMLDivElement>) {
+    if (event.button != 0) return;
+
     isDragging.current = true;
     selectClip(clip.id);
 
@@ -71,7 +75,8 @@ function Clip({
     document.body.classList.remove("grabbing-cursor");
     window.removeEventListener("mousemove", handleMouseMove);
     window.removeEventListener("mouseup", handleMouseUp);
-  }, [handleMouseMove]);
+    updateStepCount(clip.id)
+  }, [handleMouseMove, updateStepCount, clip.id]);
 
   return (
     <div
