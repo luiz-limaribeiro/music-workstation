@@ -4,11 +4,10 @@ import React from "react";
 
 interface Props {
   stepId: number;
-  sequencerTrackId: number;
-  currentStep: number;
   active: boolean;
   velocity: number;
   repeatValue: number;
+  index: number;
   toggleStep: (stepId: number) => void;
   setRepeatValue: (
     stepId: number,
@@ -25,6 +24,7 @@ function Step({
   active,
   velocity,
   repeatValue,
+  index,
   toggleStep,
   setRepeatValue,
   setStepVelocity,
@@ -75,6 +75,7 @@ function Step({
       className={`step ${active ? "active" : ""}`}
       style={{
         opacity: `${active ? Math.max(0.2, Math.min(velocity, 1)) : 1}`,
+        backgroundColor: `${active ? 'rgb(251, 143, 255)' : index % 4 === 0 ? '#223' : '#1f1f2f'}`
       }}
      onClick={() => toggleStep(stepId)}
     >

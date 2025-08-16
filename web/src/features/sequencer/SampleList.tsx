@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./SampleList.css";
-import { drums } from "./synthPresets";
+import { drums } from "../../data/synthPresets";
 
 interface Props {
   selectedSampleName: string;

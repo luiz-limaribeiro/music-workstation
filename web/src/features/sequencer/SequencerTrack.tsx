@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { SequencerTrack } from "../../models/sequencerTrackData.ts";
+import type { SequencerTrack } from "../../data/sequencerTrackData.ts";
 import "./SequencerTrack.css";
 import SampleList from "./SampleList.tsx";
 import React from "react";

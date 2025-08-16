@@ -1,9 +1,9 @@
 import type { StateCreator } from "zustand";
 import type { AppState } from "./store";
-import type { TrackData } from "../models/trackData";
-import type { ClipData } from "../models/clipData";
-import { newSequencerTrackData } from "../models/sequencerTrackData";
-import { newStepData } from "../models/stepData";
+import type { TrackData } from "../data/trackData";
+import type { ClipData } from "../data/clipData";
+import { newSequencerTrackData } from "../data/sequencerTrackData";
+import { newStepData } from "../data/stepData";
 
 export interface PlaylistSlice {
   tracks: {
@@ -159,7 +159,7 @@ export const createPlaylistSlice: StateCreator<
       const newStepIdsForTrack = [];
 
       for (let i = 0; i < 16; ++i) {
-        const newStep = newStepData();
+        const newStep = newStepData(i);
         newStepsById[newStep.id] = newStep;
         newStepsAllIds.push(newStep.id);
         newStepIdsForTrack.push(newStep.id);

@@ -24,11 +24,11 @@ function SequencerTrackContainer({ clipId, sequencerTrackId }: Props) {
     setSample,
   } = useStore(
     useShallow((state) => ({
-      setVelocity: state.setVelocity,
-      clearSequence: state.clearSequence,
-      deleteSequence: state.deleteSequence,
-      toggleMuted: state.toggleMuted,
-      setSample: state.setSample,
+      setVelocity: state.sequencerActions.setVelocity,
+      clearSequence: state.sequencerActions.clearSequence,
+      deleteSequence: state.sequencerActions.deleteSequence,
+      toggleMuted: state.sequencerActions.toggleMuted,
+      setSample: state.sequencerActions.setSample,
     }))
   );
 

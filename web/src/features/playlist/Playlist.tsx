@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import "./styles/Playlist.css";
 import { useStore } from "../../store/store";
 import Transport from "./Transport";
-import { newTrackData } from "../../models/trackData";
+import { newTrackData } from "../../data/trackData";
 import TracksContainer from "./TracksContainer";
 
 const STEPS_PER_BAR = 16;

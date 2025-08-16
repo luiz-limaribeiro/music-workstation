@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import type { StepData } from "../models/stepData";
+import type { StepData } from "../data/stepData";
 import type { AppState } from "./store";
 
 export interface StepSlice {
@@ -8,6 +8,7 @@ export interface StepSlice {
     allIds: number[];
   };
   sequencerTrackSteps: { [sequencerTrackId: number]: number[] };
+  
   stepActions: {
     toggleStep: (stepId: number) => void;
     setVelocity: (stepId: number, velocity: number) => void;

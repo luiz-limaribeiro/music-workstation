@@ -1,14 +1,15 @@
 import { useRef } from "react";
 import "./styles/Transport.css";
 import { useStore } from "../../store/store";
+import * as Tone from 'tone'
 
 export default function Transport() {
   const bpm = useStore((state) => state.bpm);
-  const setBpm = useStore((state) => state.setBpm);
+  const setBpm = useStore((state) => state.audioActions.setBpm);
 
-  const isPlaying = useStore((state) => state.isPlaying);
-  const startPlayback = useStore((state) => state.startPlayback);
-  const stopPlayback = useStore((state) => state.stopPlayback);
+  const isPlaying = useStore((state) => state.isTransportRunning);
+  const startPlayback = useStore((state) => state.audioActions.startPlayback);
+  const stopPlayback = useStore((state) => state.audioActions.stopPlayback);
 
   const previousBpm = useRef(0);
 
@@ -32,6 +33,12 @@ export default function Transport() {
   }
   return (
     <div className="transport">
+      <button onClick={() => {
+        Tone.start()
+        Tone.getTransport().start()
+        const handKick = new Tone.MembraneSynth().toDestination()
+        handKick.triggerAttackRelease("C1", "8n")
+      }}>Test</button>
       <button
         className="play-button"
         disabled={isPlaying}

@@ -2,8 +2,8 @@ import { useCallback, useRef, useState } from "react";
 import Sequencer from "../sequencer/Sequencer";
 import "./styles/Clip.css";
 import React from "react";
-import type { ClipData } from "../../models/clipData";
-import type { SequencerTrack } from "../../models/sequencerTrackData";
+import type { ClipData } from "../../data/clipData";
+import type { SequencerTrack } from "../../data/sequencerTrackData";
 
 interface Props {
   clip: ClipData;

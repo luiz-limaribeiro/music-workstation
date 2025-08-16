@@ -3,7 +3,7 @@ export type SequencerTrack = {
   name: string;
   velocity: number;
   muted: boolean;
-  play: (time: number, stepVelocity: number, stepRepeatValue: number) => void;
+  player: (time: number, stepVelocity: number, stepRepeatValue: number) => void;
 };
 
 let nextId = 0
@@ -14,6 +14,6 @@ export function newSequencerTrackData(name: string, play: (time: number) => void
     name,
     velocity: 1,
     muted: false,
-    play,
+    player: play,
   }
 }

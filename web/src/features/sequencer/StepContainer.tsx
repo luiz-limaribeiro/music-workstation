@@ -5,12 +5,10 @@ import { useShallow } from "zustand/shallow";
 
 interface Props {
   stepId: number;
-  sequencerTrackId: number;
 }
 
-function StepContainer({ stepId, sequencerTrackId }: Props) {
+function StepContainer({ stepId }: Props) {
   const step = useStore((state) => state.steps.byId[stepId]);
-  const currentStep = useStore((state) => state.currentStep);
 
   const { toggleStep, setRepeatValue, setStepVelocity } = useStore(
     useShallow((state) => ({
@@ -23,11 +21,10 @@ function StepContainer({ stepId, sequencerTrackId }: Props) {
   return (
     <Step
       stepId={stepId}
-      sequencerTrackId={sequencerTrackId}
-      currentStep={currentStep}
       active={step.active}
       velocity={step.velocity}
       repeatValue={step.repeatValue}
+      index={step.index}
       toggleStep={toggleStep}
       setRepeatValue={setRepeatValue}
       setStepVelocity={setStepVelocity}

@@ -23,7 +23,7 @@ function ClipContainer({ clipId, gridCellWidth, trackName }: Props) {
     useShallow((state) => ({
       selectClip: state.selectClip,
       moveClip: state.moveClip,
-      addSequencerTrack: state.addSequencerTrack,
+      addSequencerTrack: state.sequencerActions.addSequencerTrack,
       updateStepCount: state.updateStepCount,
     }))
   );

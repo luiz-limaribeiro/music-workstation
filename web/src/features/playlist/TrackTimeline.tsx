@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./styles/TrackTimeline.css";
 import ClipContainer from "./ClipContainer";
-import { newClipData } from "../../models/clipData";
+import { newClipData } from "../../data/clipData";
 import React from "react";
 import { useStore } from "../../store/store";
 import Timeline from "./Timeline";

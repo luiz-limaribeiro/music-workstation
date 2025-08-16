@@ -1,7 +1,7 @@
 import {
   newSequencerTrackData,
   type SequencerTrack,
-} from "../../models/sequencerTrackData";
+} from "../../data/sequencerTrackData";
 import SequencerTrackContainer from "./SequencerTrackContainer";
 import "./Sequencer.css";
 
