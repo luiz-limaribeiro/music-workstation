@@ -19,6 +19,7 @@ export interface PlaylistSlice {
   selectedClipId: number;
   newClipGhost: { trackId: number; x: number } | null;
   stepCount: number;
+  gridCellWidth: number;
 
   addTrack: (track: TrackData) => void;
   updateTrackVelocity: (trackId: number, velocity: number) => void;
@@ -31,6 +32,7 @@ export interface PlaylistSlice {
   showNewClipButton: (trackId: number, x: number) => void;
   hideNewClipButton: () => void;
   updateStepCount: (count: number) => void;
+  setGridCellWidth: (width: number) => void;
 }
 
 export const createPlaylistSlice: StateCreator<
@@ -44,7 +46,8 @@ export const createPlaylistSlice: StateCreator<
   trackClips: {},
   selectedClipId: -1,
   newClipGhost: null,
-  stepCount: 32,
+  stepCount: 64,
+  gridCellWidth: 0,
   addTrack: (newTrackData) =>
     set((state) => {
       const newTrackId = newTrackData.id;
@@ -206,6 +209,7 @@ export const createPlaylistSlice: StateCreator<
 
       if (clipEndStep > currentStepCount) {
         const newStepCount = Math.ceil(clipEndStep / 16) * 16;
+        console.log('new step count:', newStepCount)
         return {
           stepCount: newStepCount,
         };
@@ -213,4 +217,5 @@ export const createPlaylistSlice: StateCreator<
 
       return state;
     }),
+  setGridCellWidth: (width) => set({ gridCellWidth: width })
 });

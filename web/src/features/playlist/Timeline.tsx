@@ -1,10 +1,11 @@
+import React from "react";
 import "./styles/Timeline.css";
 
 interface Props {
   totalSteps: number;
 }
 
-export default function Timeline({ totalSteps }: Props) {
+function Timeline({ totalSteps }: Props) {
   return (
     <div
       className="timeline"
@@ -25,3 +26,5 @@ export default function Timeline({ totalSteps }: Props) {
     </div>
   );
 }
+
+export default React.memo(Timeline)

@@ -9,7 +9,6 @@ export interface SequencerSlice {
     allIds: number[];
   };
   clipSequencerTracks: { [clipId: number]: number[] };
-
   sequencerActions: {
     addSequencerTrack: (
       clipId: number,

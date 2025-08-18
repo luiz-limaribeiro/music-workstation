@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import "./styles/Playlist.css";
 import { useStore } from "../../store/store";
 import Transport from "./Transport";
 import { newTrackData } from "../../data/trackData";
 import TracksContainer from "./TracksContainer";
+import { newClipData } from "../../data/clipData";
 
 const STEPS_PER_BAR = 16;
 const BARS = 80;
@@ -15,6 +16,41 @@ export default function Playlist() {
   const hideAddClipButton = useStore((state) => state.hideNewClipButton);
   const selectClip = useStore((state) => state.selectClip);
 
+  const transport = useStore(state => state.transport)
+  const isPlaying = useStore((state) => state.isTransportRunning);
+  const startPlayback = useStore((state) => state.audioActions.startPlayback);
+  const stopPlayback = useStore((state) => state.audioActions.stopPlayback);
+  const setCurrentPosition = useStore((state) => state.audioActions.setCurrentPosition)
+
+  const positionListenerId = useRef(0)
+
+  const isInitialized = useRef(false)
+  const addClip = useStore((state) => state.addClip)
+
+  useEffect(() => {
+    if (isInitialized.current) return;
+
+    addTrack({
+      id: -1,
+      name: "Track 1",
+      panning: 0,
+      velocity: 1,
+      muted: false,
+      solo: false,
+    });
+    addTrack({
+      id: -2,
+      name: "Track 2",
+      panning: 0,
+      velocity: 1,
+      muted: false,
+      solo: false,
+    });
+    addClip(-1, newClipData(0, 16));
+    addClip(-2, newClipData(16, 16));
+    isInitialized.current = true
+  }, [addTrack, addClip]);
+
   useEffect(() => {
     const handleGlobalMouseDown = (e: MouseEvent) => {
       if (e.target instanceof HTMLElement) {
@@ -22,15 +58,35 @@ export default function Playlist() {
         if (!e.target.closest(".clip")) selectClip(-1);
       }
     };
+
     document.addEventListener("mousedown", handleGlobalMouseDown);
+
     return () => {
       document.removeEventListener("mousedown", handleGlobalMouseDown);
     };
   }, [hideAddClipButton, selectClip]);
 
+  useEffect(() => {
+    const posListenerId = transport.scheduleRepeat(() => {
+      const currentPos = transport.position;
+      setCurrentPosition(currentPos.toString());
+    }, '16n')
+
+    positionListenerId.current = posListenerId
+
+    return () => {
+      transport.clear(positionListenerId.current)
+    }
+  }, [isPlaying, transport, setCurrentPosition])
+
   function handleAddTrack() {
     const newTrack = newTrackData("Track " + (trackIds.length + 1));
     addTrack(newTrack);
+  }
+
+  function handleStopPlayback() {
+    transport.clear(positionListenerId.current)
+    stopPlayback()
   }
 
   return (
@@ -42,7 +98,11 @@ export default function Playlist() {
         </button>
       </div>
 
-      <Transport />
+      <Transport
+        isPlaying={isPlaying}
+        startPlayback={startPlayback}
+        stopPlayback={handleStopPlayback}
+      />
     </main>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "./styles/TrackTimeline.css";
 import ClipContainer from "./ClipContainer";
 import { newClipData } from "../../data/clipData";
@@ -14,16 +14,17 @@ interface Props {
 
 function TrackTimeline({ trackId, totalSteps, stepCount }: Props) {
   const timelineRef = useRef<HTMLDivElement>(null);
-  const [gridCellWidth, setGridCellWidth] = useState(0);
 
   const name = useStore((state) => state.tracks.byId[trackId].name);
   const clipIds = useStore((state) => state.trackClips[trackId]);
   const newClipGhost = useStore((state) => state.newClipGhost);
+  const gridCellWidth = useStore((state) => state.gridCellWidth)
 
   const addClip = useStore((state) => state.addClip);
   const showNewClipButton = useStore((state) => state.showNewClipButton);
   const hideNewClipButton = useStore((state) => state.hideNewClipButton);
   const updateStepCount = useStore((state) => state.updateStepCount)
+  const setGridCellWidth = useStore((state) => state.setGridCellWidth)
 
   useEffect(() => {
     const calculateGridWidth = () => {
@@ -37,7 +38,7 @@ function TrackTimeline({ trackId, totalSteps, stepCount }: Props) {
     return () => {
       window.removeEventListener("resize", calculateGridWidth);
     };
-  }, [totalSteps]);
+  }, [totalSteps, setGridCellWidth]);
 
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
     if (e.target === e.currentTarget && e.button === 0) {

@@ -3,6 +3,7 @@ import { useStore } from "../../store/store";
 import TrackControls from "./TrackControls";
 import TrackTimeline from "./TrackTimeline";
 import "./styles/TracksContainer.css";
+import Playhead from "./Playhead";
 
 interface Props {
   totalSteps: number;
@@ -83,6 +84,7 @@ export default function TracksContainer({ totalSteps }: Props) {
             stepCount={stepCount}
           />
         ))}
+        <Playhead />
       </div>
     </div>
   );

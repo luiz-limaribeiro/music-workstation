@@ -1,0 +1,8 @@
+.playhead {
+  width: 1px;
+  background-color: white;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  transition: all .1s linear;
+}
