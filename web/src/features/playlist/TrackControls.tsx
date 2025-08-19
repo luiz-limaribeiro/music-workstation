@@ -6,24 +6,48 @@ import { useStore } from "../../store/store";
 
 interface Props {
   trackId: number;
+  selectedTrackId: number;
+  selectTrack: (trackId: number) => void;
+  updateVelocity: (trackId: number, velocity: number) => void;
+  updatePanning: (trackId: number, panning: number) => void;
+  toggleMuted: (trackId: number) => void;
+  toggleSolo: (trackId: number) => void;
+  deleteTrack: (trackId: number) => void;
+  rename: (trackId: number, name: string) => void;
 }
 
-function TrackControls({ trackId }: Props) {
+function TrackControls({
+  trackId,
+  selectedTrackId,
+  selectTrack,
+  updateVelocity,
+  updatePanning,
+  toggleMuted,
+  toggleSolo,
+  deleteTrack,
+  rename,
+}: Props) {
   const [showOptions, setShowOptions] = useState(false);
 
   const track = useStore((state) => state.tracks.byId[trackId]);
   const { name, muted, solo, velocity, panning } = track;
 
-  const setVelocity = useStore((state) => state.updateTrackVelocity);
-  const setPanning = useStore((state) => state.updateTrackPanning);
-  const toggleMuted = useStore((state) => state.toggleTrackMuted);
-  const toggleSolo = useStore((state) => state.toggleTrackSolo);
-
   return (
     <div className="track-controls">
-      <span className="title" onMouseDown={() => setShowOptions(!showOptions)}>
-        {name}
-      </span>
+      {selectedTrackId !== trackId ? (
+        <span
+          className="title"
+          onMouseDown={() => setShowOptions(!showOptions)}
+        >
+          {name}
+        </span>
+      ) : (
+        <input
+          className="title-input"
+          type="text"
+          onChange={(e) => rename(trackId, e.target.value)}
+        />
+      )}
       <button
         className={`mute-unmute ${muted ? "muted" : ""}`}
         onClick={() => toggleMuted(trackId)}
@@ -36,19 +60,30 @@ function TrackControls({ trackId }: Props) {
       </button>
       <Knob
         value={panning}
-        onValueChange={(newValue) => setPanning(trackId, newValue)}
+        onValueChange={(newValue) => updatePanning(trackId, newValue)}
         mode="pan"
       />
       <Knob
         value={velocity}
-        onValueChange={(newValue) => setVelocity(trackId, newValue)}
+        onValueChange={(newValue) => updateVelocity(trackId, newValue)}
         mode="velocity"
       />
       {showOptions && (
         <div className="track-options">
-          <button>rename</button>
-          <button>clear</button>
-          <button>delete</button>
+          <button
+            onClick={() => {
+              setShowOptions(false);
+              selectTrack(trackId);
+            }}
+          >
+            rename
+          </button>
+          <button
+            onClick={() => {
+              setShowOptions(false);
+              deleteTrack(trackId);
+            }}
+          >delete</button>
         </div>
       )}
     </div>

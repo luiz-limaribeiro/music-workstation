@@ -12,6 +12,7 @@
 .pointer {
   width: 4px;
   height: 12px;
+  border-radius: 4px;
   background-color: aqua;
   translate: 0 -50%;
   transform-origin: 50% 100%;

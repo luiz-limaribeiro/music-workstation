@@ -4,6 +4,7 @@ import TrackControls from "./TrackControls";
 import TrackTimeline from "./TrackTimeline";
 import "./styles/TracksContainer.css";
 import Playhead from "./Playhead";
+import { useShallow } from "zustand/shallow";
 
 interface Props {
   totalSteps: number;
@@ -15,8 +16,33 @@ export default function TracksContainer({ totalSteps }: Props) {
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
-  const trackIds = useStore((state) => state.tracks.allIds);
-  const stepCount = useStore((state) => state.stepCount);
+  const { trackIds, stepCount, selectedTrackId } = useStore(
+    useShallow((state) => ({
+      trackIds: state.tracks.allIds,
+      stepCount: state.stepCount,
+      selectedTrackId: state.selectedTrackId,
+    }))
+  )
+
+  const {
+    selectTrack,
+    updateVelocity,
+    updatePanning,
+    toggleMuted,
+    toggleSolo,
+    deleteTrack,
+    rename,
+  } = useStore(
+    useShallow(state => ({
+      selectTrack: state.playlistActions.selectTrack,
+      updateVelocity: state.playlistActions.updateVelocity,
+      updatePanning: state.playlistActions.updatePanning,
+      toggleMuted: state.playlistActions.toggleMuted,
+      toggleSolo: state.playlistActions.toggleSolo,
+      deleteTrack: state.playlistActions.delete,
+      rename: state.playlistActions.rename
+    }))
+  )
 
   useEffect(() => {
     const timeline = timelineRef.current;
@@ -72,7 +98,18 @@ export default function TracksContainer({ totalSteps }: Props) {
     <div className="tracks-container">
       <div className="track-controls-container">
         {trackIds.map((id) => (
-          <TrackControls key={id} trackId={id} />
+          <TrackControls
+            key={id}
+            trackId={id}
+            selectedTrackId={selectedTrackId}
+            selectTrack={selectTrack}
+            updateVelocity={updateVelocity}
+            updatePanning={updatePanning}
+            toggleMuted={toggleMuted}
+            toggleSolo={toggleSolo}
+            deleteTrack={deleteTrack}
+            rename={rename}
+          />
         ))}
       </div>
       <div className="clips-timeline-container" ref={timelineRef}>

@@ -15,16 +15,15 @@ interface Props {
 function TrackTimeline({ trackId, totalSteps, stepCount }: Props) {
   const timelineRef = useRef<HTMLDivElement>(null);
 
-  const name = useStore((state) => state.tracks.byId[trackId].name);
   const clipIds = useStore((state) => state.trackClips[trackId]);
   const newClipGhost = useStore((state) => state.newClipGhost);
   const gridCellWidth = useStore((state) => state.gridCellWidth)
 
-  const addClip = useStore((state) => state.addClip);
-  const showNewClipButton = useStore((state) => state.showNewClipButton);
-  const hideNewClipButton = useStore((state) => state.hideNewClipButton);
-  const updateStepCount = useStore((state) => state.updateStepCount)
-  const setGridCellWidth = useStore((state) => state.setGridCellWidth)
+  const addClip = useStore((state) => state.playlistActions.addClip);
+  const showNewClipButton = useStore((state) => state.playlistActions.showNewClipButton);
+  const hideNewClipButton = useStore((state) => state.playlistActions.hideNewClipButton);
+  const updateStepCount = useStore((state) => state.playlistActions.updateStepCount)
+  const setGridCellWidth = useStore((state) => state.playlistActions.setGridCellWidth)
 
   useEffect(() => {
     const calculateGridWidth = () => {
@@ -49,6 +48,7 @@ function TrackTimeline({ trackId, totalSteps, stepCount }: Props) {
       showNewClipButton(trackId, relativeX);
     }
   }
+  
   return (
     <div
       className="track-timeline clips"
@@ -70,7 +70,6 @@ function TrackTimeline({ trackId, totalSteps, stepCount }: Props) {
           key={id}
           clipId={id}
           gridCellWidth={gridCellWidth}
-          trackName={name}
         />
       ))}
       {newClipGhost?.trackId === trackId && (

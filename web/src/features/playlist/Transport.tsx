@@ -16,6 +16,14 @@ export default function Transport({
   const bpm = useStore((state) => state.bpm);
   const setBpm = useStore((state) => state.audioActions.setBpm);
 
+  const tracks = useStore((state) => state.tracks.allIds)
+  const clips = useStore((state) => state.clips.allIds)
+  const sequencerTracks = useStore((state) => state.sequencerTracks.allIds)
+  const steps = useStore((state) => state.steps.allIds)
+  const trackClips = useStore((state) => state.trackClips)
+  const clipSequencerTracks = useStore((state) => state.clipSequencerTracks)
+  const sequencerTrackSteps = useStore((state => state.sequencerTrackSteps))
+
   const previousBpm = useRef(0);
 
   function handleMouseMove(event: MouseEvent) {
@@ -39,6 +47,23 @@ export default function Transport({
   
   return (
     <div className="transport">
+      <button
+        onClick={() => {
+
+              console.log('')
+
+              console.log('tracks', tracks)
+              console.log('clips', clips)
+              console.log('seqTracks', sequencerTracks)
+              console.log('steps', steps)
+
+              console.log('track clips: ', trackClips)
+              console.log('clip seq tracks: ', clipSequencerTracks)
+              console.log('seq track steps', sequencerTrackSteps)
+        }}
+      >
+        Test
+      </button>
       <button
         className="play-button"
         disabled={isPlaying}

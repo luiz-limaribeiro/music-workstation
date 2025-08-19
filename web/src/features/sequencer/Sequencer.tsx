@@ -7,7 +7,6 @@ import "./Sequencer.css";
 
 interface Props {
   clipId: number;
-  trackName: string;
   sequencerTrackIds: number[];
   onCloseEditor: () => void;
   addSequencerTrack: (
@@ -18,7 +17,6 @@ interface Props {
 
 export default function Sequencer({
   clipId,
-  trackName,
   sequencerTrackIds,
   onCloseEditor,
   addSequencerTrack,
@@ -32,9 +30,6 @@ export default function Sequencer({
       }}
     >
       <div className="sequencer" onMouseDown={(e) => e.stopPropagation()}>
-        <div className="sequencer-header">
-          <h3>{trackName}</h3>
-        </div>
         {sequencerTrackIds.map((id) => (
           <SequencerTrackContainer
             key={id}

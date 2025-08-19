@@ -41,16 +41,6 @@
   color: #FFF3;
 }
 
-.sequencer-header button {
-  cursor: pointer;
-  padding: .6rem 1rem;
-  background: transparent;
-  border: 1px solid #FFF2;
-  border-radius: 10px;
-  color: white;
-  font-family: 'Roboto Mono Variable', sans-serif;
-}
-
 .add-instrument {
   display: flex;
   justify-content: center;

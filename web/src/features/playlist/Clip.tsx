@@ -7,10 +7,8 @@ import type { SequencerTrack } from "../../data/sequencerTrackData";
 
 interface Props {
   clip: ClipData;
-  trackName: string;
   gridCellWidth: number;
   selectedClipId: number;
-  currentStep: number;
   sequencerTrackIds: number[];
   selectClip: (clipId: number) => void;
   moveClip: (clipId: number, startStep: number) => void;
@@ -23,7 +21,6 @@ interface Props {
 
 function Clip({
   clip,
-  trackName,
   gridCellWidth,
   selectedClipId,
   sequencerTrackIds,
@@ -91,7 +88,6 @@ function Clip({
       {showEditor && (
         <Sequencer
           clipId={clip.id}
-          trackName={trackName}
           sequencerTrackIds={sequencerTrackIds}
           onCloseEditor={() => setShowEditor(false)}
           addSequencerTrack={addSequencerTrack}
