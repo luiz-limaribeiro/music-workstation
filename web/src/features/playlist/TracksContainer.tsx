@@ -22,7 +22,7 @@ export default function TracksContainer({ totalSteps }: Props) {
       stepCount: state.stepCount,
       selectedTrackId: state.selectedTrackId,
     }))
-  )
+  );
 
   const {
     selectTrack,
@@ -32,17 +32,19 @@ export default function TracksContainer({ totalSteps }: Props) {
     toggleSolo,
     deleteTrack,
     rename,
+    updateTrackPart,
   } = useStore(
-    useShallow(state => ({
+    useShallow((state) => ({
       selectTrack: state.playlistActions.selectTrack,
       updateVelocity: state.playlistActions.updateVelocity,
       updatePanning: state.playlistActions.updatePanning,
       toggleMuted: state.playlistActions.toggleMuted,
       toggleSolo: state.playlistActions.toggleSolo,
       deleteTrack: state.playlistActions.delete,
-      rename: state.playlistActions.rename
+      rename: state.playlistActions.rename,
+      updateTrackPart: state.audioActions.updateTrackPart,
     }))
-  )
+  );
 
   useEffect(() => {
     const timeline = timelineRef.current;
@@ -109,6 +111,7 @@ export default function TracksContainer({ totalSteps }: Props) {
             toggleSolo={toggleSolo}
             deleteTrack={deleteTrack}
             rename={rename}
+            updateTrackPart={updateTrackPart}
           />
         ))}
       </div>

@@ -14,6 +14,7 @@ interface Props {
   toggleSolo: (trackId: number) => void;
   deleteTrack: (trackId: number) => void;
   rename: (trackId: number, name: string) => void;
+  updateTrackPart: (trackId: number) => void;
 }
 
 function TrackControls({
@@ -26,6 +27,7 @@ function TrackControls({
   toggleSolo,
   deleteTrack,
   rename,
+  updateTrackPart,
 }: Props) {
   const [showOptions, setShowOptions] = useState(false);
 
@@ -50,22 +52,34 @@ function TrackControls({
       )}
       <button
         className={`mute-unmute ${muted ? "muted" : ""}`}
-        onClick={() => toggleMuted(trackId)}
+        onClick={() => {
+          toggleMuted(trackId);
+          updateTrackPart(trackId);
+        }}
       />
       <button
         className={`solo-button ${solo ? "solo" : ""}`}
-        onClick={() => toggleSolo(trackId)}
+        onClick={() => {
+          toggleSolo(trackId);
+          updateTrackPart(trackId);
+        }}
       >
         solo
       </button>
       <Knob
         value={panning}
-        onValueChange={(newValue) => updatePanning(trackId, newValue)}
+        onValueChange={(newValue) => {
+          updatePanning(trackId, newValue);
+          updateTrackPart(trackId);
+        }}
         mode="pan"
       />
       <Knob
         value={velocity}
-        onValueChange={(newValue) => updateVelocity(trackId, newValue)}
+        onValueChange={(newValue) => {
+          updateVelocity(trackId, newValue);
+          updateTrackPart(trackId);
+        }}
         mode="velocity"
       />
       {showOptions && (
@@ -83,7 +97,9 @@ function TrackControls({
               setShowOptions(false);
               deleteTrack(trackId);
             }}
-          >delete</button>
+          >
+            delete
+          </button>
         </div>
       )}
     </div>

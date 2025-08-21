@@ -8,6 +8,7 @@ import StepContainer from "./StepContainer.tsx";
 interface Props {
   clipId: number;
   stepIds: number[];
+  trackId: number;
   sequencerTrack: SequencerTrack;
   setTrackVelocity: (sequencerTrackId: number, velocity: number) => void;
   clearSequence: (sequencerTrackId: number) => void;
@@ -18,17 +19,20 @@ interface Props {
     name: string,
     play: (time: number, velocity: number) => void
   ) => void;
+  updateTrackPart: (trackId: number) => void;
 }
 
 function SequencerTrack({
   clipId,
   stepIds,
+  trackId,
   sequencerTrack,
   setTrackVelocity,
   clearSequence,
   deleteSequence,
   toggleMuted,
   setSample,
+  updateTrackPart,
 }: Props) {
   const { id, name, velocity, muted } = sequencerTrack;
 
@@ -38,21 +42,25 @@ function SequencerTrack({
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
     setTrackVelocity(id, newVelocity);
+    updateTrackPart(trackId)
   }
 
   function onSetSample() {
     setShowOptions(false);
     setShowSampleList(true);
+    updateTrackPart(trackId)
   }
 
   function clear() {
     clearSequence(id);
     setShowOptions(false);
+    updateTrackPart(trackId)
   }
 
   function remove() {
     deleteSequence(clipId, id);
     setShowOptions(false);
+    updateTrackPart(trackId)
   }
 
   return (
@@ -66,6 +74,7 @@ function SequencerTrack({
           className={muted ? "muted" : ""}
           onClick={() => {
             toggleMuted(id);
+            updateTrackPart(trackId);
           }}
         />
       </div>
@@ -84,7 +93,7 @@ function SequencerTrack({
           <StepContainer
             key={id}
             stepId={id}
-            sequencerTrackId={sequencerTrack.id}
+            trackId={trackId}
           />
         ))}
       </div>

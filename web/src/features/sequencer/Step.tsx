@@ -4,23 +4,20 @@ import React from "react";
 
 interface Props {
   stepId: number;
+  trackId: number;
   active: boolean;
   velocity: number;
   repeatValue: number;
   index: number;
   toggleStep: (stepId: number) => void;
-  setRepeatValue: (
-    stepId: number,
-    repeatValue: number
-  ) => void;
-  setStepVelocity: (
-    stepId: number,
-    velocity: number
-  ) => void;
+  setRepeatValue: (stepId: number, repeatValue: number) => void;
+  setStepVelocity: (stepId: number, velocity: number) => void;
+  updateTrackPart: (trackId: number) => void;
 }
 
 function Step({
   stepId,
+  trackId,
   active,
   velocity,
   repeatValue,
@@ -28,6 +25,7 @@ function Step({
   toggleStep,
   setRepeatValue,
   setStepVelocity,
+  updateTrackPart,
 }: Props) {
   const stepRef = useRef<HTMLDivElement | null>(null);
 
@@ -45,6 +43,7 @@ function Step({
         const newRepeatValue = Math.max(1, Math.min(value, 8));
 
         setRepeatValue(stepId, newRepeatValue);
+        updateTrackPart(trackId);
         return;
       }
 
@@ -53,8 +52,18 @@ function Step({
       const newVelocity =
         Math.round((value + Number.EPSILON) * factor) / factor;
       setStepVelocity(stepId, newVelocity);
+      updateTrackPart(trackId);
     },
-    [stepId, active, velocity, repeatValue, setRepeatValue, setStepVelocity]
+    [
+      stepId,
+      trackId,
+      active,
+      velocity,
+      repeatValue,
+      setRepeatValue,
+      setStepVelocity,
+      updateTrackPart,
+    ]
   );
 
   useEffect(() => {
@@ -75,9 +84,14 @@ function Step({
       className={`step ${active ? "active" : ""}`}
       style={{
         opacity: `${active ? Math.max(0.2, Math.min(velocity, 1)) : 1}`,
-        backgroundColor: `${active ? 'rgb(251, 143, 255)' : index % 4 === 0 ? '#223' : '#1f1f2f'}`
+        backgroundColor: `${
+          active ? "rgb(251, 143, 255)" : index % 4 === 0 ? "#223" : "#1f1f2f"
+        }`,
       }}
-     onClick={() => toggleStep(stepId)}
+      onClick={() => {
+        toggleStep(stepId);
+        updateTrackPart(trackId);
+      }}
     >
       {active && bars}
     </div>

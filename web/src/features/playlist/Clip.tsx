@@ -7,6 +7,7 @@ import type { SequencerTrack } from "../../data/sequencerTrackData";
 
 interface Props {
   clip: ClipData;
+  trackId: number;
   gridCellWidth: number;
   selectedClipId: number;
   sequencerTrackIds: number[];
@@ -17,17 +18,20 @@ interface Props {
     sequencerTrackData: SequencerTrack
   ) => void;
   updateStepCount: (clipId: number) => void;
+  updateTrackPart: (trackId: number) => void;
 }
 
 function Clip({
   clip,
+  trackId,
   gridCellWidth,
   selectedClipId,
   sequencerTrackIds,
   selectClip,
   moveClip,
   addSequencerTrack,
-  updateStepCount
+  updateStepCount,
+  updateTrackPart,
 }: Props) {
   const [showEditor, setShowEditor] = useState(false);
 
@@ -72,8 +76,9 @@ function Clip({
     document.body.classList.remove("grabbing-cursor");
     window.removeEventListener("mousemove", handleMouseMove);
     window.removeEventListener("mouseup", handleMouseUp);
-    updateStepCount(clip.id)
-  }, [handleMouseMove, updateStepCount, clip.id]);
+    updateStepCount(clip.id);
+    updateTrackPart(trackId);
+  }, [handleMouseMove, updateStepCount, updateTrackPart, clip.id, trackId]);
 
   return (
     <div
@@ -88,6 +93,7 @@ function Clip({
       {showEditor && (
         <Sequencer
           clipId={clip.id}
+          trackId={trackId}
           sequencerTrackIds={sequencerTrackIds}
           onCloseEditor={() => setShowEditor(false)}
           addSequencerTrack={addSequencerTrack}

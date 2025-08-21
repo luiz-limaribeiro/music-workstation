@@ -5,10 +5,11 @@ import { useShallow } from "zustand/shallow";
 
 interface Props {
   clipId: number;
+  trackId: number;
   sequencerTrackId: number;
 }
 
-function SequencerTrackContainer({ clipId, sequencerTrackId }: Props) {
+function SequencerTrackContainer({ clipId, trackId, sequencerTrackId }: Props) {
   const { sequencerTrack, stepIds } = useStore(
     useShallow(state => ({
       sequencerTrack: state.sequencerTracks.byId[sequencerTrackId],
@@ -22,6 +23,7 @@ function SequencerTrackContainer({ clipId, sequencerTrackId }: Props) {
     deleteSequence,
     toggleMuted,
     setSample,
+    updateTrackPart,
   } = useStore(
     useShallow((state) => ({
       setVelocity: state.sequencerActions.setVelocity,
@@ -29,6 +31,7 @@ function SequencerTrackContainer({ clipId, sequencerTrackId }: Props) {
       deleteSequence: state.sequencerActions.deleteSequence,
       toggleMuted: state.sequencerActions.toggleMuted,
       setSample: state.sequencerActions.setSample,
+      updateTrackPart: state.audioActions.updateTrackPart,
     }))
   );
 
@@ -36,12 +39,14 @@ function SequencerTrackContainer({ clipId, sequencerTrackId }: Props) {
     <SequencerTrack
       clipId={clipId}
       stepIds={stepIds}
+      trackId={trackId}
       sequencerTrack={sequencerTrack}
       setTrackVelocity={setVelocity}
       clearSequence={clearSequence}
       deleteSequence={deleteSequence}
       toggleMuted={toggleMuted}
       setSample={setSample}
+      updateTrackPart={updateTrackPart}
     />
   );
 }

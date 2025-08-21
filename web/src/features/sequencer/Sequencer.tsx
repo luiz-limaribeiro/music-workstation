@@ -7,6 +7,7 @@ import "./Sequencer.css";
 
 interface Props {
   clipId: number;
+  trackId: number;
   sequencerTrackIds: number[];
   onCloseEditor: () => void;
   addSequencerTrack: (
@@ -17,6 +18,7 @@ interface Props {
 
 export default function Sequencer({
   clipId,
+  trackId,
   sequencerTrackIds,
   onCloseEditor,
   addSequencerTrack,
@@ -34,6 +36,7 @@ export default function Sequencer({
           <SequencerTrackContainer
             key={id}
             clipId={clipId}
+            trackId={trackId}
             sequencerTrackId={id}
           />
         ))}

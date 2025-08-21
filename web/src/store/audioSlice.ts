@@ -10,11 +10,13 @@ export interface AudioSlice {
   bpm: number;
   currentPosition: string;
   positionListenerId: string;
+  partsByTrackId: { [trackId: number]: Tone.Part };
   audioActions: {
     startPlayback: () => void;
     stopPlayback: () => void;
     setBpm: (bpm: number) => void;
     setCurrentPosition: (position: string) => void;
+    updateTrackPart: (trackId: number) => void;
   };
 }
 
@@ -26,25 +28,40 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
   bpm: 120,
   currentPosition: "0:0:0",
   positionListenerId: "",
+  partsByTrackId: {},
   audioActions: {
     startPlayback: () =>
       set((state) => {
         const transport = state.transport;
         const totalSteps = state.stepCount;
+        const trackIds = state.tracks.allIds;
 
         transport.cancel(0);
-        transport.loop = true;
-        transport.loopEnd = `${Math.floor(totalSteps / 16)}m`
+        for (const id in state.partsByTrackId)
+          state.partsByTrackId[id].dispose();
 
-        const allEvents = getAllEvents(state);
-        const playbackPart = createPlaybackPart(allEvents);
+        transport.loop = true;
+        transport.loopEnd = `${Math.floor(totalSteps / 16)}m`;
+        state.transport.set({ bpm: state.bpm });
+
+        const newPartsByTrackId: { [trackId: number]: Tone.Part } = {};
+
+        trackIds.forEach((id) => {
+          const events = getEventsForTrack(state, id);
+
+          const part = new Tone.Part((time, value) => {
+            value.player(time, value.velocity, 1);
+          }, events);
+
+          part.start(0);
+
+          newPartsByTrackId[id] = part;
+        });
 
         Tone.start();
-        playbackPart.start(0);
-
         transport.start();
 
-        return { isTransportRunning: true };
+        return { isTransportRunning: true, partsByTrackId: newPartsByTrackId };
       }),
     stopPlayback: () =>
       set((state) => {
@@ -56,27 +73,46 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
           currentPosition: "0:0:0",
         };
       }),
-    setBpm: (bpm) => set({ bpm }),
+    setBpm: (bpm) => set(state => {
+      state.transport.set({ bpm: bpm })
+      return { bpm: bpm }
+    }),
     setCurrentPosition: (position: string) =>
       set({ currentPosition: position }),
+    updateTrackPart: (trackId: number) =>
+      set((state) => {
+        if (state.transport.state !== "started") return state;
+
+        console.log('updating track', trackId)
+
+        // 1. Clear any existing events on this part
+        if (state.partsByTrackId[trackId])
+          state.partsByTrackId[trackId].clear();
+
+        // 2. Get only the events for this track
+        const trackEvents = getEventsForTrack(state, trackId);
+
+        // 3. Create a new part or update the existing one
+        const newPart = new Tone.Part((time, value) => {
+          value.player(time, value.velocity, 1);
+        }, trackEvents);
+
+        newPart.start(0)
+
+        // 5. Update the store
+        return {
+          ...state,
+          partsByTrackId: {
+            ...state.partsByTrackId,
+            [trackId]: newPart,
+          },
+        };
+      }),
   },
 });
 
-function createPlaybackPart(
-  allEvents: PlaybackEvent[]
-): Tone.Part<PlaybackEvent> {
-  const playbackPart = new Tone.Part((time, value) => {
-    value.player(time, value.velocity, 1);
-  }, allEvents);
-
-  playbackPart.loop = false;
-
-  return playbackPart;
-}
-
-function getAllEvents(state: AppState) {
+function getEventsForTrack(state: AppState, trackId: number) {
   const events: PlaybackEvent[] = [];
-  const trackIds = state.tracks.allIds;
   const trackClips = state.trackClips;
   const clips = state.clips;
   const clipSequencers = state.clipSequencerTracks;
@@ -84,28 +120,26 @@ function getAllEvents(state: AppState) {
   const sequencerSteps = state.sequencerTrackSteps;
   const steps = state.steps;
 
-  trackIds.forEach((trackId) => {
-    trackClips[trackId].forEach((clipId) => {
-      const clip = clips.byId[clipId];
+  trackClips[trackId].forEach((clipId) => {
+    const clip = clips.byId[clipId];
 
-      clipSequencers[clipId].forEach((sequencerTrackId) => {
-        const sequencerTrack = sequencerTracks.byId[sequencerTrackId];
+    clipSequencers[clipId].forEach((sequencerTrackId) => {
+      const sequencerTrack = sequencerTracks.byId[sequencerTrackId];
 
-        sequencerSteps[sequencerTrackId].forEach((stepId, index) => {
-          const step = steps.byId[stepId];
+      sequencerSteps[sequencerTrackId].forEach((stepId, index) => {
+        const step = steps.byId[stepId];
 
-          if (step.active) {
-            const totalSteps = clip.startStep + index;
-            const time = Tone.Time(`0:0:${totalSteps}`);
-            const player = sequencerTrack.player;
+        if (step.active) {
+          const totalSteps = clip.startStep + index;
+          const time = Tone.Time(`0:0:${totalSteps}`);
+          const player = sequencerTrack.player;
 
-            events.push({
-              time: time.toSeconds(),
-              player: player,
-              velocity: step.velocity,
-            });
-          }
-        });
+          events.push({
+            time: time.toSeconds(),
+            player: player,
+            velocity: step.velocity,
+          });
+        }
       });
     });
   });

@@ -69,6 +69,7 @@ function TrackTimeline({ trackId, totalSteps, stepCount }: Props) {
         <ClipContainer
           key={id}
           clipId={id}
+          trackId={trackId}
           gridCellWidth={gridCellWidth}
         />
       ))}
