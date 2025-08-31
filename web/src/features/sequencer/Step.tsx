@@ -89,6 +89,7 @@ function Step({
         }`,
       }}
       onClick={() => {
+        console.log('step', stepId);
         toggleStep(stepId);
         updateTrackPart(trackId);
       }}

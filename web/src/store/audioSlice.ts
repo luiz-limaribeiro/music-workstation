@@ -5,7 +5,6 @@ import type { TransportClass } from "tone/build/esm/core/clock/Transport";
 import { type PlaybackEvent } from "../data/playbackEvent";
 
 export interface AudioSlice {
-  isTransportRunning: boolean;
   transport: TransportClass;
   bpm: number;
   currentPosition: string;
@@ -23,7 +22,6 @@ export interface AudioSlice {
 export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
   set
 ) => ({
-  isTransportRunning: false,
   transport: Tone.getTransport(),
   bpm: 120,
   currentPosition: "0:0:0",
@@ -115,24 +113,24 @@ function getEventsForTrack(state: AppState, trackId: number) {
   const events: PlaybackEvent[] = [];
   const trackClips = state.trackClips;
   const clips = state.clips;
-  const clipSequencers = state.clipSequencerTracks;
-  const sequencerTracks = state.sequencerTracks;
-  const sequencerSteps = state.sequencerTrackSteps;
+  const trackInstruments = state.trackInstruments;
+  const instruments = state.instruments;
+  const clipSteps = state.clipSteps;
   const steps = state.steps;
 
   trackClips[trackId].forEach((clipId) => {
     const clip = clips.byId[clipId];
 
-    clipSequencers[clipId].forEach((sequencerTrackId) => {
-      const sequencerTrack = sequencerTracks.byId[sequencerTrackId];
+    trackInstruments[trackId].forEach((instrumentId) => {
+      const instrument = instruments.byId[instrumentId];
 
-      sequencerSteps[sequencerTrackId].forEach((stepId, index) => {
+      clipSteps[instrumentId].forEach((stepId, index) => {
         const step = steps.byId[stepId];
 
         if (step.active) {
           const totalSteps = clip.startStep + index;
           const time = Tone.Time(`0:0:${totalSteps}`);
-          const player = sequencerTrack.player;
+          const player = instrument.player;
 
           events.push({
             time: time.toSeconds(),

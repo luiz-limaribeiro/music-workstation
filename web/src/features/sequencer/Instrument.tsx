@@ -1,54 +1,54 @@
 import { useState } from "react";
-import type { SequencerTrack } from "../../data/sequencerTrackData.ts";
-import "./SequencerTrack.css";
+import type { InstrumentData } from "../../data/instrumentData.ts";
+import "./Instrument.css";
 import SampleList from "./SampleList.tsx";
 import React from "react";
 import StepContainer from "./StepContainer.tsx";
+import type { SynthPreset } from "../../data/synthPresets.ts";
 
 interface Props {
   clipId: number;
   stepIds: number[];
   trackId: number;
-  sequencerTrack: SequencerTrack;
-  setTrackVelocity: (sequencerTrackId: number, velocity: number) => void;
-  clearSequence: (sequencerTrackId: number) => void;
-  deleteSequence: (clipId: number, sequencerTrackId: number) => void;
-  toggleMuted: (sequencerTrackId: number) => void;
+  instrument: InstrumentData;
+  setVelocity: (instrumentId: number, velocity: number) => void;
+  clearSequence: (instrumentId: number) => void;
+  deleteSequence: (clipId: number, instrumentId: number) => void;
+  toggleMuted: (instrumentId: number) => void;
   setSample: (
-    sequencerTrackId: number,
-    name: string,
-    play: (time: number, velocity: number) => void
+    trackId: number,
+    instrumentId: number,
+    synthPreset: SynthPreset,
   ) => void;
   updateTrackPart: (trackId: number) => void;
 }
 
-function SequencerTrack({
+function Instrument({
   clipId,
   stepIds,
   trackId,
-  sequencerTrack,
-  setTrackVelocity,
+  instrument,
+  setVelocity,
   clearSequence,
   deleteSequence,
   toggleMuted,
   setSample,
   updateTrackPart,
 }: Props) {
-  const { id, name, velocity, muted } = sequencerTrack;
+  const { id, name, velocity, muted } = instrument;
 
   const [showSampleList, setShowSampleList] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
-    setTrackVelocity(id, newVelocity);
+    setVelocity(id, newVelocity);
     updateTrackPart(trackId)
   }
 
   function onSetSample() {
     setShowOptions(false);
     setShowSampleList(true);
-    updateTrackPart(trackId)
   }
 
   function clear() {
@@ -107,9 +107,9 @@ function SequencerTrack({
       {showSampleList && (
         <SampleList
           selectedSampleName={name}
-          onSampleSelect={(sampleName, play) => {
+          onSampleSelect={(sample) => {
             onSetSample();
-            setSample(id, sampleName, play);
+            setSample(trackId, id, sample);
           }}
           onClose={() => setShowSampleList(false)}
         />
@@ -118,4 +118,4 @@ function SequencerTrack({
   );
 }
 
-export default React.memo(SequencerTrack);
+export default React.memo(Instrument);

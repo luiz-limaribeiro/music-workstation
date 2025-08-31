@@ -10,11 +10,11 @@ interface Props {
 }
 
 function ClipContainer({ clipId, trackId, gridCellWidth }: Props) {
-  const { clip, selectedClipId, sequencerTrackIds } = useStore(
+  const { clip, selectedClipId, instrumentIds } = useStore(
     useShallow((state) => ({
       clip: state.clips.byId[clipId],
       selectedClipId: state.selectedClipId,
-      sequencerTrackIds: state.clipSequencerTracks[clipId],
+      instrumentIds: state.trackInstruments[trackId],
     }))
   );
 
@@ -26,9 +26,9 @@ function ClipContainer({ clipId, trackId, gridCellWidth }: Props) {
     updateTrackPart,
   } = useStore(
     useShallow((state) => ({
-      selectClip: state.playlistActions.selectClip,
-      moveClip: state.playlistActions.moveClip,
-      addSequencerTrack: state.sequencerActions.addSequencerTrack,
+      selectClip: state.clipActions.selectClip,
+      moveClip: state.clipActions.moveClip,
+      addSequencerTrack: state.instrumentActions.addInstrument,
       updateStepCount: state.playlistActions.updateStepCount,
       updateTrackPart: state.audioActions.updateTrackPart,
     }))
@@ -40,10 +40,10 @@ function ClipContainer({ clipId, trackId, gridCellWidth }: Props) {
       trackId={trackId}
       gridCellWidth={gridCellWidth}
       selectedClipId={selectedClipId}
-      sequencerTrackIds={sequencerTrackIds}
+      instrumentIds={instrumentIds}
       selectClip={selectClip}
       moveClip={moveClip}
-      addSequencerTrack={addSequencerTrack}
+      addInstrument={addSequencerTrack}
       updateStepCount={updateStepCount}
       updateTrackPart={updateTrackPart}
     />

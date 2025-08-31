@@ -1,8 +1,7 @@
 import * as Tone from "tone";
 
-// Kicks
-const kick = new Tone.MembraneSynth().toDestination();
-const hardKick = new Tone.MembraneSynth({
+function kick() { return new Tone.MembraneSynth(); }
+function hardKick() { return new Tone.MembraneSynth({
   pitchDecay: 0.06,
   octaves: 4,
   envelope: {
@@ -11,10 +10,8 @@ const hardKick = new Tone.MembraneSynth({
     sustain: 0,
     release: 0.4,
   },
-}).toDestination();
-
-// Snares
-const snare = new Tone.NoiseSynth({
+}); }
+function snare() { return new Tone.NoiseSynth({
   noise: { type: "white" },
   envelope: {
     attack: 0.001,
@@ -22,18 +19,16 @@ const snare = new Tone.NoiseSynth({
     sustain: 0,
     release: 0.1,
   },
-}).toDestination();
-const snappySnare = new Tone.NoiseSynth({
-  noise: { type: 'white'},
+}); }
+function snappySnare() { return new Tone.NoiseSynth({
+  noise: { type: "white" },
   envelope: {
     attack: 0.001,
     decay: 0.15,
-    sustain: 0
-  }
-}).toDestination()
-
-// HiHats
-const hihat = new Tone.NoiseSynth({
+    sustain: 0,
+  },
+}); }
+function hihat() { return new Tone.NoiseSynth({
   noise: { type: "white" },
   envelope: {
     attack: 0.001,
@@ -41,60 +36,47 @@ const hihat = new Tone.NoiseSynth({
     sustain: 0,
     release: 0.01,
   },
-}).toDestination();
-const openHat = new Tone.MetalSynth({
+}); }
+function openHat() { return new Tone.MetalSynth({
   envelope: {
     attack: 0.001,
     decay: 0.5,
-    release: 0.2
+    release: 0.2,
   },
   harmonicity: 5.1,
   modulationIndex: 32,
   resonance: 4000,
   octaves: 1.5,
-}).toDestination();
-
-// Claps
-const clap = new Tone.NoiseSynth({
+}); }
+function clap() { return new Tone.NoiseSynth({
   envelope: {
     attack: 0.001,
     decay: 0.2,
-    sustain: 0
-  }
-}).toDestination()
+    sustain: 0,
+  },
+}); }
+function tom() { return new Tone.MembraneSynth(); }
 
-// Toms
-const tom = new Tone.MembraneSynth().toDestination()
+export type SynthPreset = {
+  name: string;
+  synth: () =>
+    | Tone.Synth
+    | Tone.MembraneSynth
+    | Tone.NoiseSynth
+    | Tone.MetalSynth
+    | Tone.Sampler;
+  note: string;
+};
 
-function createPlayer(
-  synth: Tone.Synth | Tone.MembraneSynth | Tone.NoiseSynth | Tone.MetalSynth | Tone.Sampler,
-  note: string,
-  duration: string = "16n"
-) {
-  const stepDurationSec = Tone.Time(duration).toSeconds()
-  return (time: number, velocity: number = 1, stepVelocity: number = 1, repeatValue: number = 1) => {
-    const substepDuration = stepDurationSec / repeatValue;
-
-    for (let i = 0; i < repeatValue; ++i) {
-      const scheduledTime = time + i * substepDuration;
-
-      if (note)
-        synth.triggerAttackRelease(note, substepDuration, scheduledTime, velocity * stepVelocity)
-      else
-        synth.triggerAttackRelease(duration, scheduledTime, velocity * stepVelocity)
-    }
-  }
-}
-
-export const drums = {
-  kick: createPlayer(kick, "C1"),
-  hardKick: createPlayer(hardKick, "C1"),
-  snare: createPlayer(snare, ""),
-  snappySnare: createPlayer(snappySnare, ""),
-  hihat: createPlayer(hihat, ""),
-  openHat: createPlayer(openHat, ""),
-  clap: createPlayer(clap, ""),
-  highTom: createPlayer(tom, "C3"),
-  midTom: createPlayer(tom, "A2"),
-  lowTom: createPlayer(tom, "F2"),
+export const synthPresets: { [name: string]: SynthPreset } = {
+  kick: { name: 'Kick', synth: kick, note: "C1" },
+  hardKick: { name: 'Hard Kick', synth: hardKick, note: "C1" },
+  snare: { name: 'Snare', synth: snare, note: "" },
+  snappySnare: { name: 'Snappy Snare', synth: snappySnare, note: "" },
+  hihat: { name: 'Hi-Hat', synth: hihat, note: "" },
+  openHat: { name: 'Open Hat', synth: openHat, note: "C6" },
+  clap: { name: 'Clap', synth: clap, note: "" },
+  tom: { name: 'Low Tom', synth: tom, note: "C2" },
+  midTom: { name: 'Mid Tom', synth: tom, note: "C3" },
+  highTom: { name: 'High Tom', synth: tom, note: "C4"  },
 };

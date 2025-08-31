@@ -1,30 +1,38 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import "./styles/Transport.css";
 import { useStore } from "../../store/store";
 
-interface Props {
-  isPlaying: boolean;
-  startPlayback: () => void
-  stopPlayback: () => void
-}
-
-export default function Transport({
-  isPlaying,
-  startPlayback,
-  stopPlayback
-}: Props) {
-  const bpm = useStore((state) => state.bpm);
+export default function Transport() {
+  const startPlayback = useStore((state) => state.audioActions.startPlayback);
+  const stopPlayback = useStore((state) => state.audioActions.stopPlayback);
   const setBpm = useStore((state) => state.audioActions.setBpm);
+  const bpm = useStore((state) => state.bpm);
+  const transport = useStore((state) => state.transport);
+  const isPlaying = transport.state === "started";
+  const setCurrentPosition = useStore(
+    (state) => state.audioActions.setCurrentPosition
+  );
 
-  const tracks = useStore((state) => state.tracks.allIds)
-  const clips = useStore((state) => state.clips.allIds)
-  const sequencerTracks = useStore((state) => state.sequencerTracks.allIds)
-  const steps = useStore((state) => state.steps.allIds)
-  const trackClips = useStore((state) => state.trackClips)
-  const clipSequencerTracks = useStore((state) => state.clipSequencerTracks)
-  const sequencerTrackSteps = useStore((state => state.sequencerTrackSteps))
+  const tracks = useStore((state) => state.tracks.allIds);
+  const instruments = useStore((state) => state.instruments.allIds);
+  const clips = useStore((state) => state.clips.allIds);
+  const steps = useStore((state) => state.steps.allIds);
 
   const previousBpm = useRef(0);
+  const positionListenerId = useRef(0);
+
+  useEffect(() => {
+    const posListenerId = transport.scheduleRepeat(() => {
+      const currentPos = transport.position;
+      setCurrentPosition(currentPos.toString());
+    }, "16n");
+
+    positionListenerId.current = posListenerId;
+
+    return () => {
+      transport.clear(positionListenerId.current);
+    };
+  }, [transport, setCurrentPosition]);
 
   function handleMouseMove(event: MouseEvent) {
     previousBpm.current += event.movementX;
@@ -44,22 +52,17 @@ export default function Transport({
     window.removeEventListener("mousemove", handleMouseMove);
     window.removeEventListener("mouseup", handleMouseUp);
   }
-  
+
   return (
     <div className="transport">
       <button
         onClick={() => {
+          console.log("");
 
-              console.log('')
-
-              console.log('tracks', tracks)
-              console.log('clips', clips)
-              console.log('seqTracks', sequencerTracks)
-              console.log('steps', steps)
-
-              console.log('track clips: ', trackClips)
-              console.log('clip seq tracks: ', clipSequencerTracks)
-              console.log('seq track steps', sequencerTrackSteps)
+          console.log("tracks", tracks);
+          console.log("clips", clips);
+          console.log("instruments", instruments);
+          console.log("steps", steps);
         }}
       >
         Test
@@ -74,7 +77,10 @@ export default function Transport({
       <button
         className="stop-button"
         disabled={!isPlaying}
-        onClick={stopPlayback}
+        onClick={() => {
+          stopPlayback();
+          transport.clear(positionListenerId.current);
+        }}
       >
         Stop
       </button>

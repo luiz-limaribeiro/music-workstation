@@ -7,7 +7,7 @@ export interface StepSlice {
     byId: { [id: number]: StepData };
     allIds: number[];
   };
-  sequencerTrackSteps: { [sequencerTrackId: number]: number[] };
+  clipSteps: { [clipId: number]: number[] };
   
   stepActions: {
     toggleStep: (stepId: number) => void;
@@ -20,7 +20,7 @@ export const createStepSlice: StateCreator<AppState, [], [], StepSlice> = (
   set
 ) => ({
   steps: { byId: {}, allIds: [] },
-  sequencerTrackSteps: {},
+  clipSteps: {},
   stepActions: {
     toggleStep: (stepId) =>
       set((state) => {

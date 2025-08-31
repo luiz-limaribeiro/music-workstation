@@ -16,11 +16,23 @@ export default function TracksContainer({ totalSteps }: Props) {
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
-  const { trackIds, stepCount, selectedTrackId } = useStore(
+  const {
+    trackIds,
+    stepCount,
+    selectedTrackId,
+    gridCellWidth,
+    currentPosition,
+    clipIds,
+    newClipGhost,
+  } = useStore(
     useShallow((state) => ({
       trackIds: state.tracks.allIds,
       stepCount: state.stepCount,
       selectedTrackId: state.selectedTrackId,
+      gridCellWidth: state.gridCellWidth,
+      currentPosition: state.currentPosition,
+      clipIds: state.trackClips,
+      newClipGhost: state.newClipGhost,
     }))
   );
 
@@ -33,6 +45,11 @@ export default function TracksContainer({ totalSteps }: Props) {
     deleteTrack,
     rename,
     updateTrackPart,
+    addClip,
+    showNewClipButton,
+    hideNewClipButton,
+    updateStepCount,
+    setGridCellWidth,
   } = useStore(
     useShallow((state) => ({
       selectTrack: state.playlistActions.selectTrack,
@@ -43,6 +60,11 @@ export default function TracksContainer({ totalSteps }: Props) {
       deleteTrack: state.playlistActions.delete,
       rename: state.playlistActions.rename,
       updateTrackPart: state.audioActions.updateTrackPart,
+      addClip: state.clipActions.addClip,
+      showNewClipButton: state.clipActions.showNewClipButton,
+      hideNewClipButton: state.clipActions.hideNewClipButton,
+      updateStepCount: state.playlistActions.updateStepCount,
+      setGridCellWidth: state.playlistActions.setGridCellWidth,
     }))
   );
 
@@ -122,9 +144,20 @@ export default function TracksContainer({ totalSteps }: Props) {
             trackId={id}
             totalSteps={totalSteps}
             stepCount={stepCount}
+            clipIds={clipIds[id] || []}
+            gridCellWidth={gridCellWidth}
+            newClipGhost={newClipGhost}
+            addClip={addClip}
+            showNewClipButton={showNewClipButton}
+            hideNewClipButton={hideNewClipButton}
+            updateStepCount={updateStepCount}
+            setGridCellWidth={setGridCellWidth}
           />
         ))}
-        <Playhead />
+        <Playhead
+          gridCellWidth={gridCellWidth}
+          currentPosition={currentPosition}
+        />
       </div>
     </div>
   );

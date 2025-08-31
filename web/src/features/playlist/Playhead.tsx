@@ -1,5 +1,9 @@
-import { useStore } from "../../store/store";
 import "./styles/Playhead.css";
+
+interface Props {
+  gridCellWidth: number;
+  currentPosition: string;
+}
 
 function convertPosToPixels(pos: string, gridCellWidth: number): string {
   const [bars, quarters, sixteenth] = pos.split(":").map(Number);
@@ -9,9 +13,7 @@ function convertPosToPixels(pos: string, gridCellWidth: number): string {
   return `${posInPixels}px`;
 }
 
-export default function Playhead() {
-  const gridCellWidth = useStore((state) => state.gridCellWidth)
-  const currentPosition = useStore((state) => state.currentPosition);
+export default function Playhead({ gridCellWidth, currentPosition}: Props) {
   const playheadPosInPixels = convertPosToPixels(currentPosition, gridCellWidth);
 
   return <div className="playhead" style={{ left: playheadPosInPixels }} />;

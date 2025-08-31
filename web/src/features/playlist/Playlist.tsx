@@ -7,26 +7,18 @@ import TracksContainer from "./TracksContainer";
 import { newClipData } from "../../data/clipData";
 
 const STEPS_PER_BAR = 16;
-const BARS = 80;
+const BARS = 50;
 const TOTAL_STEPS = STEPS_PER_BAR * BARS;
 
 export default function Playlist() {
   const trackIds = useStore((state) => state.tracks.allIds);
   const addTrack = useStore((state) => state.playlistActions.addTrack);
-  const hideAddClipButton = useStore((state) => state.playlistActions.hideNewClipButton);
-  const selectClip = useStore((state) => state.playlistActions.selectClip);
+  const hideAddClipButton = useStore((state) => state.clipActions.hideNewClipButton);
+  const selectClip = useStore((state) => state.clipActions.selectClip);
   const selectTrack = useStore(state => state.playlistActions.selectTrack)
 
-  const transport = useStore(state => state.transport)
-  const isPlaying = useStore((state) => state.isTransportRunning);
-  const startPlayback = useStore((state) => state.audioActions.startPlayback);
-  const stopPlayback = useStore((state) => state.audioActions.stopPlayback);
-  const setCurrentPosition = useStore((state) => state.audioActions.setCurrentPosition)
-
-  const positionListenerId = useRef(0)
-
   const isInitialized = useRef(false)
-  const addClip = useStore((state) => state.playlistActions.addClip)
+  const addClip = useStore((state) => state.clipActions.addClip)
 
   useEffect(() => {
     if (isInitialized.current) return;
@@ -68,27 +60,11 @@ export default function Playlist() {
     };
   }, [hideAddClipButton, selectClip, selectTrack]);
 
-  useEffect(() => {
-    const posListenerId = transport.scheduleRepeat(() => {
-      const currentPos = transport.position;
-      setCurrentPosition(currentPos.toString());
-    }, '16n')
-
-    positionListenerId.current = posListenerId
-
-    return () => {
-      transport.clear(positionListenerId.current)
-    }
-  }, [isPlaying, transport, setCurrentPosition])
+  
 
   function handleAddTrack() {
     const newTrack = newTrackData("Track " + (trackIds.length + 1));
     addTrack(newTrack);
-  }
-
-  function handleStopPlayback() {
-    transport.clear(positionListenerId.current)
-    stopPlayback()
   }
 
   return (
@@ -100,11 +76,7 @@ export default function Playlist() {
         </button>
       </div>
 
-      <Transport
-        isPlaying={isPlaying}
-        startPlayback={startPlayback}
-        stopPlayback={handleStopPlayback}
-      />
+      <Transport/>
     </main>
   );
 }

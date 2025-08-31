@@ -3,19 +3,19 @@ import Sequencer from "../sequencer/Sequencer";
 import "./styles/Clip.css";
 import React from "react";
 import type { ClipData } from "../../data/clipData";
-import type { SequencerTrack } from "../../data/sequencerTrackData";
+import type { InstrumentData } from "../../data/instrumentData";
 
 interface Props {
   clip: ClipData;
   trackId: number;
   gridCellWidth: number;
   selectedClipId: number;
-  sequencerTrackIds: number[];
+  instrumentIds: number[];
   selectClip: (clipId: number) => void;
   moveClip: (clipId: number, startStep: number) => void;
-  addSequencerTrack: (
-    clipId: number,
-    sequencerTrackData: SequencerTrack
+  addInstrument: (
+    trackId: number,
+    instrumentData: InstrumentData
   ) => void;
   updateStepCount: (clipId: number) => void;
   updateTrackPart: (trackId: number) => void;
@@ -26,10 +26,10 @@ function Clip({
   trackId,
   gridCellWidth,
   selectedClipId,
-  sequencerTrackIds,
+  instrumentIds,
   selectClip,
   moveClip,
-  addSequencerTrack,
+  addInstrument,
   updateStepCount,
   updateTrackPart,
 }: Props) {
@@ -94,9 +94,9 @@ function Clip({
         <Sequencer
           clipId={clip.id}
           trackId={trackId}
-          sequencerTrackIds={sequencerTrackIds}
+          instrumentIds={instrumentIds}
           onCloseEditor={() => setShowEditor(false)}
-          addSequencerTrack={addSequencerTrack}
+          addInstrument={addInstrument}
         />
       )}
     </div>

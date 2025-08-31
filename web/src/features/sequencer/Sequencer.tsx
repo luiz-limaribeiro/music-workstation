@@ -1,27 +1,27 @@
 import {
-  newSequencerTrackData,
-  type SequencerTrack,
-} from "../../data/sequencerTrackData";
-import SequencerTrackContainer from "./SequencerTrackContainer";
+  newInstrumentData,
+  type InstrumentData,
+} from "../../data/instrumentData";
+import InstrumentContainer from "./InstrumentContainer";
 import "./Sequencer.css";
 
 interface Props {
   clipId: number;
   trackId: number;
-  sequencerTrackIds: number[];
+  instrumentIds: number[];
   onCloseEditor: () => void;
-  addSequencerTrack: (
+  addInstrument: (
     clipId: number,
-    sequencerTrackData: SequencerTrack
+    instrumentData: InstrumentData
   ) => void;
 }
 
 export default function Sequencer({
   clipId,
   trackId,
-  sequencerTrackIds,
+  instrumentIds,
   onCloseEditor,
-  addSequencerTrack,
+  addInstrument,
 }: Props) {
   return (
     <div
@@ -32,20 +32,20 @@ export default function Sequencer({
       }}
     >
       <div className="sequencer" onMouseDown={(e) => e.stopPropagation()}>
-        {sequencerTrackIds.map((id) => (
-          <SequencerTrackContainer
+        {instrumentIds.map((id) => (
+          <InstrumentContainer
             key={id}
             clipId={clipId}
             trackId={trackId}
-            sequencerTrackId={id}
+            instrumentId={id}
           />
         ))}
         <div className="add-instrument">
           <button
             onClick={() =>
-              addSequencerTrack(
-                clipId,
-                newSequencerTrackData("<empty>", () => {})
+              addInstrument(
+                trackId,
+                newInstrumentData()
               )
             }
           >

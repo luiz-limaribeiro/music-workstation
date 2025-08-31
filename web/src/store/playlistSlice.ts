@@ -2,8 +2,13 @@ import type { StateCreator } from "zustand";
 import type { AppState } from "./store";
 import type { TrackData } from "../data/trackData";
 import type { ClipData } from "../data/clipData";
-import { newSequencerTrackData } from "../data/sequencerTrackData";
 import { newStepData } from "../data/stepData";
+import {
+  createPlayer,
+  newInstrumentData,
+  type InstrumentData,
+} from "../data/instrumentData";
+import type { SynthPreset } from "../data/synthPresets";
 
 export interface PlaylistSlice {
   tracks: {
@@ -14,8 +19,12 @@ export interface PlaylistSlice {
     byId: { [id: number]: ClipData };
     allIds: number[];
   };
+  instruments: {
+    byId: { [id: number]: InstrumentData };
+    allIds: number[];
+  };
   trackClips: { [trackId: number]: number[] };
-
+  trackInstruments: { [trackId: number]: number[] };
   selectedClipId: number;
   selectedTrackId: number;
   trackToRenameId: number;
@@ -30,15 +39,29 @@ export interface PlaylistSlice {
     updatePanning: (trackId: number, panning: number) => void;
     toggleMuted: (trackId: number) => void;
     toggleSolo: (trackId: number) => void;
+    selectTrack: (trackId: number) => void;
+    selectTrackToRename: (trackId: number) => void;
+    updateStepCount: (count: number) => void;
+    setGridCellWidth: (width: number) => void;
+  };
+  clipActions: {
     addClip: (trackId: number, clip: ClipData) => void;
     moveClip: (clipId: number, startStep: number) => void;
     selectClip: (clipId: number) => void;
-    selectTrack: (trackId: number) => void;
-    selectTrackToRename: (trackId: number) => void;
     showNewClipButton: (trackId: number, x: number) => void;
     hideNewClipButton: () => void;
-    updateStepCount: (count: number) => void;
-    setGridCellWidth: (width: number) => void;
+  };
+  instrumentActions: {
+    addInstrument: (trackId: number, instrument: InstrumentData) => void;
+    setVelocity: (instrumentId: number, velocity: number) => void;
+    clearSequence: (instrumentId: number) => void;
+    deleteSequence: (instrumentId: number) => void;
+    toggleMute: (instrumentId: number) => void;
+    setSample: (
+      trackId: number,
+      instrumentId: number,
+      synthPreset: SynthPreset
+    ) => void;
   };
 }
 
@@ -50,7 +73,9 @@ export const createPlaylistSlice: StateCreator<
 > = (set) => ({
   tracks: { byId: [], allIds: [] },
   clips: { byId: [], allIds: [] },
+  instruments: { byId: [], allIds: [] },
   trackClips: {},
+  trackInstruments: {},
   selectedClipId: -1,
   selectedTrackId: -1,
   trackToRenameId: -1,
@@ -61,17 +86,31 @@ export const createPlaylistSlice: StateCreator<
     addTrack: (newTrackData) =>
       set((state) => {
         const newTrackId = newTrackData.id;
-
         const newById = {
           ...state.tracks.byId,
           [newTrackId]: newTrackData,
         };
-
         const newAllIds = [...state.tracks.allIds, newTrackId];
 
         const newTrackClips = {
           ...state.trackClips,
           [newTrackId]: [],
+        };
+
+        // Initial instrument
+        const newInstrument = newInstrumentData();
+        const newInstrumentId = newInstrument.id;
+        const newInstrumentsById = {
+          ...state.instruments.byId,
+          [newInstrumentId]: newInstrument,
+        };
+        const newInstrumentsAllIds = [
+          ...state.instruments.allIds,
+          newInstrumentId,
+        ];
+        const newTrackInstruments = {
+          ...state.trackInstruments,
+          [newTrackId]: [newInstrumentId],
         };
 
         return {
@@ -80,6 +119,11 @@ export const createPlaylistSlice: StateCreator<
             allIds: newAllIds,
           },
           trackClips: newTrackClips,
+          trackInstruments: newTrackInstruments,
+          instruments: {
+            byId: newInstrumentsById,
+            allIds: newInstrumentsAllIds,
+          },
         };
       }),
     rename: (trackId, name) =>
@@ -99,16 +143,15 @@ export const createPlaylistSlice: StateCreator<
       set((state) => {
         const newState = { ...state };
         const clipIdsToDelete = newState.trackClips[trackId] || [];
-        const sequencerTrackIdsToDelete = clipIdsToDelete.flatMap(
-          (clipId) => newState.clipSequencerTracks[clipId] || []
-        );
-        const stepIdsToDelete = sequencerTrackIdsToDelete.flatMap(
-          (seqId) => newState.sequencerTrackSteps[seqId] || []
+        const instrumentIds = newState.trackInstruments[trackId] || [];
+        const stepIdsToDelete = clipIdsToDelete.flatMap(
+          (clipId) => newState.clipSteps[clipId] || []
         );
 
         // Track
         delete newState.tracks.byId[trackId];
         delete newState.trackClips[trackId];
+        delete newState.trackInstruments[trackId];
         newState.tracks.allIds = newState.tracks.allIds.filter(
           (id) => id !== trackId
         );
@@ -116,23 +159,20 @@ export const createPlaylistSlice: StateCreator<
         // Clips associated with the track
         clipIdsToDelete.forEach((clipId) => {
           delete newState.clips.byId[clipId];
-          delete newState.clipSequencerTracks[clipId];
         });
         newState.clips.allIds = newState.clips.allIds.filter(
           (id) => !clipIdsToDelete.includes(id)
         );
 
-        // Sequencer associated with the clips
-        sequencerTrackIdsToDelete.forEach((seqId) => {
-          delete newState.sequencerTracks.byId[seqId];
-          delete newState.sequencerTrackSteps[seqId];
+        // Instruments associated with the track
+        instrumentIds.forEach((instrumentId) => {
+          delete newState.instruments.byId[instrumentId];
         });
-        newState.sequencerTracks.allIds =
-          newState.sequencerTracks.allIds.filter(
-            (id) => !sequencerTrackIdsToDelete.includes(id)
-          );
+        newState.instruments.allIds = newState.instruments.allIds.filter(
+          (id) => !instrumentIds.includes(id)
+        );
 
-        // Sequencer's steps
+        // Clip's steps
         stepIdsToDelete.forEach((stepId) => {
           delete newState.steps.byId[stepId];
         });
@@ -196,86 +236,8 @@ export const createPlaylistSlice: StateCreator<
           },
         };
       }),
-    addClip: (trackId, newClipData) =>
-      set((state) => {
-        const newClipId = newClipData.id;
-
-        const newById = {
-          ...state.clips.byId,
-          [newClipId]: newClipData,
-        };
-        const newAllIds = [...state.clips.allIds, newClipId];
-        const newTrackClips = {
-          ...state.trackClips,
-          [trackId]: [...(state.trackClips[trackId] || []), newClipId],
-        };
-
-        const initialSequencerTrack = newSequencerTrackData(
-          "<empty>",
-          () => {}
-        );
-        const newSequencerTrackId = initialSequencerTrack.id;
-
-        const newSequencerTracksById = {
-          ...state.sequencerTracks.byId,
-          [newSequencerTrackId]: initialSequencerTrack,
-        };
-        const newSequencerTracksAllIds = [
-          ...state.sequencerTracks.allIds,
-          newSequencerTrackId,
-        ];
-
-        const newClipSequencerTracks = {
-          ...state.clipSequencerTracks,
-          [newClipId]: [newSequencerTrackId],
-        };
-
-        const newStepsById = { ...state.steps.byId };
-        const newStepsAllIds = [...state.steps.allIds];
-        const newStepIdsForTrack = [];
-
-        for (let i = 0; i < 16; ++i) {
-          const newStep = newStepData(i);
-          newStepsById[newStep.id] = newStep;
-          newStepsAllIds.push(newStep.id);
-          newStepIdsForTrack.push(newStep.id);
-        }
-
-        const newSequencerTrackSteps = {
-          ...state.sequencerTrackSteps,
-          [newSequencerTrackId]: newStepIdsForTrack,
-        };
-
-        return {
-          clips: { byId: newById, allIds: newAllIds },
-          trackClips: newTrackClips,
-          sequencerTracks: {
-            byId: newSequencerTracksById,
-            allIds: newSequencerTracksAllIds,
-          },
-          clipSequencerTracks: newClipSequencerTracks,
-          steps: { byId: newStepsById, allIds: newStepsAllIds },
-          sequencerTrackSteps: newSequencerTrackSteps,
-        };
-      }),
-    moveClip: (clipId, startStep) =>
-      set((state) => ({
-        clips: {
-          ...state.clips,
-          byId: {
-            ...state.clips.byId,
-            [clipId]: {
-              ...state.clips.byId[clipId],
-              startStep: startStep,
-            },
-          },
-        },
-      })),
-    selectClip: (clipId) => set({ selectedClipId: clipId }),
     selectTrack: (trackId) => set({ selectedTrackId: trackId }),
     selectTrackToRename: (trackId) => set({ trackToRenameId: trackId }),
-    showNewClipButton: (trackId, x) => set({ newClipGhost: { trackId, x } }),
-    hideNewClipButton: () => set({ newClipGhost: null }),
     updateStepCount: (clipId) =>
       set((state) => {
         const clip = state.clips.byId[clipId];
@@ -293,5 +255,160 @@ export const createPlaylistSlice: StateCreator<
         return state;
       }),
     setGridCellWidth: (width) => set({ gridCellWidth: width }),
+  },
+  clipActions: {
+    addClip: (trackId, newClipData) =>
+      set((state) => {
+        // Clip
+        const newClipId = newClipData.id;
+
+        const newById = {
+          ...state.clips.byId,
+          [newClipId]: newClipData,
+        };
+        const newAllIds = [...state.clips.allIds, newClipId];
+        const newTrackClips = {
+          ...state.trackClips,
+          [trackId]: [...state.trackClips[trackId], newClipId],
+        };
+
+        // Steps
+        const newStepsById = { ...state.steps.byId };
+        const newStepsAllIds = [...state.steps.allIds];
+        const newStepIds = [];
+
+        for (let i = 0; i < 16; ++i) {
+          const newStep = newStepData(i);
+          newStepsById[newStep.id] = newStep;
+          newStepsAllIds.push(newStep.id);
+          newStepIds.push(newStep.id);
+        }
+
+        const newClipSteps = {
+          ...state.clipSteps,
+          [newClipId]: newStepIds,
+        };
+
+        return {
+          clips: { byId: newById, allIds: newAllIds },
+          trackClips: newTrackClips,
+          steps: { byId: newStepsById, allIds: newStepsAllIds },
+          clipSteps: newClipSteps,
+        };
+      }),
+    moveClip: (clipId, startStep) =>
+      set((state) => ({
+        clips: {
+          ...state.clips,
+          byId: {
+            ...state.clips.byId,
+            [clipId]: {
+              ...state.clips.byId[clipId],
+              startStep: startStep,
+            },
+          },
+        },
+      })),
+    selectClip: (clipId) => set({ selectedClipId: clipId }),
+    showNewClipButton: (trackId, x) => set({ newClipGhost: { trackId, x } }),
+    hideNewClipButton: () => set({ newClipGhost: null }),
+  },
+  instrumentActions: {
+    addInstrument: (trackId, instrument) => {
+      set((state) => {
+        const newInstrumentId = instrument.id;
+        const newById = {
+          ...state.instruments.byId,
+          [newInstrumentId]: instrument,
+        };
+        const newAllIds = [...state.instruments.allIds, newInstrumentId];
+
+        const newTrackInstruments = {
+          ...state.trackInstruments,
+          [trackId]: [...state.trackInstruments[trackId], newInstrumentId],
+        };
+
+        // Steps
+        const clips = state.trackClips[trackId];
+        const newClipSteps: { [clipId: number]: number[] } = {
+          ...state.clipSteps,
+        };
+        const newStepsById = { ...state.steps.byId };
+        const newStepsAllIds = [...state.steps.allIds];
+
+        for (const clipId of clips) {
+          const existingStepIds = newClipSteps[clipId] || [];
+          const newStepIds = [];
+
+          for (let i = 0; i < 16; ++i) {
+            const newStep = newStepData(i);
+            newStepsById[newStep.id] = newStep;
+            newStepsAllIds.push(newStep.id);
+            newStepIds.push(newStep.id);
+          }
+
+          newClipSteps[clipId] = [...existingStepIds, ...newStepIds];
+        }
+
+        return {
+          instruments: {
+            byId: newById,
+            allIds: newAllIds,
+          },
+          trackInstruments: newTrackInstruments,
+          steps: { byId: newStepsById, allIds: newStepsAllIds },
+          clipSteps: newClipSteps,
+        };
+      });
+    },
+    setVelocity: (instrumentId, velocity) => {
+      set((state) => ({
+        instruments: {
+          ...state.instruments,
+          byId: {
+            ...state.instruments.byId,
+            [instrumentId]: {
+              ...state.instruments.byId[instrumentId],
+              velocity: velocity,
+            },
+          },
+        },
+      }));
+    },
+    clearSequence: () => {},
+    deleteSequence: () => {},
+    toggleMute: () => {},
+    setSample: (trackId, instrumentId, sample) => {
+      set((state) => {
+        const instruments = state.trackInstruments[trackId];
+        for (const instId of instruments) {
+          const instrument = state.instruments.byId[instId];
+          if (instrument.sample.name === sample.name) return state;
+        }
+
+        let instrument = state.instruments.byId[instrumentId];
+        instrument.sample.dispose();
+
+        const newSample = sample.synth();
+
+        instrument = {
+          ...instrument,
+          name: sample.name,
+          synthPreset: sample,
+          sample: newSample,
+          player: createPlayer(newSample, sample.note),
+        };
+
+        return {
+          instruments: {
+            ...state.instruments,
+            byId: {
+              ...state.instruments.byId,
+              [instrumentId]: instrument,
+            },
+          },
+        };
+      });
+    },
   },
 });
