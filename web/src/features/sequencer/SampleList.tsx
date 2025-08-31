@@ -30,7 +30,6 @@ export default function SampleList({
             key={key}
             className={key === selectedSample ? "selected-sample" : ""}
             onClick={() => {
-              console.log("selecting sample", key, value);
               onSampleSelect(value);
               setSelectedSample(key);
             }}

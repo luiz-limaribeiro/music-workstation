@@ -246,7 +246,6 @@ export const createPlaylistSlice: StateCreator<
 
         if (clipEndStep > currentStepCount) {
           const newStepCount = Math.ceil(clipEndStep / 16) * 16;
-          console.log("new step count:", newStepCount);
           return {
             stepCount: newStepCount,
           };
@@ -273,16 +272,19 @@ export const createPlaylistSlice: StateCreator<
         };
 
         // Steps
+        const instrumets = state.trackInstruments[trackId];
         const newStepsById = { ...state.steps.byId };
         const newStepsAllIds = [...state.steps.allIds];
-        const newStepIds = [];
+        const newStepIds: number[] = [];
 
-        for (let i = 0; i < 16; ++i) {
-          const newStep = newStepData(i);
-          newStepsById[newStep.id] = newStep;
-          newStepsAllIds.push(newStep.id);
-          newStepIds.push(newStep.id);
-        }
+        instrumets.forEach(() => {
+          for (let i = 0; i < 16; ++i) {
+            const newStep = newStepData(i);
+            newStepsById[newStep.id] = newStep;
+            newStepsAllIds.push(newStep.id);
+            newStepIds.push(newStep.id);
+          }
+        });
 
         const newClipSteps = {
           ...state.clipSteps,

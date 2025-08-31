@@ -13,7 +13,7 @@ export type InstrumentData = {
     | Tone.NoiseSynth
     | Tone.MetalSynth
     | Tone.Sampler;
-  player: (time: number, stepVelocity: number, stepRepeatValue: number) => void;
+  player: (time: number, stepRepeatValue: number) => void;
 };
 
 let nextId = 0;

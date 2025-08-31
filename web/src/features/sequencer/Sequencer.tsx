@@ -32,12 +32,13 @@ export default function Sequencer({
       }}
     >
       <div className="sequencer" onMouseDown={(e) => e.stopPropagation()}>
-        {instrumentIds.map((id) => (
+        {instrumentIds.map((id, i) => (
           <InstrumentContainer
             key={id}
             clipId={clipId}
             trackId={trackId}
             instrumentId={id}
+            index={i}
           />
         ))}
         <div className="add-instrument">

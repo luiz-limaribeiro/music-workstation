@@ -48,7 +48,7 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
           const events = getEventsForTrack(state, id);
 
           const part = new Tone.Part((time, value) => {
-            value.player(time, value.velocity, 1);
+            value.player(time, 1);
           }, events);
 
           part.start(0);
@@ -92,7 +92,7 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
 
         // 3. Create a new part or update the existing one
         const newPart = new Tone.Part((time, value) => {
-          value.player(time, value.velocity, 1);
+          value.player(time, 1);
         }, trackEvents);
 
         newPart.start(0)
@@ -124,18 +124,16 @@ function getEventsForTrack(state: AppState, trackId: number) {
     trackInstruments[trackId].forEach((instrumentId) => {
       const instrument = instruments.byId[instrumentId];
 
-      clipSteps[instrumentId].forEach((stepId, index) => {
+      clipSteps[clipId].forEach((stepId, index) => {
         const step = steps.byId[stepId];
 
         if (step.active) {
           const totalSteps = clip.startStep + index;
           const time = Tone.Time(`0:0:${totalSteps}`);
-          const player = instrument.player;
 
           events.push({
             time: time.toSeconds(),
-            player: player,
-            velocity: step.velocity,
+            player: instrument.player,
           });
         }
       });

@@ -7,9 +7,10 @@ interface Props {
   clipId: number;
   trackId: number;
   instrumentId: number;
+  index: number;
 }
 
-function InstrumentContainer({ clipId, trackId, instrumentId }: Props) {
+function InstrumentContainer({ clipId, trackId, instrumentId, index }: Props) {
   const { instrument, stepIds } = useStore(
     useShallow(state => ({
       instrument: state.instruments.byId[instrumentId],
@@ -38,7 +39,7 @@ function InstrumentContainer({ clipId, trackId, instrumentId }: Props) {
   return (
     <Instrument
       clipId={clipId}
-      stepIds={stepIds}
+      stepIds={stepIds.slice(index * 16, index * 16 + 16)}
       trackId={trackId}
       instrument={instrument}
       setVelocity={setVelocity}
