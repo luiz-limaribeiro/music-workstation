@@ -3,20 +3,13 @@ import "./styles/Transport.css";
 import { useStore } from "../../store/store";
 
 export default function Transport() {
+  const bpm = useStore((state) => state.bpm);
+  const transport = useStore((state) => state.transport);
+  const isPlaying = useStore((state) => state.isPlaying);
   const startPlayback = useStore((state) => state.audioActions.startPlayback);
   const stopPlayback = useStore((state) => state.audioActions.stopPlayback);
   const setBpm = useStore((state) => state.audioActions.setBpm);
-  const bpm = useStore((state) => state.bpm);
-  const transport = useStore((state) => state.transport);
-  const isPlaying = transport.state === "started";
-  const setCurrentPosition = useStore(
-    (state) => state.audioActions.setCurrentPosition
-  );
-
-  const tracks = useStore((state) => state.tracks.allIds);
-  const instruments = useStore((state) => state.instruments.allIds);
-  const clips = useStore((state) => state.clips.allIds);
-  const steps = useStore((state) => state.steps.allIds);
+  const setCurrentPosition = useStore((state) => state.audioActions.setCurrentPosition);
 
   const previousBpm = useRef(0);
   const positionListenerId = useRef(0);
@@ -32,7 +25,7 @@ export default function Transport() {
     return () => {
       transport.clear(positionListenerId.current);
     };
-  }, [transport, setCurrentPosition]);
+  }, [isPlaying, transport, setCurrentPosition]);
 
   function handleMouseMove(event: MouseEvent) {
     previousBpm.current += event.movementX;
@@ -58,11 +51,7 @@ export default function Transport() {
       <button
         onClick={() => {
           console.log("");
-
-          console.log("tracks", tracks);
-          console.log("clips", clips);
-          console.log("instruments", instruments);
-          console.log("steps", steps);
+          console.log("isPlaying:", isPlaying, transport.state === "started");
         }}
       >
         Test

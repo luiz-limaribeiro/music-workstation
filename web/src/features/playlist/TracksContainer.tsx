@@ -21,7 +21,6 @@ export default function TracksContainer({ totalSteps }: Props) {
     stepCount,
     selectedTrackId,
     gridCellWidth,
-    currentPosition,
     clipIds,
     newClipGhost,
   } = useStore(
@@ -30,7 +29,6 @@ export default function TracksContainer({ totalSteps }: Props) {
       stepCount: state.stepCount,
       selectedTrackId: state.selectedTrackId,
       gridCellWidth: state.gridCellWidth,
-      currentPosition: state.currentPosition,
       clipIds: state.trackClips,
       newClipGhost: state.newClipGhost,
     }))
@@ -154,10 +152,7 @@ export default function TracksContainer({ totalSteps }: Props) {
             setGridCellWidth={setGridCellWidth}
           />
         ))}
-        <Playhead
-          gridCellWidth={gridCellWidth}
-          currentPosition={currentPosition}
-        />
+        <Playhead />
       </div>
     </div>
   );

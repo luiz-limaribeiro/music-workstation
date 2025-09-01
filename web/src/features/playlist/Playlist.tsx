@@ -60,8 +60,6 @@ export default function Playlist() {
     };
   }, [hideAddClipButton, selectClip, selectTrack]);
 
-  
-
   function handleAddTrack() {
     const newTrack = newTrackData("Track " + (trackIds.length + 1));
     addTrack(newTrack);

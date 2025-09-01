@@ -6,6 +6,7 @@ import { type PlaybackEvent } from "../data/playbackEvent";
 
 export interface AudioSlice {
   transport: TransportClass;
+  isPlaying: boolean;
   bpm: number;
   currentPosition: string;
   positionListenerId: string;
@@ -23,6 +24,7 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
   set
 ) => ({
   transport: Tone.getTransport(),
+  isPlaying: false,
   bpm: 120,
   currentPosition: "0:0:0",
   positionListenerId: "",
@@ -59,7 +61,7 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
         Tone.start();
         transport.start();
 
-        return { isTransportRunning: true, partsByTrackId: newPartsByTrackId };
+        return { isPlaying: true, partsByTrackId: newPartsByTrackId };
       }),
     stopPlayback: () =>
       set((state) => {
@@ -67,21 +69,20 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
         state.transport.position = 0;
 
         return {
-          isTransportRunning: false,
+          isPlaying: false,
           currentPosition: "0:0:0",
         };
       }),
-    setBpm: (bpm) => set(state => {
-      state.transport.set({ bpm: bpm })
-      return { bpm: bpm }
-    }),
+    setBpm: (bpm) =>
+      set((state) => {
+        state.transport.set({ bpm: bpm });
+        return { bpm: bpm };
+      }),
     setCurrentPosition: (position: string) =>
       set({ currentPosition: position }),
     updateTrackPart: (trackId: number) =>
       set((state) => {
         if (state.transport.state !== "started") return state;
-
-        console.log('updating track', trackId)
 
         // 1. Clear any existing events on this part
         if (state.partsByTrackId[trackId])
@@ -95,7 +96,7 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
           value.player(time, 1);
         }, trackEvents);
 
-        newPart.start(0)
+        newPart.start(0);
 
         // 5. Update the store
         return {
@@ -121,10 +122,12 @@ function getEventsForTrack(state: AppState, trackId: number) {
   trackClips[trackId].forEach((clipId) => {
     const clip = clips.byId[clipId];
 
-    trackInstruments[trackId].forEach((instrumentId) => {
+    trackInstruments[trackId].forEach((instrumentId, i) => {
       const instrument = instruments.byId[instrumentId];
+      instrument.sample.toDestination();
 
-      clipSteps[clipId].forEach((stepId, index) => {
+      // Each clip is 16 steps long
+      clipSteps[clipId].slice(i * 16, i * 16 + 16).forEach((stepId, index) => {
         const step = steps.byId[stepId];
 
         if (step.active) {
