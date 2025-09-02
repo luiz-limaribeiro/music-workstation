@@ -1,8 +1,8 @@
 import type { StateCreator } from "zustand";
 import type { AppState } from "./store";
 import type { TrackData } from "../data/trackData";
-import type { ClipData } from "../data/clipData";
-import { newStepData } from "../data/stepData";
+import { getNextClipId, type ClipData } from "../data/clipData";
+import { getNextStepId, newStepData } from "../data/stepData";
 import {
   createPlayer,
   newInstrumentData,
@@ -50,6 +50,8 @@ export interface PlaylistSlice {
     selectClip: (clipId: number) => void;
     showNewClipButton: (trackId: number, x: number) => void;
     hideNewClipButton: () => void;
+    duplicateClip: (trackId: number, clipId: number, startStep?: number) => void;
+    deleteClip: (trackId: number, clipId: number) => void;
   };
   instrumentActions: {
     addInstrument: (trackId: number, instrument: InstrumentData) => void;
@@ -314,6 +316,79 @@ export const createPlaylistSlice: StateCreator<
     selectClip: (clipId) => set({ selectedClipId: clipId }),
     showNewClipButton: (trackId, x) => set({ newClipGhost: { trackId, x } }),
     hideNewClipButton: () => set({ newClipGhost: null }),
+    duplicateClip: (trackId, clipId, startStep) =>
+      set((state) => {
+        const originalClip = state.clips.byId[clipId];
+        const newClip = {
+          ...originalClip,
+          id: getNextClipId(),
+          startStep: originalClip.startStep + originalClip.length,
+        };
+        const newClipId = newClip.id;
+        const newById = {
+          ...state.clips.byId,
+          [newClipId]: newClip,
+        };
+        const newAllIds = [...state.clips.allIds, newClipId];
+        const newTrackClips = {
+          ...state.trackClips,
+          [trackId]: [...state.trackClips[trackId], newClipId],
+        };
+
+        // Steps
+        const originalStepIds = state.clipSteps[clipId];
+        const newStepsById = { ...state.steps.byId };
+        const newStepsAllIds = [...state.steps.allIds];
+        const newStepIds: number[] = [];
+        originalStepIds.forEach((stepId) => {
+          const originalStep = state.steps.byId[stepId];
+            const newStep = { ...originalStep, id: getNextStepId() };
+            newStepsById[newStep.id] = newStep;
+            newStepsAllIds.push(newStep.id);
+            newStepIds.push(newStep.id);
+        });
+        const newClipSteps = {
+          ...state.clipSteps,
+          [newClipId]: newStepIds,
+        };
+
+        if (startStep !== undefined && startStep >= 0) newClip.startStep = startStep;
+
+        return {
+          clips: { byId: newById, allIds: newAllIds },
+          trackClips: newTrackClips,
+          steps: { byId: newStepsById, allIds: newStepsAllIds },
+          clipSteps: newClipSteps,
+          selectedClipId: newClipId,
+        };
+      }),
+    deleteClip: (trackId, clipId) =>
+      set((state) => {
+        const newState = { ...state };
+        const stepIdsToDelete = newState.clipSteps[clipId] || [];
+
+        // Clip
+        delete newState.clips.byId[clipId];
+        delete newState.clipSteps[clipId];
+        newState.clips.allIds = newState.clips.allIds.filter(
+          (id) => id !== clipId
+        );
+        newState.trackClips[trackId] = newState.trackClips[trackId].filter(
+          (id) => id !== clipId
+        );
+
+        // Clip's steps
+        stepIdsToDelete.forEach((stepId) => {
+          delete newState.steps.byId[stepId];
+        });
+        newState.steps.allIds = newState.steps.allIds.filter(
+          (id) => !stepIdsToDelete.includes(id)
+        );
+
+        newState.selectedClipId = -1
+
+        return newState;
+      }),
   },
   instrumentActions: {
     addInstrument: (trackId, instrument) => {

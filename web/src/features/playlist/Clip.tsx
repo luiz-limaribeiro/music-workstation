@@ -8,22 +8,23 @@ import type { InstrumentData } from "../../data/instrumentData";
 interface Props {
   clip: ClipData;
   trackId: number;
+  trackName: string;
   gridCellWidth: number;
   selectedClipId: number;
   instrumentIds: number[];
   selectClip: (clipId: number) => void;
   moveClip: (clipId: number, startStep: number) => void;
-  addInstrument: (
-    trackId: number,
-    instrumentData: InstrumentData
-  ) => void;
+  addInstrument: (trackId: number, instrumentData: InstrumentData) => void;
   updateStepCount: (clipId: number) => void;
   updateTrackPart: (trackId: number) => void;
+  duplicateClip: (trackId: number, clipId: number, startStep?: number) => void;
+  deleteClip: (trackId: number, clipId: number) => void;
 }
 
 function Clip({
   clip,
   trackId,
+  trackName,
   gridCellWidth,
   selectedClipId,
   instrumentIds,
@@ -32,6 +33,8 @@ function Clip({
   addInstrument,
   updateStepCount,
   updateTrackPart,
+  duplicateClip,
+  deleteClip,
 }: Props) {
   const [showEditor, setShowEditor] = useState(false);
 
@@ -41,6 +44,7 @@ function Clip({
 
   function handleMouseDown(event: React.MouseEvent<HTMLDivElement>) {
     if (event.button != 0) return;
+    if (event.altKey) duplicateClip(trackId, clip.id, clip.startStep);
 
     isDragging.current = true;
     selectClip(clip.id);
@@ -56,16 +60,11 @@ function Clip({
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
       if (!isDragging) return;
-
       const currentX = event.clientX;
       const deltaX = currentX - startMouseX.current;
-
       const deltaSteps = Math.round(deltaX / gridCellWidth);
-
       const newStartStep = startClipStep.current + deltaSteps;
-
       const finalStartStep = Math.max(0, newStartStep);
-
       moveClip(clip.id, finalStartStep);
     },
     [clip.id, gridCellWidth, isDragging, moveClip]
@@ -78,7 +77,7 @@ function Clip({
     window.removeEventListener("mouseup", handleMouseUp);
     updateStepCount(clip.id);
     updateTrackPart(trackId);
-  }, [handleMouseMove, updateStepCount, updateTrackPart, clip.id, trackId]);
+  }, [handleMouseMove, updateStepCount, updateTrackPart, trackId, clip.id]);
 
   return (
     <div
@@ -87,9 +86,33 @@ function Clip({
         width: clip.length * gridCellWidth,
       }}
       className={`clip ${selectedClipId === clip.id ? "selected" : ""}`}
+      tabIndex={0}
       onMouseDown={handleMouseDown}
       onDoubleClick={() => setShowEditor(true)}
+      onKeyDown={(e) => {
+        if (selectedClipId === clip.id)
+          if (e.key === "Delete") deleteClip(trackId, clip.id);
+      }}
     >
+      <span className="clip-name">{trackName}</span>
+      {selectedClipId === clip.id && (
+        <div className="clip-controls">
+          <span
+            className="duplicate-clip-handle"
+            onClick={() => duplicateClip(trackId, clip.id)}
+            title="Duplicate (Alt + Drag)"
+          >
+            ⧉
+          </span>
+          <span
+            className="delete-clip-handle"
+            title="Delete (Del)"
+            onClick={() => deleteClip(trackId, clip.id)}
+          >
+            ✕
+          </span>
+        </div>
+      )}
       {showEditor && (
         <Sequencer
           clipId={clip.id}

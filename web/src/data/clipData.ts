@@ -6,9 +6,13 @@ export type ClipData = {
 
 let nextId = 0;
 
+export function getNextClipId() {
+  return ++nextId;
+}
+
 export function newClipData(startStep: number, length: number): ClipData {
   return {
-    id: nextId++,
+    id: ++nextId,
     startStep,
     length,
   };

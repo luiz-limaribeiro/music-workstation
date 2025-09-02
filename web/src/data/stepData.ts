@@ -8,9 +8,13 @@ export type StepData = {
 
 let nextId = 1
 
+export function getNextStepId() {
+  return ++nextId;
+}
+
 export function newStepData(index: number): StepData {
   return {
-    id: nextId++,
+    id: ++nextId,
     active: false,
     velocity: 1.0,
     repeatValue: 1,
