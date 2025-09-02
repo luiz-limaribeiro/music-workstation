@@ -112,6 +112,7 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
 
 function getEventsForTrack(state: AppState, trackId: number) {
   const events: PlaybackEvent[] = [];
+  const track = state.tracks.byId[trackId];
   const trackClips = state.trackClips;
   const clips = state.clips;
   const trackInstruments = state.trackInstruments;
@@ -124,7 +125,7 @@ function getEventsForTrack(state: AppState, trackId: number) {
 
     trackInstruments[trackId].forEach((instrumentId, i) => {
       const instrument = instruments.byId[instrumentId];
-      instrument.sample.toDestination();
+      instrument.sample.connect(track.pannerNode);
 
       // Each clip is 16 steps long
       clipSteps[clipId].slice(i * 16, i * 16 + 16).forEach((stepId, index) => {

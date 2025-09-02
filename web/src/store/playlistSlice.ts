@@ -50,7 +50,11 @@ export interface PlaylistSlice {
     selectClip: (clipId: number) => void;
     showNewClipButton: (trackId: number, x: number) => void;
     hideNewClipButton: () => void;
-    duplicateClip: (trackId: number, clipId: number, startStep?: number) => void;
+    duplicateClip: (
+      trackId: number,
+      clipId: number,
+      startStep?: number
+    ) => void;
     deleteClip: (trackId: number, clipId: number) => void;
   };
   instrumentActions: {
@@ -185,31 +189,42 @@ export const createPlaylistSlice: StateCreator<
         return newState;
       }),
     updateVelocity: (trackId, velocity) =>
-      set((state) => ({
-        tracks: {
-          ...state.tracks,
-          byId: {
-            ...state.tracks.byId,
-            [trackId]: {
-              ...state.tracks.byId[trackId],
-              velocity: velocity,
+      set((state) => {
+        const track = state.tracks.byId[trackId];
+        const velocityInDb = velocity * 60 - 60; // 0..1 → -60..0 dB
+        track.volumeNode.volume.value = velocityInDb;
+
+        return {
+          tracks: {
+            ...state.tracks,
+            byId: {
+              ...state.tracks.byId,
+              [trackId]: {
+                ...state.tracks.byId[trackId],
+                velocity: velocity,
+              },
             },
           },
-        },
-      })),
+        };
+      }),
     updatePanning: (trackId, panning) =>
-      set((state) => ({
-        tracks: {
-          ...state.tracks,
-          byId: {
-            ...state.tracks.byId,
-            [trackId]: {
-              ...state.tracks.byId[trackId],
-              panning: panning,
+      set((state) => {
+        const track = state.tracks.byId[trackId];
+        track.pannerNode.pan.value = panning;
+
+        return {
+          tracks: {
+            ...state.tracks,
+            byId: {
+              ...state.tracks.byId,
+              [trackId]: {
+                ...state.tracks.byId[trackId],
+                panning: panning,
+              },
             },
           },
-        },
-      })),
+        };
+      }),
     toggleMuted: (trackId) =>
       set((state) => {
         const track = state.tracks.byId[trackId];
@@ -342,17 +357,18 @@ export const createPlaylistSlice: StateCreator<
         const newStepIds: number[] = [];
         originalStepIds.forEach((stepId) => {
           const originalStep = state.steps.byId[stepId];
-            const newStep = { ...originalStep, id: getNextStepId() };
-            newStepsById[newStep.id] = newStep;
-            newStepsAllIds.push(newStep.id);
-            newStepIds.push(newStep.id);
+          const newStep = { ...originalStep, id: getNextStepId() };
+          newStepsById[newStep.id] = newStep;
+          newStepsAllIds.push(newStep.id);
+          newStepIds.push(newStep.id);
         });
         const newClipSteps = {
           ...state.clipSteps,
           [newClipId]: newStepIds,
         };
 
-        if (startStep !== undefined && startStep >= 0) newClip.startStep = startStep;
+        if (startStep !== undefined && startStep >= 0)
+          newClip.startStep = startStep;
 
         return {
           clips: { byId: newById, allIds: newAllIds },
@@ -385,7 +401,7 @@ export const createPlaylistSlice: StateCreator<
           (id) => !stepIdsToDelete.includes(id)
         );
 
-        newState.selectedClipId = -1
+        newState.selectedClipId = -1;
 
         return newState;
       }),

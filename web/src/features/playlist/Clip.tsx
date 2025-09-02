@@ -91,7 +91,10 @@ function Clip({
       onDoubleClick={() => setShowEditor(true)}
       onKeyDown={(e) => {
         if (selectedClipId === clip.id)
-          if (e.key === "Delete") deleteClip(trackId, clip.id);
+          if (e.key === "Delete") {
+            deleteClip(trackId, clip.id);
+            updateTrackPart(trackId);
+          }
       }}
     >
       <span className="clip-name">{trackName}</span>
@@ -99,7 +102,10 @@ function Clip({
         <div className="clip-controls">
           <span
             className="duplicate-clip-handle"
-            onClick={() => duplicateClip(trackId, clip.id)}
+            onClick={() => {
+              duplicateClip(trackId, clip.id);
+              updateTrackPart(trackId);
+            }}
             title="Duplicate (Alt + Drag)"
           >
             ⧉
@@ -107,7 +113,10 @@ function Clip({
           <span
             className="delete-clip-handle"
             title="Delete (Del)"
-            onClick={() => deleteClip(trackId, clip.id)}
+            onClick={() => {
+              deleteClip(trackId, clip.id);
+              updateTrackPart(trackId);
+            }}
           >
             ✕
           </span>

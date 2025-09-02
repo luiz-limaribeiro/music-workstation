@@ -23,24 +23,10 @@ export default function Playlist() {
   useEffect(() => {
     if (isInitialized.current) return;
 
-    addTrack({
-      id: -2,
-      name: "Track 1",
-      panning: 0,
-      velocity: 1,
-      muted: false,
-      solo: false,
-    });
-    addTrack({
-      id: -3,
-      name: "Track 2",
-      panning: 0,
-      velocity: 1,
-      muted: false,
-      solo: false,
-    });
-    addClip(-2, newClipData(0, 16));
-    addClip(-3, newClipData(16, 16));
+    addTrack(newTrackData("Track 1"));
+    addTrack(newTrackData("Track 2"));
+    addClip(1, newClipData(0, 16));
+    addClip(2, newClipData(16, 16));
     isInitialized.current = true
   }, [addTrack, addClip]);
 
