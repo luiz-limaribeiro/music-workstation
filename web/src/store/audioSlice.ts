@@ -9,7 +9,6 @@ export interface AudioSlice {
   isPlaying: boolean;
   bpm: number;
   currentPosition: string;
-  positionListenerId: string;
   partsByTrackId: { [trackId: number]: Tone.Part };
   audioActions: {
     startPlayback: () => void;
@@ -27,7 +26,6 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
   isPlaying: false,
   bpm: 120,
   currentPosition: "0:0:0",
-  positionListenerId: "",
   partsByTrackId: {},
   audioActions: {
     startPlayback: () =>
@@ -41,12 +39,14 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
           state.partsByTrackId[id].dispose();
 
         transport.loop = true;
-        transport.loopEnd = `${Math.floor(totalSteps / 16)}m`;
+        transport.loopEnd = `${Math.ceil(totalSteps / 16)}m`;
         state.transport.set({ bpm: state.bpm });
 
         const newPartsByTrackId: { [trackId: number]: Tone.Part } = {};
+        const tracksToPlay =
+          state.soloTrackIds.length > 0 ? state.soloTrackIds : trackIds;
 
-        trackIds.forEach((id) => {
+        tracksToPlay.forEach((id) => {
           const events = getEventsForTrack(state, id);
 
           const part = new Tone.Part((time, value) => {
@@ -61,7 +61,10 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
         Tone.start();
         transport.start();
 
-        return { isPlaying: true, partsByTrackId: newPartsByTrackId };
+        return {
+          isPlaying: true,
+          partsByTrackId: newPartsByTrackId,
+        };
       }),
     stopPlayback: () =>
       set((state) => {

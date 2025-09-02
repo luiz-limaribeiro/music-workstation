@@ -6,6 +6,7 @@ export default function Transport() {
   const bpm = useStore((state) => state.bpm);
   const transport = useStore((state) => state.transport);
   const isPlaying = useStore((state) => state.isPlaying);
+  const soloTrackIds = useStore((state) => state.soloTrackIds);
   const startPlayback = useStore((state) => state.audioActions.startPlayback);
   const stopPlayback = useStore((state) => state.audioActions.stopPlayback);
   const setBpm = useStore((state) => state.audioActions.setBpm);
@@ -18,14 +19,14 @@ export default function Transport() {
     const posListenerId = transport.scheduleRepeat(() => {
       const currentPos = transport.position;
       setCurrentPosition(currentPos.toString());
-    }, "16n");
+    }, "16n", 0);
 
     positionListenerId.current = posListenerId;
 
     return () => {
       transport.clear(positionListenerId.current);
     };
-  }, [isPlaying, transport, setCurrentPosition]);
+  }, [isPlaying, transport, soloTrackIds, setCurrentPosition]);
 
   function handleMouseMove(event: MouseEvent) {
     previousBpm.current += event.movementX;

@@ -7,6 +7,7 @@ import { useStore } from "../../store/store";
 interface Props {
   trackId: number;
   selectedTrackId: number;
+  isPlaybackRunning: boolean;
   selectTrack: (trackId: number) => void;
   updateVelocity: (trackId: number, velocity: number) => void;
   updatePanning: (trackId: number, panning: number) => void;
@@ -15,11 +16,13 @@ interface Props {
   deleteTrack: (trackId: number) => void;
   rename: (trackId: number, name: string) => void;
   updateTrackPart: (trackId: number) => void;
+  startPlayback: () => void;
 }
 
 function TrackControls({
   trackId,
   selectedTrackId,
+  isPlaybackRunning,
   selectTrack,
   updateVelocity,
   updatePanning,
@@ -28,6 +31,7 @@ function TrackControls({
   deleteTrack,
   rename,
   updateTrackPart,
+  startPlayback,
 }: Props) {
   const [showOptions, setShowOptions] = useState(false);
 
@@ -54,14 +58,14 @@ function TrackControls({
         className={`mute-unmute ${muted ? "muted" : ""}`}
         onClick={() => {
           toggleMuted(trackId);
-          updateTrackPart(trackId);
+          if (isPlaybackRunning) startPlayback();
         }}
       />
       <button
         className={`solo-button ${solo ? "solo" : ""}`}
         onClick={() => {
           toggleSolo(trackId);
-          updateTrackPart(trackId);
+          if (isPlaybackRunning) startPlayback();
         }}
       >
         solo

@@ -23,6 +23,7 @@ export default function TracksContainer({ totalSteps }: Props) {
     gridCellWidth,
     clipIds,
     newClipGhost,
+    isPlaybackRunning,
   } = useStore(
     useShallow((state) => ({
       trackIds: state.tracks.allIds,
@@ -31,6 +32,7 @@ export default function TracksContainer({ totalSteps }: Props) {
       gridCellWidth: state.gridCellWidth,
       clipIds: state.trackClips,
       newClipGhost: state.newClipGhost,
+      isPlaybackRunning: state.isPlaying,
     }))
   );
 
@@ -43,6 +45,7 @@ export default function TracksContainer({ totalSteps }: Props) {
     deleteTrack,
     rename,
     updateTrackPart,
+    startPlayback,
     addClip,
     showNewClipButton,
     hideNewClipButton,
@@ -58,6 +61,7 @@ export default function TracksContainer({ totalSteps }: Props) {
       deleteTrack: state.playlistActions.delete,
       rename: state.playlistActions.rename,
       updateTrackPart: state.audioActions.updateTrackPart,
+      startPlayback: state.audioActions.startPlayback,
       addClip: state.clipActions.addClip,
       showNewClipButton: state.clipActions.showNewClipButton,
       hideNewClipButton: state.clipActions.hideNewClipButton,
@@ -124,6 +128,7 @@ export default function TracksContainer({ totalSteps }: Props) {
             key={id}
             trackId={id}
             selectedTrackId={selectedTrackId}
+            isPlaybackRunning={isPlaybackRunning}
             selectTrack={selectTrack}
             updateVelocity={updateVelocity}
             updatePanning={updatePanning}
@@ -132,6 +137,7 @@ export default function TracksContainer({ totalSteps }: Props) {
             deleteTrack={deleteTrack}
             rename={rename}
             updateTrackPart={updateTrackPart}
+            startPlayback={startPlayback}
           />
         ))}
       </div>

@@ -31,6 +31,7 @@ export interface PlaylistSlice {
   newClipGhost: { trackId: number; x: number } | null;
   stepCount: number;
   gridCellWidth: number;
+  soloTrackIds: number[];
   playlistActions: {
     addTrack: (track: TrackData) => void;
     rename: (trackId: number, name: string) => void;
@@ -88,6 +89,7 @@ export const createPlaylistSlice: StateCreator<
   newClipGhost: null,
   stepCount: 64,
   gridCellWidth: 0,
+  soloTrackIds: [],
   playlistActions: {
     addTrack: (newTrackData) =>
       set((state) => {
@@ -155,6 +157,10 @@ export const createPlaylistSlice: StateCreator<
         );
 
         // Track
+        const track = newState.tracks.byId[trackId];
+        track.volumeNode.dispose();
+        track.pannerNode.dispose();
+        
         delete newState.tracks.byId[trackId];
         delete newState.trackClips[trackId];
         delete newState.trackInstruments[trackId];
@@ -240,19 +246,21 @@ export const createPlaylistSlice: StateCreator<
         };
       }),
     toggleSolo: (trackId) =>
-      set((state) => {
-        const track = state.tracks.byId[trackId];
-
-        return {
-          tracks: {
-            ...state.tracks,
-            byId: {
-              ...state.tracks.byId,
-              [trackId]: { ...track, solo: !track.solo },
+      set((state) => ({
+        soloTrackIds: state.soloTrackIds.includes(trackId)
+          ? state.soloTrackIds.filter((id) => id !== trackId)
+          : [...state.soloTrackIds, trackId],
+        tracks: {
+          ...state.tracks,
+          byId: {
+            ...state.tracks.byId,
+            [trackId]: {
+              ...state.tracks.byId[trackId],
+              solo: !state.tracks.byId[trackId].solo,
             },
           },
-        };
-      }),
+        },
+      })),
     selectTrack: (trackId) => set({ selectedTrackId: trackId }),
     selectTrackToRename: (trackId) => set({ trackToRenameId: trackId }),
     updateStepCount: (clipId) =>

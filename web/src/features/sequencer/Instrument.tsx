@@ -110,6 +110,7 @@ function Instrument({
           onSampleSelect={(sample) => {
             onSetSample();
             setSample(trackId, id, sample);
+            updateTrackPart(trackId)
           }}
           onClose={() => setShowSampleList(false)}
         />
