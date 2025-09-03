@@ -15,7 +15,8 @@ export default function Playlist() {
   const addTrack = useStore((state) => state.playlistActions.addTrack);
   const hideAddClipButton = useStore((state) => state.clipActions.hideNewClipButton);
   const selectClip = useStore((state) => state.clipActions.selectClip);
-  const selectTrack = useStore(state => state.playlistActions.selectTrack)
+  const selectTrack = useStore((state) => state.playlistActions.selectTrack);
+  const selectTrackToRename = useStore(state => state.playlistActions.selectTrackToRename)
 
   const isInitialized = useRef(false)
   const addClip = useStore((state) => state.clipActions.addClip)
@@ -35,7 +36,8 @@ export default function Playlist() {
       if (e.target instanceof HTMLElement) {
         if (!e.target.closest(".clips")) hideAddClipButton();
         if (!e.target.closest(".clip")) selectClip(-1);
-        if (!e.target.closest(".title-input")) selectTrack(-1);
+        if (!e.target.closest(".title-input")) selectTrackToRename(-1);
+        if (!e.target.closest(".track-controls")) selectTrack(-1);
       }
     };
 
@@ -44,7 +46,7 @@ export default function Playlist() {
     return () => {
       document.removeEventListener("mousedown", handleGlobalMouseDown);
     };
-  }, [hideAddClipButton, selectClip, selectTrack]);
+  }, [hideAddClipButton, selectClip, selectTrackToRename, selectTrack]);
 
   function handleAddTrack() {
     const newTrack = newTrackData("Track " + (trackIds.length + 1));

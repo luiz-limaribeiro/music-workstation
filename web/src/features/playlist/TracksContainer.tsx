@@ -20,6 +20,7 @@ export default function TracksContainer({ totalSteps }: Props) {
     trackIds,
     stepCount,
     selectedTrackId,
+    trackToRenameId,
     gridCellWidth,
     clipIds,
     newClipGhost,
@@ -29,6 +30,7 @@ export default function TracksContainer({ totalSteps }: Props) {
       trackIds: state.tracks.allIds,
       stepCount: state.stepCount,
       selectedTrackId: state.selectedTrackId,
+      trackToRenameId: state.trackToRenameId,
       gridCellWidth: state.gridCellWidth,
       clipIds: state.trackClips,
       newClipGhost: state.newClipGhost,
@@ -38,6 +40,7 @@ export default function TracksContainer({ totalSteps }: Props) {
 
   const {
     selectTrack,
+    selectTrackToRename,
     updateVelocity,
     updatePanning,
     toggleMuted,
@@ -54,12 +57,13 @@ export default function TracksContainer({ totalSteps }: Props) {
   } = useStore(
     useShallow((state) => ({
       selectTrack: state.playlistActions.selectTrack,
+      selectTrackToRename: state.playlistActions.selectTrackToRename,
       updateVelocity: state.playlistActions.updateVelocity,
       updatePanning: state.playlistActions.updatePanning,
       toggleMuted: state.playlistActions.toggleMuted,
       toggleSolo: state.playlistActions.toggleSolo,
-      deleteTrack: state.playlistActions.delete,
-      rename: state.playlistActions.rename,
+      deleteTrack: state.playlistActions.deleteTrack,
+      rename: state.playlistActions.renameTrack,
       updateTrackPart: state.audioActions.updateTrackPart,
       startPlayback: state.audioActions.startPlayback,
       addClip: state.clipActions.addClip,
@@ -128,8 +132,10 @@ export default function TracksContainer({ totalSteps }: Props) {
             key={id}
             trackId={id}
             selectedTrackId={selectedTrackId}
+            trackToRenameId={trackToRenameId}
             isPlaybackRunning={isPlaybackRunning}
             selectTrack={selectTrack}
+            selectTrackToRename={selectTrackToRename}
             updateVelocity={updateVelocity}
             updatePanning={updatePanning}
             toggleMuted={toggleMuted}

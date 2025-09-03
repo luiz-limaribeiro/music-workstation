@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Knob from "../../common/Knob";
 import "./styles/TrackControls.css";
 import React from "react";
@@ -7,8 +6,10 @@ import { useStore } from "../../store/store";
 interface Props {
   trackId: number;
   selectedTrackId: number;
+  trackToRenameId: number;
   isPlaybackRunning: boolean;
   selectTrack: (trackId: number) => void;
+  selectTrackToRename: (trackId: number) => void;
   updateVelocity: (trackId: number, velocity: number) => void;
   updatePanning: (trackId: number, panning: number) => void;
   toggleMuted: (trackId: number) => void;
@@ -21,9 +22,11 @@ interface Props {
 
 function TrackControls({
   trackId,
+  trackToRenameId,
   selectedTrackId,
   isPlaybackRunning,
   selectTrack,
+  selectTrackToRename,
   updateVelocity,
   updatePanning,
   toggleMuted,
@@ -33,18 +36,13 @@ function TrackControls({
   updateTrackPart,
   startPlayback,
 }: Props) {
-  const [showOptions, setShowOptions] = useState(false);
-
   const track = useStore((state) => state.tracks.byId[trackId]);
   const { name, muted, solo, velocity, panning } = track;
 
   return (
     <div className="track-controls">
-      {selectedTrackId !== trackId ? (
-        <span
-          className="title"
-          onMouseDown={() => setShowOptions(!showOptions)}
-        >
+      {trackToRenameId !== trackId ? (
+        <span className="title" onMouseDown={() => selectTrack(trackId)}>
           {name}
         </span>
       ) : (
@@ -86,19 +84,19 @@ function TrackControls({
         }}
         mode="velocity"
       />
-      {showOptions && (
+      {selectedTrackId === trackId && (
         <div className="track-options">
           <button
             onClick={() => {
-              setShowOptions(false);
-              selectTrack(trackId);
+              selectTrack(-1);
+              selectTrackToRename(trackId);
             }}
           >
             rename
           </button>
           <button
             onClick={() => {
-              setShowOptions(false);
+              selectTrack(-1);
               deleteTrack(trackId);
             }}
           >

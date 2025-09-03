@@ -32,10 +32,11 @@ export interface PlaylistSlice {
   stepCount: number;
   gridCellWidth: number;
   soloTrackIds: number[];
+  mutedTrackIds: number[];
   playlistActions: {
     addTrack: (track: TrackData) => void;
-    rename: (trackId: number, name: string) => void;
-    delete: (trackId: number) => void;
+    renameTrack: (trackId: number, name: string) => void;
+    deleteTrack: (trackId: number) => void;
     updateVelocity: (trackId: number, velocity: number) => void;
     updatePanning: (trackId: number, panning: number) => void;
     toggleMuted: (trackId: number) => void;
@@ -90,6 +91,7 @@ export const createPlaylistSlice: StateCreator<
   stepCount: 64,
   gridCellWidth: 0,
   soloTrackIds: [],
+  mutedTrackIds: [],
   playlistActions: {
     addTrack: (newTrackData) =>
       set((state) => {
@@ -134,7 +136,7 @@ export const createPlaylistSlice: StateCreator<
           },
         };
       }),
-    rename: (trackId, name) =>
+    renameTrack: (trackId, name) =>
       set((state) => ({
         tracks: {
           ...state.tracks,
@@ -147,7 +149,7 @@ export const createPlaylistSlice: StateCreator<
           },
         },
       })),
-    delete: (trackId) =>
+    deleteTrack: (trackId) =>
       set((state) => {
         const newState = { ...state };
         const clipIdsToDelete = newState.trackClips[trackId] || [];
@@ -160,7 +162,7 @@ export const createPlaylistSlice: StateCreator<
         const track = newState.tracks.byId[trackId];
         track.volumeNode.dispose();
         track.pannerNode.dispose();
-        
+
         delete newState.tracks.byId[trackId];
         delete newState.trackClips[trackId];
         delete newState.trackInstruments[trackId];
@@ -243,6 +245,7 @@ export const createPlaylistSlice: StateCreator<
               [trackId]: { ...track, muted: !track.muted },
             },
           },
+          mutedTrackIds: [trackId],
         };
       }),
     toggleSolo: (trackId) =>

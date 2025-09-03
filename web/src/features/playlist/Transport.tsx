@@ -7,6 +7,8 @@ export default function Transport() {
   const transport = useStore((state) => state.transport);
   const isPlaying = useStore((state) => state.isPlaying);
   const soloTrackIds = useStore((state) => state.soloTrackIds);
+  const mutedTrackIds = useStore((state) => state.mutedTrackIds);
+  const currentPosition = useStore((state) => state.currentPosition);
   const startPlayback = useStore((state) => state.audioActions.startPlayback);
   const stopPlayback = useStore((state) => state.audioActions.stopPlayback);
   const setBpm = useStore((state) => state.audioActions.setBpm);
@@ -26,7 +28,7 @@ export default function Transport() {
     return () => {
       transport.clear(positionListenerId.current);
     };
-  }, [isPlaying, transport, soloTrackIds, setCurrentPosition]);
+  }, [isPlaying, transport, soloTrackIds, mutedTrackIds, setCurrentPosition]);
 
   function handleMouseMove(event: MouseEvent) {
     previousBpm.current += event.movementX;
@@ -51,8 +53,7 @@ export default function Transport() {
     <div className="transport">
       <button
         onClick={() => {
-          console.log("");
-          console.log("isPlaying:", isPlaying, transport.state === "started");
+          console.log("Position:", currentPosition);
         }}
       >
         Test

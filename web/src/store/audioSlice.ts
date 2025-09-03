@@ -40,11 +40,12 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
 
         transport.loop = true;
         transport.loopEnd = `${Math.ceil(totalSteps / 16)}m`;
-        state.transport.set({ bpm: state.bpm });
+        transport.position = state.currentPosition;
+        transport.set({ bpm: state.bpm });
 
         const newPartsByTrackId: { [trackId: number]: Tone.Part } = {};
         const tracksToPlay =
-          state.soloTrackIds.length > 0 ? state.soloTrackIds : trackIds;
+          state.soloTrackIds.length > 0 ? state.soloTrackIds : trackIds.filter(id => !state.tracks.byId[id].muted);
 
         tracksToPlay.forEach((id) => {
           const events = getEventsForTrack(state, id);

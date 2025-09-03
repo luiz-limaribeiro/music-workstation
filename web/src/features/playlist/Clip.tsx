@@ -43,7 +43,7 @@ function Clip({
   const startClipStep = useRef(0);
 
   function handleMouseDown(event: React.MouseEvent<HTMLDivElement>) {
-    if (event.button != 0) return;
+    if (event.button !== 0) return;
     if (event.altKey) duplicateClip(trackId, clip.id, clip.startStep);
 
     isDragging.current = true;

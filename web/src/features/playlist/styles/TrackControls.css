@@ -65,8 +65,8 @@
   background: #1a2424aa;
   backdrop-filter: blur(10px);
   margin-left: 4rem;
-  margin-top: 4rem;
   border: 1px solid #eee2;
+  box-shadow: 0 0 10px #0008;
   z-index: 1;
 }
 
