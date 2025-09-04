@@ -6,6 +6,7 @@ export type InstrumentData = {
   name: string;
   velocity: number;
   muted: boolean;
+  volumeNode: Tone.Volume;
   synthPreset?: SynthPreset | null;
   sample:
     | Tone.Synth
@@ -19,24 +20,31 @@ export type InstrumentData = {
 let nextId = 0;
 
 export function newInstrumentData(synth?: SynthPreset): InstrumentData {
-  if (!synth)
+  if (!synth) {
+    const volume = new Tone.Volume(0);
+    const emptySampler = new Tone.Sampler({}).connect(volume);
+
     return {
       id: nextId++,
       name: "<empty>",
       velocity: 1,
       muted: false,
+      volumeNode: volume,
       synthPreset: null,
-      sample: new Tone.Sampler({}),
+      sample: emptySampler,
       player: () => {},
     };
+  }
   
-  const sample = synth.synth();
+  const volume = new Tone.Volume(0);
+  const sample = synth.synth().connect(volume);
 
   return {
     id: nextId++,
     name: synth.name,
     velocity: 1,
     muted: false,
+    volumeNode: volume,
     synthPreset: synth,
     sample: sample,
     player: createPlayer(sample, synth.note),

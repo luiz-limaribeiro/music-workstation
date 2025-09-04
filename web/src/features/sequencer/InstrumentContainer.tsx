@@ -28,7 +28,7 @@ function InstrumentContainer({ clipId, trackId, instrumentId, index }: Props) {
     useShallow((state) => ({
       setVelocity: state.instrumentActions.setVelocity,
       deleteSequence: state.instrumentActions.delete,
-      toggleMuted: state.instrumentActions.toggleMute,
+      toggleMuted: state.instrumentActions.toggleMuted,
       setSample: state.instrumentActions.setSample,
       updateTrackPart: state.audioActions.updateTrackPart,
     }))

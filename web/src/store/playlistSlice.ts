@@ -63,7 +63,7 @@ export interface PlaylistSlice {
     addInstrument: (trackId: number, instrument: InstrumentData) => void;
     delete: (trackId: number, instrumentId: number) => void;
     setVelocity: (instrumentId: number, velocity: number) => void;
-    toggleMute: (instrumentId: number) => void;
+    toggleMuted: (instrumentId: number) => void;
     setSample: (
       trackId: number,
       instrumentId: number,
@@ -181,6 +181,7 @@ export const createPlaylistSlice: StateCreator<
         instrumentIds.forEach((instrumentId) => {
           const instrument = newState.instruments.byId[instrumentId];
           instrument.sample.dispose();
+          instrument.volumeNode.dispose();
           delete newState.instruments.byId[instrumentId];
         });
         newState.instruments.allIds = newState.instruments.allIds.filter(
@@ -495,6 +496,7 @@ export const createPlaylistSlice: StateCreator<
         // Instrument
         const instrument = newState.instruments.byId[instrumentId];
         instrument.sample.dispose();
+        instrument.volumeNode.dispose();
         delete newState.instruments.byId[instrumentId];
 
         newState.trackInstruments[trackId] = state.trackInstruments[
@@ -511,20 +513,40 @@ export const createPlaylistSlice: StateCreator<
       });
     },
     setVelocity: (instrumentId, velocity) => {
-      set((state) => ({
-        instruments: {
-          ...state.instruments,
-          byId: {
-            ...state.instruments.byId,
-            [instrumentId]: {
-              ...state.instruments.byId[instrumentId],
-              velocity: velocity,
+      set((state) => {
+        const instrument = state.instruments.byId[instrumentId];
+        const velocityInDb = velocity * 60 - 60;
+        instrument.volumeNode.volume.value = velocityInDb;
+        
+        return {
+          instruments: {
+            ...state.instruments,
+            byId: {
+              ...state.instruments.byId,
+              [instrumentId]: {
+                ...state.instruments.byId[instrumentId],
+                velocity: velocity,
+              },
             },
           },
-        },
-      }));
+        };
+      });
     },
-    toggleMute: () => {},
+    toggleMuted: (instrumentId) => {
+      set((state) => {
+        const instrument = state.instruments.byId[instrumentId];
+
+        return {
+          instruments: {
+            ...state.instruments,
+            byId: {
+              ...state.instruments.byId,
+              [instrumentId]: { ...instrument, muted: !instrument.muted },
+            },
+          },
+        };
+      });
+    },
     setSample: (trackId, instrumentId, sample) => {
       set((state) => {
         const instruments = state.trackInstruments[trackId];
@@ -537,6 +559,7 @@ export const createPlaylistSlice: StateCreator<
         instrument.sample.dispose();
 
         const newSample = sample.synth();
+        newSample.connect(instrument.volumeNode);
 
         instrument = {
           ...instrument,

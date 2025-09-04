@@ -29,7 +29,7 @@ export default function Transport() {
       if (timeString.current) {
         timeString.current.textContent = str;
       }
-    }, "1s");
+    }, "1s", 0);
 
     timeListenerId.current = id;
 

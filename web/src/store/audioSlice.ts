@@ -127,22 +127,24 @@ function getEventsForTrack(state: AppState, trackId: number) {
 
     trackInstruments[trackId].forEach((instrumentId, i) => {
       const instrument = instruments.byId[instrumentId];
-      instrument.sample.connect(track.pannerNode);
+      if (!instrument.muted) {
+        instrument.volumeNode.connect(track.pannerNode);
 
-      // Each clip is 16 steps long
-      clipSteps[clipId].slice(i * 16, i * 16 + 16).forEach((stepId, index) => {
-        const step = steps.byId[stepId];
+        // Each clip is 16 steps long
+        clipSteps[clipId].slice(i * 16, i * 16 + 16).forEach((stepId, index) => {
+          const step = steps.byId[stepId];
 
-        if (step.active) {
-          const totalSteps = clip.startStep + index;
-          const time = Tone.Time(`0:0:${totalSteps}`);
+          if (step.active) {
+            const totalSteps = clip.startStep + index;
+            const time = Tone.Time(`0:0:${totalSteps}`);
 
-          events.push({
-            time: time.toSeconds(),
-            player: instrument.player,
-          });
-        }
-      });
+            events.push({
+              time: time.toSeconds(),
+              player: instrument.player,
+            });
+          }
+        });
+      }
     });
   });
 
