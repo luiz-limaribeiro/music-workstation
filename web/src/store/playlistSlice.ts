@@ -61,9 +61,8 @@ export interface PlaylistSlice {
   };
   instrumentActions: {
     addInstrument: (trackId: number, instrument: InstrumentData) => void;
+    delete: (trackId: number, instrumentId: number) => void;
     setVelocity: (instrumentId: number, velocity: number) => void;
-    clearSequence: (instrumentId: number) => void;
-    deleteSequence: (instrumentId: number) => void;
     toggleMute: (instrumentId: number) => void;
     setSample: (
       trackId: number,
@@ -180,6 +179,8 @@ export const createPlaylistSlice: StateCreator<
 
         // Instruments associated with the track
         instrumentIds.forEach((instrumentId) => {
+          const instrument = newState.instruments.byId[instrumentId];
+          instrument.sample.dispose();
           delete newState.instruments.byId[instrumentId];
         });
         newState.instruments.allIds = newState.instruments.allIds.filter(
@@ -465,6 +466,50 @@ export const createPlaylistSlice: StateCreator<
         };
       });
     },
+    delete: (trackId, instrumentId) => {
+      set((state) => {
+        if (state.trackInstruments[trackId].length <= 1) return state;
+
+        const newState = { ...state };
+
+        // Steps in clips
+        const clipIds = state.trackClips[trackId];
+
+        clipIds.forEach((clipId) => {
+          const stepIds = newState.clipSteps[clipId];
+          const index = state.trackInstruments[trackId].indexOf(instrumentId);
+          const stepIdsToDelete = stepIds.slice(index * 16, index * 16 + 16);
+          // Remove only the deleted sequence's steps from the array
+          newState.clipSteps[clipId] = [
+            ...stepIds.slice(0, index * 16),
+            ...stepIds.slice((index + 1) * 16),
+          ];
+          stepIdsToDelete.forEach((stepId) => {
+            delete newState.steps.byId[stepId];
+          });
+          newState.steps.allIds = newState.steps.allIds.filter(
+            (stepId) => !stepIdsToDelete.includes(stepId)
+          );
+        });
+
+        // Instrument
+        const instrument = newState.instruments.byId[instrumentId];
+        instrument.sample.dispose();
+        delete newState.instruments.byId[instrumentId];
+
+        newState.trackInstruments[trackId] = state.trackInstruments[
+          trackId
+        ].filter((id) => id !== instrumentId);
+        newState.instruments.allIds = newState.instruments.allIds.filter(
+          (id) => id !== instrumentId
+        );
+
+        console.log("track instruments", newState.trackInstruments);
+        console.log("clip steps", newState.clipSteps);
+
+        return newState;
+      });
+    },
     setVelocity: (instrumentId, velocity) => {
       set((state) => ({
         instruments: {
@@ -479,8 +524,6 @@ export const createPlaylistSlice: StateCreator<
         },
       }));
     },
-    clearSequence: () => {},
-    deleteSequence: () => {},
     toggleMute: () => {},
     setSample: (trackId, instrumentId, sample) => {
       set((state) => {

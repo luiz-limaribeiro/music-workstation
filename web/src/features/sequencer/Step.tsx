@@ -85,7 +85,7 @@ function Step({
       style={{
         opacity: `${active ? Math.max(0.2, Math.min(velocity, 1)) : 1}`,
         backgroundColor: `${
-          active ? "rgb(251, 143, 255)" : index % 4 === 0 ? "#223" : "#1f1f2f"
+          active ? "rgb(251, 143, 255)" : index % 4 === 0 ? "#2a2a3a" : "#223"
         }`,
       }}
       onClick={() => {

@@ -20,7 +20,6 @@ function InstrumentContainer({ clipId, trackId, instrumentId, index }: Props) {
 
   const {
     setVelocity,
-    clearSequence,
     deleteSequence,
     toggleMuted,
     setSample,
@@ -28,22 +27,22 @@ function InstrumentContainer({ clipId, trackId, instrumentId, index }: Props) {
   } = useStore(
     useShallow((state) => ({
       setVelocity: state.instrumentActions.setVelocity,
-      clearSequence: state.instrumentActions.clearSequence,
-      deleteSequence: state.instrumentActions.deleteSequence,
+      deleteSequence: state.instrumentActions.delete,
       toggleMuted: state.instrumentActions.toggleMute,
       setSample: state.instrumentActions.setSample,
       updateTrackPart: state.audioActions.updateTrackPart,
     }))
   );
 
+  if (!instrument || !stepIds) return null;
+
   return (
     <Instrument
-      clipId={clipId}
       stepIds={stepIds.slice(index * 16, index * 16 + 16)}
       trackId={trackId}
       instrument={instrument}
+      index={index}
       setVelocity={setVelocity}
-      clearSequence={clearSequence}
       deleteSequence={deleteSequence}
       toggleMuted={toggleMuted}
       setSample={setSample}

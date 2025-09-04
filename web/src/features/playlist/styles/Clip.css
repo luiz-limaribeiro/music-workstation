@@ -1,5 +1,5 @@
 .clip {
-  background-color: #00ffff99;
+  background-color: #01b8b8f5;
   color: #00ffff;
   height: 3rem;
   cursor: pointer;
@@ -13,6 +13,10 @@
   font-weight: 300;
   letter-spacing: 1px;
   left: 2px;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: calc(100% - 4px);
 }
 
 .selected {
@@ -29,7 +33,6 @@
   display: flex;
   gap: 0.3em;
   padding: 0 0.3em;
-  border-radius: 4px;
 }
 
 .clip-controls span:hover {

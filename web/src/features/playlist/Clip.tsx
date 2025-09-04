@@ -97,7 +97,14 @@ function Clip({
           }
       }}
     >
-      <span className="clip-name">{trackName}</span>
+      <span
+        className="clip-name"
+        style={{
+          width: selectedClipId === clip.id ? "60%" : "calc(100% - 4px)",
+        }}
+      >
+        {trackName}
+      </span>
       {selectedClipId === clip.id && (
         <div className="clip-controls">
           <span

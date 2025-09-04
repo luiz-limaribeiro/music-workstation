@@ -7,29 +7,27 @@ import StepContainer from "./StepContainer.tsx";
 import type { SynthPreset } from "../../data/synthPresets.ts";
 
 interface Props {
-  clipId: number;
   stepIds: number[];
   trackId: number;
   instrument: InstrumentData;
+  index: number;
   setVelocity: (instrumentId: number, velocity: number) => void;
-  clearSequence: (instrumentId: number) => void;
-  deleteSequence: (clipId: number, instrumentId: number) => void;
+  deleteSequence: (trackId: number, instrumentId: number) => void;
   toggleMuted: (instrumentId: number) => void;
   setSample: (
     trackId: number,
     instrumentId: number,
-    synthPreset: SynthPreset,
+    synthPreset: SynthPreset
   ) => void;
   updateTrackPart: (trackId: number) => void;
 }
 
 function Instrument({
-  clipId,
   stepIds,
   trackId,
   instrument,
+  index,
   setVelocity,
-  clearSequence,
   deleteSequence,
   toggleMuted,
   setSample,
@@ -43,7 +41,7 @@ function Instrument({
   function changeVelocity(event: React.ChangeEvent<HTMLInputElement>) {
     const newVelocity = parseFloat(event.target.value);
     setVelocity(id, newVelocity);
-    updateTrackPart(trackId)
+    updateTrackPart(trackId);
   }
 
   function onSetSample() {
@@ -51,16 +49,10 @@ function Instrument({
     setShowSampleList(true);
   }
 
-  function clear() {
-    clearSequence(id);
+  function onDelete() {
+    deleteSequence(trackId, id);
     setShowOptions(false);
-    updateTrackPart(trackId)
-  }
-
-  function remove() {
-    deleteSequence(clipId, id);
-    setShowOptions(false);
-    updateTrackPart(trackId)
+    updateTrackPart(trackId);
   }
 
   return (
@@ -90,18 +82,15 @@ function Instrument({
       </div>
       <div className="steps">
         {stepIds.map((id) => (
-          <StepContainer
-            key={id}
-            stepId={id}
-            trackId={trackId}
-          />
+          <StepContainer key={id} stepId={id} trackId={trackId} />
         ))}
       </div>
       {showOptions && (
         <div className="options">
           <button onClick={onSetSample}>set sample</button>
-          <button onClick={clear}>clear</button>
-          <button onClick={remove}>delete</button>
+          <button onClick={onDelete} disabled={index === 0} style={{opacity: index === 0 ? 0.3 : 1}}>
+            delete
+          </button>
         </div>
       )}
       {showSampleList && (
@@ -110,7 +99,7 @@ function Instrument({
           onSampleSelect={(sample) => {
             onSetSample();
             setSample(trackId, id, sample);
-            updateTrackPart(trackId)
+            updateTrackPart(trackId);
           }}
           onClose={() => setShowSampleList(false)}
         />

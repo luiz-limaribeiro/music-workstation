@@ -10,10 +10,7 @@ interface Props {
   trackId: number;
   instrumentIds: number[];
   onCloseEditor: () => void;
-  addInstrument: (
-    clipId: number,
-    instrumentData: InstrumentData
-  ) => void;
+  addInstrument: (clipId: number, instrumentData: InstrumentData) => void;
 }
 
 export default function Sequencer({
@@ -42,15 +39,8 @@ export default function Sequencer({
           />
         ))}
         <div className="add-instrument">
-          <button
-            onClick={() =>
-              addInstrument(
-                trackId,
-                newInstrumentData()
-              )
-            }
-          >
-            add track
+          <button onClick={() => addInstrument(trackId, newInstrumentData())}>
+            ➕
           </button>
         </div>
       </div>

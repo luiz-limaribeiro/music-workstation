@@ -1,12 +1,8 @@
 .step {
   width: 2rem;
   height: 3rem;
-  border: 1px solid #1123;
+  border: 1px solid #112;
   cursor: pointer;
-}
-
-.step.current {
-  filter: brightness(1.2);
 }
 
 .repeat-bar {

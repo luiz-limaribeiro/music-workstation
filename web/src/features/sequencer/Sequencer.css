@@ -51,10 +51,15 @@
   cursor: pointer;
   padding: .6rem 1rem;
   background: transparent;
-  border: 1px solid #FFF2;
+  border: 1px solid #FFF3;
   border-radius: 10px;
   color: white;
   font-family: 'Roboto Mono Variable', sans-serif;
+  filter: brightness(2);
+}
+
+.add-instrument button:hover {
+  background-color: #111;
 }
 
 .sequencer::-webkit-scrollbar {
