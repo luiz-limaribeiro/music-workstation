@@ -1,12 +1,11 @@
-import Sequencer from "./features/sequencer/Sequencer"
-import './App.css'
+import Playlist from "./features/playlist/Playlist";
 
 function App() {
   return (
     <main>
-      <Sequencer />
+      <Playlist />
     </main>
-  )
+  );
 }
 
-export default App
+export default App;

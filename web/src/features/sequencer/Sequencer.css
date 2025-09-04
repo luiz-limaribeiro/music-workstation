@@ -1,31 +1,65 @@
+.sequencer-container {
+  z-index: 1100;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #1124;
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-content: center;
+  cursor: default;
+}
+
 .sequencer {
   background-color: #111;
   border: 2px solid #FFF2;
   color: white;
   padding: 4rem;
+  padding-top: 3rem;
   padding-bottom: 2rem;
   border-radius: 10px;
   position: relative;
-  margin: 8rem 0;
-  max-height: 64vh;
-  min-height: 64vh;
+  max-height: 32rem;
+  min-height: 32rem;
+  width: fit-content;
+  align-self: center;
   overflow-y: scroll;
 }
 
-.add-track {
+.sequencer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sequencer-header h3 {
+  font-family: 'Roboto Mono Variable', sans-serif;
+  font-size: 1.5rem;
+  color: #FFF3;
+}
+
+.add-instrument {
   display: flex;
   justify-content: center;
   margin-top: 2rem;
 }
 
-.add-track button {
+.add-instrument button {
   cursor: pointer;
   padding: .6rem 1rem;
   background: transparent;
-  border: 1px solid #FFF2;
+  border: 1px solid #FFF3;
   border-radius: 10px;
   color: white;
   font-family: 'Roboto Mono Variable', sans-serif;
+  filter: brightness(2);
+}
+
+.add-instrument button:hover {
+  background-color: #111;
 }
 
 .sequencer::-webkit-scrollbar {

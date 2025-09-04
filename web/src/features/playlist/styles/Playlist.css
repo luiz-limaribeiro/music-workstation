@@ -1,0 +1,50 @@
+:root {
+  --playlist-bg: #000;
+  --timeline-bg: #1e1e2e;
+  --track-bg: #313449
+}
+
+.playlist {
+  background-color: var(--playlist-bg);
+  min-height: 100vh;
+  color: white;
+  user-select: none;
+}
+
+.tracks {
+  display: flex;
+  flex-direction: column;
+}
+
+.track {
+  display: flex;
+}
+
+.track-controls-container {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.clips-timeline.container {
+  flex-grow: 1;
+  overflow-x: auto;
+}
+
+.add-track {
+  cursor: pointer;
+  align-self: center;
+  margin-top: 2rem;
+  margin-bottom: 8rem;
+  cursor: pointer;
+  padding: .6rem 1rem;
+  background: transparent;
+  border: 1px solid #FFF5;
+  border-radius: 10px;
+  color: white;
+  font-family: 'Roboto Mono Variable', sans-serif;
+  filter: brightness(2);
+}
+
+.add-track:hover {
+  background-color: #111;
+}

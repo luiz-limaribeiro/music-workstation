@@ -1,22 +1,21 @@
 import { useState } from "react";
 import "./SampleList.css";
-import { drums } from "./synthPresets";
+import { synthPresets, type SynthPreset } from "../../data/synthPresets";
 
 interface Props {
-  selectedSample?: string;
+  selectedSampleName: string;
   onSampleSelect: (
-    sampleName: string,
-    play: (time: number, velocity: number) => void
+    sample: SynthPreset
   ) => void;
   onClose: () => void;
 }
 
 export default function SampleList({
-  selectedSample = "",
+  selectedSampleName = "",
   onSampleSelect,
   onClose,
 }: Props) {
-  const [selected, setSelected] = useState<string>(selectedSample);
+  const [selectedSample, setSelectedSample] = useState<string>(selectedSampleName);
 
   return (
     <div className="sample-list">
@@ -26,16 +25,16 @@ export default function SampleList({
       </button>
       <hr />
       <ul>
-        {Object.entries(drums).map(([key, value]) => (
+        {Object.entries(synthPresets).map(([key, value]) => (
           <li
             key={key}
-            className={key === selected ? "selected" : ""}
+            className={key === selectedSample ? "selected-sample" : ""}
             onClick={() => {
-              onSampleSelect(key, value);
-              setSelected(key);
+              onSampleSelect(value);
+              setSelectedSample(key);
             }}
           >
-            <span>{key}</span>
+            <span>{value.name}</span>
           </li>
         ))}
       </ul>

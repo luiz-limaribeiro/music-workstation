@@ -1,0 +1,8 @@
+.playhead {
+  width: 3px;
+  background-color: white;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  cursor: grab;
+}

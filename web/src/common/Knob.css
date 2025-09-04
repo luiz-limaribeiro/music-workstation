@@ -1,0 +1,19 @@
+.knob {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #111;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  user-select: none;
+}
+
+.pointer {
+  width: 4px;
+  height: 12px;
+  border-radius: 4px;
+  background-color: aqua;
+  translate: 0 -50%;
+  transform-origin: 50% 100%;
+}

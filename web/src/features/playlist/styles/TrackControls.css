@@ -1,0 +1,87 @@
+.track-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 .8em;
+  gap: 0.5rem;
+  background: linear-gradient(to right, #334, #282838);
+  height: 3em;
+  border-top: 1px solid #112;
+}
+
+.track-controls .title {
+  font-size: .8rem;
+  max-width: 4rem;
+  text-wrap: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.track-controls .title-input {
+  max-width: 4rem;
+  border: none;
+  outline: none;
+  padding: 2px 4px;
+}
+
+.track-controls .mute-unmute {
+  width: 8px;
+  height: 20px;
+  border-radius: 9999px;
+  cursor: pointer;
+  background-color: cyan;
+  border: none;
+}
+
+.track-controls .mute-unmute.muted {
+  background-color: #eee;
+}
+
+.track-controls .solo-button {
+  font-size: 11px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  background-color: transparent;
+  color: #ccca;
+  font-family: 'Roboto Mono Variable', monospace;
+}
+
+.track-controls .solo-button.solo {
+  color: black;
+  background-color: #eee;
+}
+
+.track-options {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: #1a2424aa;
+  backdrop-filter: blur(10px);
+  margin-left: 4rem;
+  border: 1px solid #eee2;
+  box-shadow: 0 0 10px #0008;
+  z-index: 1;
+}
+
+.track-options button {
+  background: transparent;
+  border: none;
+  color: #eeee;
+  text-align: start;
+  padding: .6rem .4rem;
+  border: 1px solid transparent;
+  width: 5rem;
+  cursor: pointer;
+}
+
+.track-options button:hover {
+  background: #1a2424;
+  color: #eee;
+}

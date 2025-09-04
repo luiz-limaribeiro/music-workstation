@@ -1,0 +1,40 @@
+.clip {
+  background-color: #01b8b8f5;
+  color: #00ffff;
+  height: 3rem;
+  cursor: pointer;
+  position: absolute;
+  border-radius: 4px;
+}
+
+.clip-name {
+  font-size: x-small;
+  position: absolute;
+  font-weight: 300;
+  letter-spacing: 1px;
+  left: 2px;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: calc(100% - 4px);
+}
+
+.selected {
+  cursor: grab;
+  border: 1px solid white;
+}
+
+.clip-controls {
+  position: absolute;
+  font-size: x-small;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  display: flex;
+  gap: 0.3em;
+  padding: 0 0.3em;
+}
+
+.clip-controls span:hover {
+  color: white;
+}
