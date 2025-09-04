@@ -57,9 +57,7 @@ export default function Playlist() {
     <main className="playlist">
       <div className="tracks">
         <TracksContainer totalSteps={TOTAL_STEPS} />
-        <button className="add-track" onClick={handleAddTrack}>
-          add track
-        </button>
+        <button className="add-track" onClick={handleAddTrack} title="Add Track">➕</button>
       </div>
 
       <Transport/>

@@ -61,7 +61,10 @@ function TrackTimeline({
   return (
     <div
       className="track-timeline clips"
-      style={{ gridTemplateColumns: `repeat(${totalSteps}, 1fr)` }}
+      style={{
+        gridTemplateColumns: `repeat(${totalSteps}, 1fr)`,
+        marginTop: trackId === 1 ? "2em" : 0,
+      }}
       onMouseDown={handleMouseDown}
       ref={timelineRef}
     >

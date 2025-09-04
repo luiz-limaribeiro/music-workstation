@@ -40,7 +40,10 @@ function TrackControls({
   const { name, muted, solo, velocity, panning } = track;
 
   return (
-    <div className="track-controls">
+    <div
+      className="track-controls"
+      style={{ marginTop: trackId === 1 ? "2em" : 0 }}
+    >
       {trackToRenameId !== trackId ? (
         <span className="title" onMouseDown={() => selectTrack(trackId)}>
           {name}

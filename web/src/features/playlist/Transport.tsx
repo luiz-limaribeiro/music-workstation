@@ -8,20 +8,45 @@ export default function Transport() {
   const isPlaying = useStore((state) => state.isPlaying);
   const soloTrackIds = useStore((state) => state.soloTrackIds);
   const mutedTrackIds = useStore((state) => state.mutedTrackIds);
-  const currentPosition = useStore((state) => state.currentPosition);
   const startPlayback = useStore((state) => state.audioActions.startPlayback);
   const stopPlayback = useStore((state) => state.audioActions.stopPlayback);
   const setBpm = useStore((state) => state.audioActions.setBpm);
-  const setCurrentPosition = useStore((state) => state.audioActions.setCurrentPosition);
+  const setCurrentPosition = useStore(
+    (state) => state.audioActions.setCurrentPosition
+  );
 
   const previousBpm = useRef(0);
   const positionListenerId = useRef(0);
+  const timeListenerId = useRef(0);
+  const timeString = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const posListenerId = transport.scheduleRepeat(() => {
-      const currentPos = transport.position;
-      setCurrentPosition(currentPos.toString());
-    }, "16n", 0);
+    const id = transport.scheduleRepeat(() => {
+      const seconds = transport.seconds;
+      const minutes = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      const str = `${minutes}:${secs.toString().padStart(2, "0")}`;
+      if (timeString.current) {
+        timeString.current.textContent = str;
+      }
+    }, "1s");
+
+    timeListenerId.current = id;
+
+    return () => {
+      transport.clear(id);
+    };
+  }, [isPlaying, transport]);
+
+  useEffect(() => {
+    const posListenerId = transport.scheduleRepeat(
+      () => {
+        const currentPos = transport.position;
+        setCurrentPosition(currentPos.toString());
+      },
+      "16n",
+      0
+    );
 
     positionListenerId.current = posListenerId;
 
@@ -52,13 +77,6 @@ export default function Transport() {
   return (
     <div className="transport">
       <button
-        onClick={() => {
-          console.log("Position:", currentPosition);
-        }}
-      >
-        Test
-      </button>
-      <button
         className="play-button"
         disabled={isPlaying}
         onClick={startPlayback}
@@ -71,6 +89,7 @@ export default function Transport() {
         onClick={() => {
           stopPlayback();
           transport.clear(positionListenerId.current);
+          transport.clear(timeListenerId.current);
         }}
       >
         Stop
@@ -78,7 +97,7 @@ export default function Transport() {
       <div className="bpm-display" onMouseDown={handleMouseDown}>
         BPM: {bpm}
       </div>
-      <div className="time-display">00:00</div>
+      <div className="time-display" ref={timeString}>0:00</div>
     </div>
   );
 }

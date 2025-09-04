@@ -1,7 +1,6 @@
 .track-timeline {
   height: 3rem;
   background-color: var(--track-bg);
-  border-top: 1px solid #112;
   min-width: 300vw;
 }
 

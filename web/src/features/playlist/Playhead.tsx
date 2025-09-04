@@ -32,8 +32,7 @@ export default function Playhead() {
     if (event.button !== 0) return;
     event.stopPropagation();
 
-    if (isPlaying)
-      stopPlayback();
+    if (isPlaying) stopPlayback();
 
     isDragging.current = true;
     startMouseX.current = event.clientX;
@@ -80,6 +79,8 @@ export default function Playhead() {
         transition: isPlaying ? "all .2s linear" : "none",
       }}
       onMouseDown={handleMouseDown}
-    />
+    >
+      <div className="circle" />
+    </div>
   );
 }

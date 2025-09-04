@@ -70,11 +70,9 @@ export const createAudioSlice: StateCreator<AppState, [], [], AudioSlice> = (
     stopPlayback: () =>
       set((state) => {
         state.transport.stop();
-        state.transport.position = 0;
 
         return {
           isPlaying: false,
-          currentPosition: "0:0:0",
         };
       }),
     setBpm: (bpm) =>
