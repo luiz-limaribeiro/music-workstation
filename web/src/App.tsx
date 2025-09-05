@@ -1,9 +1,9 @@
-import Playlist from "./features/playlist/Playlist";
+import PianoRoll from "./features/piano-roll/PianoRoll";
 
 function App() {
   return (
     <main>
-      <Playlist />
+      <PianoRoll />
     </main>
   );
 }

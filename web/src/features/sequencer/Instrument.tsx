@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { InstrumentData } from "../../data/instrumentData.ts";
-import "./Instrument.css";
+import "./styles/Instrument.css";
 import SampleList from "./SampleList.tsx";
 import React from "react";
 import StepContainer from "./StepContainer.tsx";

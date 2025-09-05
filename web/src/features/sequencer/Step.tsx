@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import "./Step.css";
+import "./styles/Step.css";
 import React from "react";
 
 interface Props {

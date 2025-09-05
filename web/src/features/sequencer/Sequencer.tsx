@@ -3,7 +3,7 @@ import {
   type InstrumentData,
 } from "../../data/instrumentData";
 import InstrumentContainer from "./InstrumentContainer";
-import "./Sequencer.css";
+import "./styles/Sequencer.css";
 
 interface Props {
   clipId: number;
