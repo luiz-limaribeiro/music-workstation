@@ -10,6 +10,7 @@ export type PianoRollStore = {
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
     highlightKey: (keyId: number) => void;
+    resetKey: (keyId: number) => void;
     addNote: (note: PianoNote) => void;
     updateNote: (
       noteId: number,
@@ -30,6 +31,11 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
     },
     highlightKey: (keyId) => {
       set((state) => ({ highlightedKeys: [...state.highlightedKeys, keyId] }));
+    },
+    resetKey: (keyId) => {
+      set((state) => ({
+        highlightedKeys: state.highlightedKeys.filter((id) => id !== keyId),
+      }));
     },
     addNote: (note) => {
       set((state) => ({
