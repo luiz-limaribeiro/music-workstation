@@ -1,4 +1,5 @@
-export type Note = {
+export type PianoNote = {
+  id: number;
   startStep: number;
   length: number;
   keyId: number;
