@@ -1,0 +1,16 @@
+.piano-roll {
+  display: flex;
+}
+
+.keys-container {
+  width: 7em;
+  flex-shrink: 0;
+}
+
+.timeline-container {
+  flex-grow: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  position: relative;
+}

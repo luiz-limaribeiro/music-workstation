@@ -1,23 +1,27 @@
 import { create } from "zustand";
 
 export type PianoRollStore = {
-  activeKeyIds: number[];
+  highlightedKeys: number[];
+  length: number;
+  cellWidth: number;
+  cellHeight: number;
   pianoRollActions: {
-    addKey: (keyId: number) => void;
-    removeKey: (keyId: number) => void;
+    setHighlightedKeys: (keyIds: number[]) => void
+    highlightKey: (keyId: number) => void;
   };
 };
 
 const usePianoRollStore = create<PianoRollStore>((set) => ({
-  activeKeyIds: [],
+  highlightedKeys: [],
+  length: 80,
+  cellWidth: 48,
+  cellHeight: 28,
   pianoRollActions: {
-    addKey: (keyId) => {
-      set((state) => ({ activeKeyIds: [...state.activeKeyIds, keyId] }));
+    setHighlightedKeys: (keyIds) => {
+      set(() => ({ highlightedKeys: keyIds }))
     },
-    removeKey: (keyId) => {
-      set((state) => ({
-        activeKeyIds: [...state.activeKeyIds.filter((id) => id !== keyId)],
-      }));
+    highlightKey: (keyId) => {
+      set((state) => ({ highlightedKeys: [...state.highlightedKeys, keyId] }));
     },
   },
 }));

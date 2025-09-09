@@ -4,32 +4,33 @@ import "./styles/Keys.css";
 import usePianoRollStore from "../../store/pianoRollStore";
 
 export default function Keys() {
-  const activeKeyIds = usePianoRollStore((state) => state.activeKeyIds);
-  const addKey = usePianoRollStore((state) => state.pianoRollActions.addKey);
-  const removeKey = usePianoRollStore(
-    (state) => state.pianoRollActions.removeKey
-  );
+  const highlightedKeys = usePianoRollStore((state) => state.highlightedKeys);
+  const setHighlightedKeys = usePianoRollStore((state) => state.pianoRollActions.setHighlightedKeys);
+  const highlightKey = usePianoRollStore((state) => state.pianoRollActions.highlightKey);
+  const cellHeight = usePianoRollStore((state) => state.cellHeight)
 
   const keys = pianoKeys;
 
   function handleMouseEnter(e: MouseEvent, keyId: number) {
-    if (e.buttons & 1) addKey(keyId);
+    if (e.buttons & 1) highlightKey(keyId)
   }
 
   function handleMouseLeave(keyId: number) {
-    removeKey(keyId);
+    setHighlightedKeys(highlightedKeys.filter(id => id !== keyId))
   }
 
   return (
     <div className="keys">
-      {keys.map((key, index) => (
+      {keys.map((key) => (
         <div
-          key={index}
+          key={key.id}
           className={`key
             ${key.note.length > 1 ? "black-key" : "white-key"}
-            ${activeKeyIds.includes(key.id) ? "active" : ""}
+            ${highlightedKeys.includes(key.id) ? "active" : ""}
           `}
-          onMouseDown={() => addKey(key.id)}
+          style={{ height: cellHeight }}
+          onMouseDown={() => setHighlightedKeys([...highlightedKeys, key.id])}
+          onMouseUp={() => setHighlightedKeys(highlightedKeys.filter(id => id !== key.id))}
           onMouseEnter={(e) => handleMouseEnter(e, key.id)}
           onMouseLeave={() => handleMouseLeave(key.id)}
         >

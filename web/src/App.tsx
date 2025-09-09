@@ -1,11 +1,7 @@
 import PianoRoll from "./features/piano-roll/PianoRoll";
 
 function App() {
-  return (
-    <main>
-      <PianoRoll />
-    </main>
-  );
+  return <PianoRoll />;
 }
 
 export default App;
