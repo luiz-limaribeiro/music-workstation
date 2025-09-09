@@ -5,9 +5,9 @@ import usePianoRollStore from "../../store/pianoRollStore";
 
 export default function Keys() {
   const highlightedKeys = usePianoRollStore((state) => state.highlightedKeys);
+  const cellHeight = usePianoRollStore((state) => state.cellHeight)
   const setHighlightedKeys = usePianoRollStore((state) => state.pianoRollActions.setHighlightedKeys);
   const highlightKey = usePianoRollStore((state) => state.pianoRollActions.highlightKey);
-  const cellHeight = usePianoRollStore((state) => state.cellHeight)
 
   const keys = pianoKeys;
 

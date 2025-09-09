@@ -16,7 +16,7 @@ function Note({ noteId }: Props) {
       className="note"
       style={{
         position: 'absolute',
-        left: note.startStep * cellWidth,
+        left: note.start * cellWidth,
         top: note.keyId * cellHeight,
         width: note.length * cellWidth,
         height: cellHeight,
