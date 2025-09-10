@@ -7,6 +7,7 @@ export type PianoRollStore = {
   length: number;
   cellWidth: number;
   cellHeight: number;
+  selectedNoteId: number;
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
     highlightKey: (keyId: number) => void;
@@ -14,8 +15,9 @@ export type PianoRollStore = {
     addNote: (note: PianoNote) => void;
     updateNote: (
       noteId: number,
-      updates: { startStep: number | null; length: number | null }
+      updater: (note: PianoNote) => PianoNote
     ) => void;
+    selectNote: (noteId: number) => void;
   };
 };
 
@@ -25,43 +27,39 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
   length: 80,
   cellWidth: 48,
   cellHeight: 28,
+  selectedNoteId: -1,
   pianoRollActions: {
-    setHighlightedKeys: (keyIds) => {
-      set(() => ({ highlightedKeys: keyIds }));
-    },
-    highlightKey: (keyId) => {
-      set((state) => ({ highlightedKeys: [...state.highlightedKeys, keyId] }));
-    },
-    resetKey: (keyId) => {
+    setHighlightedKeys: (keyIds) => set(() => ({ highlightedKeys: keyIds })),
+    highlightKey: (keyId) =>
+      set((state) => ({ highlightedKeys: [...state.highlightedKeys, keyId] })),
+    resetKey: (keyId) =>
       set((state) => ({
         highlightedKeys: state.highlightedKeys.filter((id) => id !== keyId),
-      }));
-    },
-    addNote: (note) => {
+      })),
+    addNote: (note) =>
       set((state) => ({
         notes: {
           byId: { ...state.notes.byId, [note.id]: note },
           allIds: [...state.notes.allIds, note.id],
         },
-      }));
-    },
-    updateNote: (noteId, updates) =>
+        selectedNoteId: note.id,
+      })),
+    updateNote: (noteId, updater) =>
       set((state) => {
-        const updatedNote = {
-          ...state.notes.byId[noteId],
-          ...(updates.length !== null ? { length: updates.length } : {}),
-          ...(updates.startStep !== null
-            ? { startStep: updates.startStep }
-            : {}),
-        };
+        const prevNote = state.notes.byId[noteId];
+        const updatedNote = updater(prevNote);
 
         return {
           notes: {
             ...state.notes,
-            [noteId]: updatedNote,
+            byId: {
+              ...state.notes.byId,
+              [noteId]: updatedNote,
+            },
           },
         };
       }),
+    selectNote: (noteId) => set({ selectedNoteId: noteId }),
   },
 }));
 

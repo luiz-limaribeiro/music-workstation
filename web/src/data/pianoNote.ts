@@ -12,6 +12,6 @@ export function newPianoNote(start: number, length: number, keyId: number) {
     id: ++nextId,
     start,
     length,
-    keyId
+    keyId: keyId
   }
 }
