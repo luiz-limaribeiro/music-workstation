@@ -1,13 +1,22 @@
 .note {
   background: rgba(0, 255, 255, 0.808);
+  display: flex;
+  justify-content: end;
 }
 
 .selected {
-  border: 2px solid white;
+  background: cyan;
+  box-shadow: 0px 0px 8px cyan;
   cursor: grab;
   user-select: none;
 }
 
 .selected:active {
   cursor: grabbing;
+}
+
+.resize-handler {
+  width: 4px;
+  height: 100%;
+  cursor: ew-resize;
 }

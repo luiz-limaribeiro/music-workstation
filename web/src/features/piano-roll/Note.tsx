@@ -7,9 +7,10 @@ interface Props {
   noteId: number;
   selectNote: (noteId: number) => void;
   onMove: (note: PianoNote, e: MouseEvent) => void;
+  onResize: (note: PianoNote, e: MouseEvent) => void;
 }
 
-function Note({ noteId, selectNote, onMove }: Props) {
+function Note({ noteId, selectNote, onMove, onResize }: Props) {
   const note = usePianoRollStore((state) => state.notes.byId[noteId]);
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
@@ -21,7 +22,7 @@ function Note({ noteId, selectNote, onMove }: Props) {
       onMouseDown={(e) => {
         e.stopPropagation();
         selectNote(noteId);
-        onMove(note, e as unknown as MouseEvent)
+        onMove(note, e as unknown as MouseEvent);
       }}
       style={{
         position: "absolute",
@@ -30,7 +31,15 @@ function Note({ noteId, selectNote, onMove }: Props) {
         width: note.length * cellWidth,
         height: cellHeight,
       }}
-    />
+    >
+      <div
+        className={`resize-handler`}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          onResize(note, e as unknown as MouseEvent);
+        }}
+      />
+    </div>
   );
 }
 

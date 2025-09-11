@@ -5,6 +5,7 @@ import Note from "./Note";
 import { useRef } from "react";
 import { newPianoNote, type PianoNote } from "../../data/pianoNote";
 import { startMove } from "../../common/startMove";
+import { pianoKeys } from "../../data/pianoKeys";
 
 export default function NotesTimeline() {
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
@@ -46,13 +47,28 @@ export default function NotesTimeline() {
       const deltaRows = Math.round(dy / cellHeight);
 
       const newStart = originalStart + deltaCols
+      const newMidi = originalMidi - deltaRows * -1;
 
       updateNote(note.id, (note) => ({
         ...note,
         start: newStart >= 0 ? newStart : 0,
-        keyId: originalMidi - deltaRows * -1,
+        keyId: newMidi < 0 ? 0 : (newMidi > pianoKeys.length-1 ? pianoKeys.length-1 : newMidi) ,
       }));
     });
+  }
+
+  function handleResize(note: PianoNote, e: MouseEvent) {
+    const originalLength = note.length
+
+    startMove(e, timelineRef.current, (dx) => {
+      const deltaCols = Math.round(dx / cellWidth)
+      const newLength = originalLength + deltaCols
+
+      updateNote(note.id, (note) => ({
+        ...note,
+        length: newLength >= 1 ? newLength : 1
+      }))
+    })
   }
 
   return (
@@ -68,6 +84,7 @@ export default function NotesTimeline() {
           noteId={id}
           selectNote={selectNote}
           onMove={handleMove}
+          onResize={handleResize}
         />
       ))}
     </div>
