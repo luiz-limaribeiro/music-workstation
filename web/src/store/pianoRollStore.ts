@@ -8,11 +8,13 @@ export type PianoRollStore = {
   cellWidth: number;
   cellHeight: number;
   selectedNoteId: number;
+  mode: 'add' | 'select' | 'remove';
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
     highlightKey: (keyId: number) => void;
     resetKey: (keyId: number) => void;
     addNote: (note: PianoNote) => void;
+    removeNote: (noteId: number) => void;
     updateNote: (
       noteId: number,
       updater: (note: PianoNote) => PianoNote
@@ -28,6 +30,7 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
   cellWidth: 48,
   cellHeight: 28,
   selectedNoteId: -1,
+  mode: 'add',
   pianoRollActions: {
     setHighlightedKeys: (keyIds) => set(() => ({ highlightedKeys: keyIds })),
     highlightKey: (keyId) =>
@@ -44,6 +47,17 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
         },
         selectedNoteId: note.id,
       })),
+    removeNote: (noteId) =>
+      set((state) => {
+        delete state.notes.byId[noteId];
+
+        return {
+          notes: {
+            ...state.notes,
+            allIds: state.notes.allIds.filter((id) => id !== noteId),
+          },
+        };
+      }),
     updateNote: (noteId, updater) =>
       set((state) => {
         const prevNote = state.notes.byId[noteId];

@@ -2,19 +2,29 @@ export function startMove(
   e: MouseEvent | TouchEvent,
   div: HTMLDivElement | null,
   onMove: (dx: number, dy: number) => void,
-  onEnd?: () => void
+  onEnd?: () => void,
+  includeScrollOffsets: boolean = true
 ) {
+  if (!div) return;
   e.preventDefault();
 
-  const rect = div?.getBoundingClientRect()
-  const startX = "touches" in e ? e.touches[0].clientX : e.clientX - (rect?.left ?? 0);
-  const startY = "touches" in e ? e.touches[0].clientY : e.clientY - (rect?.top ?? 0);
+  const rect = div.getBoundingClientRect();
+
+  const getLocalPos = (ev: MouseEvent | TouchEvent) => {
+    const clientX = "touches" in ev ? ev.touches[0].clientX : ev.clientX;
+    const clientY = "touches" in ev ? ev.touches[0].clientY : ev.clientY;
+    return {
+      x: clientX - rect.left + (includeScrollOffsets ? div.scrollLeft : 0),
+      y: clientY - rect.top + (includeScrollOffsets ? div.scrollTop : 0),
+    };
+  };
+
+  const startPos = getLocalPos(e);
 
   function handleMove(ev: MouseEvent | TouchEvent) {
-    const clientX = "touches" in ev ? ev.touches[0].clientX : ev.clientX - (rect?.left ?? 0);
-    const clientY = "touches" in ev ? ev.touches[0].clientY : ev.clientY - (rect?.top ?? 0);
-    const dx = clientX - startX;
-    const dy = clientY - startY;
+    const pos = getLocalPos(ev)
+    const dx = pos.x - startPos.x;
+    const dy = pos.y - startPos.y;
     onMove(dx, dy);
   }
 

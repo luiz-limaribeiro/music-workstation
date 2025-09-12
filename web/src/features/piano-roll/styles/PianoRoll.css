@@ -2,6 +2,8 @@
   display: flex;
 }
 
+.piano-roll::-webkit-scrollbar { display: none;}
+
 .keys-container {
   width: 7em;
   flex-shrink: 0;
@@ -14,3 +16,5 @@
   scrollbar-width: none;
   position: relative;
 }
+
+.timeline-container::-webkit-scrollbar { display: none;}

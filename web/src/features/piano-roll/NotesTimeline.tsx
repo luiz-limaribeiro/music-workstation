@@ -11,6 +11,7 @@ export default function NotesTimeline() {
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
   const notesIds = usePianoRollStore((state) => state.notes.allIds);
+  const timelineLength = usePianoRollStore((state) => state.length)
   const addNote = usePianoRollStore((state) => state.pianoRollActions.addNote);
   const selectNote = usePianoRollStore(
     (state) => state.pianoRollActions.selectNote
@@ -38,44 +39,74 @@ export default function NotesTimeline() {
     addNote(newPianoNote(pos.col, 4, pos.row));
   }
 
-  function handleMove(note: PianoNote, e: MouseEvent) {
-    const originalStart = note.start
-    const originalMidi = note.keyId
+  function handleNoteMove(note: PianoNote, e: MouseEvent) {
+    const originalStart = note.start;
+    const originalMidi = note.keyId;
 
     startMove(e, timelineRef.current, (dx, dy) => {
       const deltaCols = Math.round(dx / cellWidth);
       const deltaRows = Math.round(dy / cellHeight);
 
-      const newStart = originalStart + deltaCols
+      const newStart = originalStart + deltaCols;
       const newMidi = originalMidi - deltaRows * -1;
 
       updateNote(note.id, (note) => ({
         ...note,
         start: newStart >= 0 ? newStart : 0,
-        keyId: newMidi < 0 ? 0 : (newMidi > pianoKeys.length-1 ? pianoKeys.length-1 : newMidi) ,
+        keyId:
+          newMidi < 0
+            ? 0
+            : newMidi > pianoKeys.length - 1
+            ? pianoKeys.length - 1
+            : newMidi,
       }));
     });
   }
 
-  function handleResize(note: PianoNote, e: MouseEvent) {
-    const originalLength = note.length
+  function handleNoteResize(note: PianoNote, e: MouseEvent) {
+    const originalLength = note.length;
 
     startMove(e, timelineRef.current, (dx) => {
-      const deltaCols = Math.round(dx / cellWidth)
-      const newLength = originalLength + deltaCols
+      const deltaCols = Math.round(dx / cellWidth);
+      const newLength = originalLength + deltaCols;
 
       updateNote(note.id, (note) => ({
         ...note,
-        length: newLength >= 1 ? newLength : 1
-      }))
-    })
+        length: newLength >= 1 ? newLength : 1,
+      }));
+    });
   }
 
-  return (
+    return (
     <div
       ref={timelineRef}
       className="notes-timeline"
-      onMouseDown={handleAddNote}
+      style={{
+        width: timelineLength * cellWidth,
+        height: pianoKeys.length * cellHeight,
+        position: 'relative'
+      }}
+      onMouseDown={(e) => {
+        if (!e.shiftKey) handleAddNote(e);
+      }}
+      onMouseUp={() => {
+        document.body.classList.remove("grabbing-cursor");
+      }}
+      onMouseLeave={() => {
+        document.body.classList.remove("grabbing-cursor");
+      }}
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Shift") {
+          if (timelineRef.current) timelineRef.current.style.cursor = "cell";
+        }
+      }}
+      onKeyUp={(e) => {
+        if (e.key === "Shift") {
+          if (timelineRef.current) timelineRef.current.style.cursor = "default";
+        }
+      }}
+      onContextMenu={(e) => e.preventDefault()}
     >
       <Grid cellWidth={cellWidth} cellHeight={cellHeight} />
       {notesIds.map((id) => (
@@ -83,8 +114,8 @@ export default function NotesTimeline() {
           key={id}
           noteId={id}
           selectNote={selectNote}
-          onMove={handleMove}
-          onResize={handleResize}
+          onMove={handleNoteMove}
+          onResize={handleNoteResize}
         />
       ))}
     </div>
