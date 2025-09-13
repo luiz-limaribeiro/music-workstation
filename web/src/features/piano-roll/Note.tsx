@@ -1,13 +1,12 @@
 import React from "react";
 import "./styles/Note.css";
 import usePianoRollStore from "../../store/pianoRollStore";
-import type { PianoNote } from "../../data/pianoNote";
 
 interface Props {
   noteId: number;
   selectNote: (noteId: number) => void;
-  onMove: (note: PianoNote, e: MouseEvent) => void;
-  onResize: (note: PianoNote, e: MouseEvent) => void;
+  onMove: (e: MouseEvent) => void;
+  onResize: (e: MouseEvent) => void;
 }
 
 function Note({ noteId, selectNote, onMove, onResize }: Props) {
@@ -36,7 +35,7 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
           resetSelected()
 
         selectNote(noteId);
-        onMove(note, e as unknown as MouseEvent);
+        onMove(e as unknown as MouseEvent);
       }}
       style={{
         position: "absolute",
@@ -54,7 +53,7 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         onMouseDown={(e) => {
           if (e.buttons & 1) {
             e.stopPropagation();
-            onResize(note, e as unknown as MouseEvent);
+            onResize(e as unknown as MouseEvent);
           }
         }}
       />

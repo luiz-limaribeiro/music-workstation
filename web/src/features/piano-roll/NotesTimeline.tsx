@@ -3,7 +3,7 @@ import usePianoRollStore from "../../store/pianoRollStore";
 import Grid from "./Grid";
 import Note from "./Note";
 import { useRef } from "react";
-import { newPianoNote, type PianoNote } from "../../data/pianoNote";
+import { newPianoNote } from "../../data/pianoNote";
 import { startMove } from "../../common/startMove";
 import { pianoKeys } from "../../data/pianoKeys";
 
@@ -19,7 +19,9 @@ export default function NotesTimeline() {
   const updateNote = usePianoRollStore(
     (state) => state.pianoRollActions.updateNote
   );
-  const resetSelected = usePianoRollStore((state) => state.pianoRollActions.resetSelected)
+  const resetSelected = usePianoRollStore(
+    (state) => state.pianoRollActions.resetSelected
+  );
 
   const timelineRef = useRef<HTMLDivElement>(null);
   const selectionOverlayRef = useRef<HTMLDivElement>(null);
@@ -33,13 +35,6 @@ export default function NotesTimeline() {
     };
   }
 
-  function gridToPixels(col: number, row: number) {
-    return {
-      x: col * cellWidth,
-      y: row * cellHeight,
-    };
-  }
-
   function handleAddNote(e: React.MouseEvent) {
     const timelineRect = timelineRef.current?.getBoundingClientRect();
     if (!timelineRect) return;
@@ -50,31 +45,39 @@ export default function NotesTimeline() {
     addNote(newPianoNote(pos.col, 4, pos.row));
   }
 
-  function handleNoteMove(note: PianoNote, e: MouseEvent) {
-    const originalStart = note.start;
-    const originalMidi = note.keyId;
+  function handleNoteMove(e: MouseEvent) {
+    const selectedNotes = usePianoRollStore.getState().selectedNotes;
+    for (const noteId of selectedNotes) {
+      const note = usePianoRollStore.getState().notes.byId[noteId]
+      const originalStart = note.start;
+      const originalMidi = note.keyId;
 
-    startMove(e, timelineRef.current, (dx, dy) => {
-      const deltaCols = Math.round(dx / cellWidth);
-      const deltaRows = Math.round(dy / cellHeight);
+      startMove(e, timelineRef.current, (dx, dy) => {
+        const deltaCols = Math.round(dx / cellWidth);
+        const deltaRows = Math.round(dy / cellHeight);
 
-      const newStart = originalStart + deltaCols;
-      const newMidi = originalMidi - deltaRows * -1;
+        const newStart = originalStart + deltaCols;
+        const newMidi = originalMidi - deltaRows * -1;
 
-      updateNote(note.id, (note) => ({
-        ...note,
-        start: newStart >= 0 ? newStart : 0,
-        keyId:
-          newMidi < 0
-            ? 0
-            : newMidi > pianoKeys.length - 1
-            ? pianoKeys.length - 1
-            : newMidi,
-      }));
-    });
+        updateNote(note.id, (note) => ({
+          ...note,
+          start: newStart >= 0 ? newStart : 0,
+          keyId:
+            newMidi < 0
+              ? 0
+              : newMidi > pianoKeys.length - 1
+              ? pianoKeys.length - 1
+              : newMidi,
+        }));
+      });
+    }
   }
 
-  function handleNoteResize(note: PianoNote, e: MouseEvent) {
+  function handleNoteResize(e: MouseEvent) {
+
+    const selectedNotes = usePianoRollStore.getState().selectedNotes;
+    for (const noteId of selectedNotes) {
+      const note = usePianoRollStore.getState().notes.byId[noteId]
     const originalLength = note.length;
 
     startMove(e, timelineRef.current, (dx) => {
@@ -86,6 +89,7 @@ export default function NotesTimeline() {
         length: newLength >= 1 ? newLength : 1,
       }));
     });
+  }
   }
 
   function handleSelectionBox(e: MouseEvent) {
@@ -117,20 +121,20 @@ export default function NotesTimeline() {
         const notesIds = usePianoRollStore.getState().notes.allIds;
         const notes = usePianoRollStore.getState().notes.byId;
 
-        const boxLeft = Math.min(leftTop.col, rightBottom.col)
-        const boxRight = Math.max(leftTop.col, rightBottom.col)
-        const boxTop = Math.min(leftTop.row, rightBottom.row)
-        const boxBottom = Math.max(leftTop.row, rightBottom.row)
+        const boxLeft = Math.min(leftTop.col, rightBottom.col);
+        const boxRight = Math.max(leftTop.col, rightBottom.col);
+        const boxTop = Math.min(leftTop.row, rightBottom.row);
+        const boxBottom = Math.max(leftTop.row, rightBottom.row);
 
         for (const id of notesIds) {
           const note = notes[id];
-          const noteLeft = note.start
-          const noteRight = note.start + note.length
-          const noteTop = note.keyId
-          const noteBottom = note.keyId + 1
+          const noteLeft = note.start;
+          const noteRight = note.start + note.length;
+          const noteTop = note.keyId;
+          const noteBottom = note.keyId + 1;
 
           if (
-            noteLeft < boxRight-1 &&
+            noteLeft < boxRight - 1 &&
             noteRight > boxLeft &&
             noteTop < boxBottom &&
             noteBottom > boxTop
@@ -157,9 +161,9 @@ export default function NotesTimeline() {
       }}
       onMouseDown={(e) => {
         if (!e.ctrlKey && e.buttons & 1) {
-          resetSelected()
+          resetSelected();
         }
-        
+
         if (!e.shiftKey && e.buttons & 1) {
           handleSelectionBox(e as unknown as MouseEvent);
           adding.current = true;
