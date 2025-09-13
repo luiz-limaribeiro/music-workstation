@@ -15,11 +15,14 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
   const selected = usePianoRollStore(
-    (state) => state.selectedNoteId === noteId
+    (state) => state.selectedNotes.has(noteId)
   );
   const remove = usePianoRollStore(
     (state) => state.pianoRollActions.removeNote
   );
+  const resetSelected = usePianoRollStore(
+    state => state.pianoRollActions.resetSelected
+  )
 
   return (
     <div
@@ -29,6 +32,9 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         if (e.shiftKey) remove(noteId);
 
         e.stopPropagation();
+        if (!(e.ctrlKey) && !selected)
+          resetSelected()
+
         selectNote(noteId);
         onMove(note, e as unknown as MouseEvent);
       }}

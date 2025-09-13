@@ -11,7 +11,7 @@ export default function NotesTimeline() {
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
   const notesIds = usePianoRollStore((state) => state.notes.allIds);
-  const timelineLength = usePianoRollStore((state) => state.length)
+  const timelineLength = usePianoRollStore((state) => state.length);
   const addNote = usePianoRollStore((state) => state.pianoRollActions.addNote);
   const selectNote = usePianoRollStore(
     (state) => state.pianoRollActions.selectNote
@@ -19,8 +19,12 @@ export default function NotesTimeline() {
   const updateNote = usePianoRollStore(
     (state) => state.pianoRollActions.updateNote
   );
+  const resetSelected = usePianoRollStore((state) => state.pianoRollActions.resetSelected)
 
   const timelineRef = useRef<HTMLDivElement>(null);
+  const selectionOverlayRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const adding = useRef(false);
 
   function pixelsToGrid(x: number, y: number) {
     return {
@@ -29,9 +33,16 @@ export default function NotesTimeline() {
     };
   }
 
+  function gridToPixels(col: number, row: number) {
+    return {
+      x: col * cellWidth,
+      y: row * cellHeight,
+    };
+  }
+
   function handleAddNote(e: React.MouseEvent) {
     const timelineRect = timelineRef.current?.getBoundingClientRect();
-    if (!timelineRect || !(e.buttons & 1)) return;
+    if (!timelineRect) return;
 
     const x = e.clientX - timelineRect.x;
     const y = e.clientY - timelineRect.y;
@@ -77,19 +88,92 @@ export default function NotesTimeline() {
     });
   }
 
-    return (
+  function handleSelectionBox(e: MouseEvent) {
+    const rect = timelineRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const startX = e.clientX - rect.left;
+    const startY = e.clientY - rect.top;
+
+    startMove(
+      e,
+      timelineRef.current,
+      (dx, dy) => {
+        if (!boxRef.current) return;
+        const x = startX + dx;
+        const y = startY + dy;
+
+        boxRef.current.style.top = `${Math.min(startY, y)}px`;
+        boxRef.current.style.left = `${Math.min(startX, x)}px`;
+        boxRef.current.style.width = `${Math.abs(x - startX)}px`;
+        boxRef.current.style.height = `${Math.abs(y - startY)}px`;
+      },
+      () => {
+        if (!boxRef.current) return;
+        const rect = boxRef.current.getBoundingClientRect();
+        const leftTop = pixelsToGrid(rect.left, rect.top);
+        const rightBottom = pixelsToGrid(rect.right, rect.bottom);
+
+        const notesIds = usePianoRollStore.getState().notes.allIds;
+        const notes = usePianoRollStore.getState().notes.byId;
+
+        const boxLeft = Math.min(leftTop.col, rightBottom.col)
+        const boxRight = Math.max(leftTop.col, rightBottom.col)
+        const boxTop = Math.min(leftTop.row, rightBottom.row)
+        const boxBottom = Math.max(leftTop.row, rightBottom.row)
+
+        for (const id of notesIds) {
+          const note = notes[id];
+          const noteLeft = note.start
+          const noteRight = note.start + note.length
+          const noteTop = note.keyId
+          const noteBottom = note.keyId + 1
+
+          if (
+            noteLeft < boxRight-1 &&
+            noteRight > boxLeft &&
+            noteTop < boxBottom &&
+            noteBottom > boxTop
+          ) {
+            selectNote(id);
+          }
+        }
+
+        boxRef.current.style.width = "0px";
+        boxRef.current.style.height = "0px";
+      },
+      false
+    );
+  }
+
+  return (
     <div
       ref={timelineRef}
       className="notes-timeline"
       style={{
         width: timelineLength * cellWidth,
         height: pianoKeys.length * cellHeight,
-        position: 'relative'
+        position: "relative",
       }}
       onMouseDown={(e) => {
-        if (!e.shiftKey) handleAddNote(e);
+        if (!e.ctrlKey && e.buttons & 1) {
+          resetSelected()
+        }
+        
+        if (!e.shiftKey && e.buttons & 1) {
+          handleSelectionBox(e as unknown as MouseEvent);
+          adding.current = true;
+        }
       }}
-      onMouseUp={() => {
+      onMouseUp={(e) => {
+        if (boxRef.current) {
+          const rect = boxRef.current.getBoundingClientRect();
+
+          if (adding.current && rect.width < 20 && rect.height < 20)
+            handleAddNote(e);
+        }
+
+        adding.current = false;
         document.body.classList.remove("grabbing-cursor");
       }}
       onMouseLeave={() => {
@@ -118,6 +202,9 @@ export default function NotesTimeline() {
           onResize={handleNoteResize}
         />
       ))}
+      <div ref={selectionOverlayRef} className="selection-overlay">
+        <div ref={boxRef} className="selection-box" />
+      </div>
     </div>
   );
 }
