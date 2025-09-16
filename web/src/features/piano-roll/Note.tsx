@@ -53,6 +53,7 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         onMouseDown={(e) => {
           if (e.buttons & 1) {
             e.stopPropagation();
+            selectNote(noteId)
             onResize(e as unknown as MouseEvent);
           }
         }}

@@ -3,19 +3,32 @@ import type { PianoKey } from "../../data/pianoKeys";
 import usePianoRollStore from "../../store/pianoRollStore";
 
 interface Props {
-  pianoKey: PianoKey
+  pianoKey: PianoKey;
   highlightKey: (keyId: number) => void;
   onMouseLeaveOrUp: (keyId: number) => void;
+  onKeyDown: (pianoKey: PianoKey) => void;
+  onKeyUp: (pianoKey: PianoKey) => void;
 }
 
-function Key({ pianoKey, highlightKey, onMouseLeaveOrUp }: Props) {
-  const cellHeight = usePianoRollStore((state) => state.cellHeight)
-  const highlighted = usePianoRollStore((state) => state.highlightedKeys.includes(pianoKey.id))
+function Key({
+  pianoKey,
+  highlightKey,
+  onMouseLeaveOrUp,
+  onKeyDown,
+  onKeyUp,
+}: Props) {
+  const cellHeight = usePianoRollStore((state) => state.cellHeight);
+  const highlighted = usePianoRollStore((state) =>
+    state.highlightedKeys.includes(pianoKey.id)
+  );
 
   function handleMouseEnter(e: React.MouseEvent, keyId: number) {
-    if (e.buttons & 1) highlightKey(keyId);
+    if (e.buttons & 1) {
+      highlightKey(keyId);
+      onKeyDown(pianoKey);
+    }
   }
-  
+
   return (
     <div
       className={`key
@@ -23,10 +36,19 @@ function Key({ pianoKey, highlightKey, onMouseLeaveOrUp }: Props) {
             ${highlighted ? "active" : ""}
           `}
       style={{ height: cellHeight }}
-      onMouseDown={() => highlightKey(pianoKey.id)}
-      onMouseUp={() => onMouseLeaveOrUp(pianoKey.id)}
+      onMouseDown={() => {
+        highlightKey(pianoKey.id);
+        onKeyDown(pianoKey);
+      }}
+      onMouseUp={() => {
+        onMouseLeaveOrUp(pianoKey.id);
+        onKeyUp(pianoKey);
+      }}
       onMouseEnter={(e) => handleMouseEnter(e, pianoKey.id)}
-      onMouseLeave={() => onMouseLeaveOrUp(pianoKey.id)}
+      onMouseLeave={() => {
+        onMouseLeaveOrUp(pianoKey.id);
+        onKeyUp(pianoKey);
+      }}
     >
       {pianoKey.note === "C" && (
         <div className="octave-label">
@@ -38,4 +60,4 @@ function Key({ pianoKey, highlightKey, onMouseLeaveOrUp }: Props) {
   );
 }
 
-export default React.memo(Key)
+export default React.memo(Key);

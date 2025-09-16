@@ -18,3 +18,13 @@
 }
 
 .timeline-container::-webkit-scrollbar { display: none;}
+
+.loading {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #1114;
+  color: white;
+}

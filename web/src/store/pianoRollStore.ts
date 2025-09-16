@@ -44,7 +44,6 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
           byId: { ...state.notes.byId, [note.id]: note },
           allIds: [...state.notes.allIds, note.id],
         },
-        selectedNoteId: note.id,
       })),
     removeNote: (noteId) =>
       set((state) => {

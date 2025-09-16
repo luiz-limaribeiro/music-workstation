@@ -27,6 +27,7 @@ export default function NotesTimeline() {
   const selectionOverlayRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const adding = useRef(false);
+  
 
   function pixelsToGrid(x: number, y: number) {
     return {
@@ -48,7 +49,7 @@ export default function NotesTimeline() {
   function handleNoteMove(e: MouseEvent) {
     const selectedNotes = usePianoRollStore.getState().selectedNotes;
     for (const noteId of selectedNotes) {
-      const note = usePianoRollStore.getState().notes.byId[noteId]
+      const note = usePianoRollStore.getState().notes.byId[noteId];
       const originalStart = note.start;
       const originalMidi = note.keyId;
 
@@ -74,27 +75,26 @@ export default function NotesTimeline() {
   }
 
   function handleNoteResize(e: MouseEvent) {
-
     const selectedNotes = usePianoRollStore.getState().selectedNotes;
     for (const noteId of selectedNotes) {
-      const note = usePianoRollStore.getState().notes.byId[noteId]
-    const originalLength = note.length;
+      const note = usePianoRollStore.getState().notes.byId[noteId];
+      const originalLength = note.length;
 
-    startMove(e, timelineRef.current, (dx) => {
-      const deltaCols = Math.round(dx / cellWidth);
-      const newLength = originalLength + deltaCols;
+      startMove(e, timelineRef.current, (dx) => {
+        const deltaCols = Math.round(dx / cellWidth);
+        const newLength = originalLength + deltaCols;
 
-      updateNote(note.id, (note) => ({
-        ...note,
-        length: newLength >= 1 ? newLength : 1,
-      }));
-    });
-  }
+        updateNote(note.id, (note) => ({
+          ...note,
+          length: newLength >= 1 ? newLength : 1,
+        }));
+      });
+    }
   }
 
   function handleSelectionBox(e: MouseEvent) {
     const rect = timelineRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    if (!rect || !timelineRef.current) return;
 
     const startX = e.clientX - rect.left;
     const startY = e.clientY - rect.top;
@@ -113,10 +113,18 @@ export default function NotesTimeline() {
         boxRef.current.style.height = `${Math.abs(y - startY)}px`;
       },
       () => {
-        if (!boxRef.current) return;
-        const rect = boxRef.current.getBoundingClientRect();
-        const leftTop = pixelsToGrid(rect.left, rect.top);
-        const rightBottom = pixelsToGrid(rect.right, rect.bottom);
+        if (!boxRef.current || !timelineRef.current) return;
+        const boxRect = boxRef.current.getBoundingClientRect();
+        const timelineRect = timelineRef.current.getBoundingClientRect();
+
+        const leftTop = pixelsToGrid(
+          boxRect.left - timelineRect.left + timelineRef.current.scrollLeft,
+          boxRect.top - timelineRect.top + timelineRef.current.scrollTop
+        );
+        const rightBottom = pixelsToGrid(
+          boxRect.right - timelineRect.left + timelineRef.current.scrollLeft,
+          boxRect.bottom - timelineRect.top + timelineRef.current.scrollTop
+        );
 
         const notesIds = usePianoRollStore.getState().notes.allIds;
         const notes = usePianoRollStore.getState().notes.byId;
@@ -146,7 +154,7 @@ export default function NotesTimeline() {
         boxRef.current.style.width = "0px";
         boxRef.current.style.height = "0px";
       },
-      false
+      true
     );
   }
 
