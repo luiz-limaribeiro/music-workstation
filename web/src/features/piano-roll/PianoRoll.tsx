@@ -4,12 +4,14 @@ import Keys from "./Keys";
 import NotesTimeline from "./NotesTimeline";
 import "./styles/PianoRoll.css";
 import { startMove } from "../../common/startMove";
-import type { PianoKey } from "../../data/pianoKeys";
+import { pianoKeys, type PianoKey } from "../../data/pianoKeys";
 
 export default function PianoRoll() {
   const timelineRef = useRef<HTMLDivElement | null>(null);
   const sampler = useRef<Tone.Sampler>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const keys = pianoKeys
 
   useEffect(() => {
     sampler.current = new Tone.Sampler({
@@ -82,6 +84,11 @@ export default function PianoRoll() {
     sampler.current?.triggerRelease(key.note + key.octave);
   }
 
+  function playNote(midi: number) {
+    const key = pianoKeys[midi]
+    sampler.current?.triggerAttackRelease(key.note + key.octave, '8n')
+  }
+
   return (
     <div className="piano-roll">
       <div
@@ -93,7 +100,7 @@ export default function PianoRoll() {
           }
         }}
       >
-        <Keys onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} />
+        <Keys keys={keys} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} />
       </div>
       <div
         className="timeline-container"
@@ -106,7 +113,7 @@ export default function PianoRoll() {
           }
         }}
       >
-        <NotesTimeline />
+        <NotesTimeline playNote={playNote} />
       </div>
       {!isLoaded && <span className="loading">Loading...</span>}
     </div>

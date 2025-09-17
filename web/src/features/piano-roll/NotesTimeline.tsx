@@ -7,7 +7,11 @@ import { newPianoNote } from "../../data/pianoNote";
 import { startMove } from "../../common/startMove";
 import { pianoKeys } from "../../data/pianoKeys";
 
-export default function NotesTimeline() {
+interface Props {
+  playNote: (midi: number) => void;
+}
+
+export default function NotesTimeline({ playNote }: Props) {
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
   const notesIds = usePianoRollStore((state) => state.notes.allIds);
@@ -27,7 +31,6 @@ export default function NotesTimeline() {
   const selectionOverlayRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const adding = useRef(false);
-  
 
   function pixelsToGrid(x: number, y: number) {
     return {
@@ -44,32 +47,39 @@ export default function NotesTimeline() {
     const y = e.clientY - timelineRect.y;
     const pos = pixelsToGrid(x, y);
     addNote(newPianoNote(pos.col, 4, pos.row));
+    playNote(pos.row);
   }
 
   function handleNoteMove(e: MouseEvent) {
     const selectedNotes = usePianoRollStore.getState().selectedNotes;
+
     for (const noteId of selectedNotes) {
       const note = usePianoRollStore.getState().notes.byId[noteId];
       const originalStart = note.start;
       const originalMidi = note.keyId;
 
+      let start = note.start;
+      let midi = note.keyId;
+
       startMove(e, timelineRef.current, (dx, dy) => {
         const deltaCols = Math.round(dx / cellWidth);
         const deltaRows = Math.round(dy / cellHeight);
 
-        const newStart = originalStart + deltaCols;
-        const newMidi = originalMidi - deltaRows * -1;
+        const newStart = Math.max(0, originalStart + deltaCols);
+        const newMidi = Math.min(
+          pianoKeys.length - 1,
+          Math.max(0, originalMidi + deltaRows)
+        );
 
-        updateNote(note.id, (note) => ({
-          ...note,
-          start: newStart >= 0 ? newStart : 0,
-          keyId:
-            newMidi < 0
-              ? 0
-              : newMidi > pianoKeys.length - 1
-              ? pianoKeys.length - 1
-              : newMidi,
-        }));
+        if (newStart !== start || newMidi !== midi) {
+          start = newStart;
+          midi = newMidi;
+          updateNote(note.id, (note) => ({
+            ...note,
+            start: newStart,
+            keyId: newMidi,
+          }));
+        }
       });
     }
   }
@@ -79,15 +89,19 @@ export default function NotesTimeline() {
     for (const noteId of selectedNotes) {
       const note = usePianoRollStore.getState().notes.byId[noteId];
       const originalLength = note.length;
+      let length = originalLength;
 
       startMove(e, timelineRef.current, (dx) => {
         const deltaCols = Math.round(dx / cellWidth);
         const newLength = originalLength + deltaCols;
 
-        updateNote(note.id, (note) => ({
-          ...note,
-          length: newLength >= 1 ? newLength : 1,
-        }));
+        if (newLength !== length) {
+          length = newLength
+          updateNote(note.id, (note) => ({
+            ...note,
+            length: newLength >= 1 ? newLength : 1,
+          }));
+        }
       });
     }
   }
