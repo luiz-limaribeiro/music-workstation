@@ -5,16 +5,24 @@ import NotesTimeline from "./NotesTimeline";
 import "./styles/PianoRoll.css";
 import { startMove } from "../../common/startMove";
 import { pianoKeys, type PianoKey } from "../../data/pianoKeys";
+import usePianoRollStore from "../../store/pianoRollStore";
 
 export default function PianoRoll() {
-  const timelineRef = useRef<HTMLDivElement | null>(null);
-  const sampler = useRef<Tone.Sampler>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const samplerRef = useRef<Tone.Sampler>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const keys = pianoKeys
+  const cellWidth = usePianoRollStore((state) => state.cellWidth);
+  const cellHeight = usePianoRollStore((state) => state.cellHeight);
+  const updateCellDimensions = usePianoRollStore(
+    (state) => state.pianoRollActions.updateCellDimensions
+  );
 
+  const keys = pianoKeys;
+
+  // Setup sampler
   useEffect(() => {
-    sampler.current = new Tone.Sampler({
+    samplerRef.current = new Tone.Sampler({
       urls: {
         A0: "A0.mp3",
         A1: "A1.mp3",
@@ -55,11 +63,11 @@ export default function PianoRoll() {
     }).toDestination();
 
     return () => {
-      sampler.current?.dispose();
+      samplerRef.current?.dispose();
     };
   }, []);
 
-  function handleScroll(e: MouseEvent) {
+  function handleHorizontalScroll(e: MouseEvent) {
     if (!timelineRef.current) return;
     const startLeft = timelineRef.current.scrollLeft;
 
@@ -77,20 +85,42 @@ export default function PianoRoll() {
   }
 
   function handleKeyDown(key: PianoKey) {
-    sampler.current?.triggerAttack(key.note + key.octave);
+    samplerRef.current?.triggerAttack(key.note + key.octave);
   }
 
   function handleKeyUp(key: PianoKey) {
-    sampler.current?.triggerRelease(key.note + key.octave);
+    samplerRef.current?.triggerRelease(key.note + key.octave);
   }
 
   function playNote(midi: number) {
-    const key = pianoKeys[midi]
-    sampler.current?.triggerAttackRelease(key.note + key.octave, '8n')
+    const key = pianoKeys[midi];
+    samplerRef.current?.triggerAttackRelease(key.note + key.octave, "8n");
   }
 
   return (
     <div className="piano-roll">
+      <button
+        className="zoom-in"
+        onClick={() => {
+          updateCellDimensions(
+            Math.min(cellWidth + 4, 48),
+            Math.min(cellHeight + 4, 28)
+          );
+        }}
+      >
+        +
+      </button>
+      <button
+        className="zoom-out"
+        onClick={() => {
+          updateCellDimensions(
+            Math.max(24, cellWidth - 4),
+            Math.max(14, cellHeight - 4)
+          );
+        }}
+      >
+        -
+      </button>
       <div
         className="keys-container"
         onMouseDown={() => {
@@ -108,12 +138,12 @@ export default function PianoRoll() {
         onMouseDown={(e) => {
           if (e.buttons & 2) {
             e.preventDefault();
-            handleScroll(e as unknown as MouseEvent);
+            handleHorizontalScroll(e as unknown as MouseEvent);
             document.body.classList.add("grabbing-cursor");
           }
         }}
       >
-        <NotesTimeline playNote={playNote} />
+        <NotesTimeline playNote={playNote} timelineOffsetX={timelineRef.current?.scrollLeft || 0} />
       </div>
       {!isLoaded && <span className="loading">Loading...</span>}
     </div>

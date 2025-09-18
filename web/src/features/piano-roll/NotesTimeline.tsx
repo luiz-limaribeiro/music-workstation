@@ -8,10 +8,11 @@ import { startMove } from "../../common/startMove";
 import { pianoKeys } from "../../data/pianoKeys";
 
 interface Props {
+  timelineOffsetX: number
   playNote: (midi: number) => void;
 }
 
-export default function NotesTimeline({ playNote }: Props) {
+export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
   const notesIds = usePianoRollStore((state) => state.notes.allIds);
@@ -218,7 +219,13 @@ export default function NotesTimeline({ playNote }: Props) {
       }}
       onContextMenu={(e) => e.preventDefault()}
     >
-      <Grid cellWidth={cellWidth} cellHeight={cellHeight} />
+      <Grid
+        cellWidth={cellWidth}
+        cellHeight={cellHeight}
+        offsetX={timelineOffsetX}
+        offsetY={0}
+        timelineLength={timelineLength}
+      />
       {notesIds.map((id) => (
         <Note
           key={id}

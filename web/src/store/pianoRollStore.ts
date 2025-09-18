@@ -20,6 +20,7 @@ export type PianoRollStore = {
     ) => void;
     selectNote: (noteId: number) => void;
     resetSelected: () => void;
+    updateCellDimensions: (width: number, height: number) => void;
   };
 };
 
@@ -73,8 +74,9 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
       }),
     selectNote: (noteId) =>
       set((state) => ({ selectedNotes: state.selectedNotes.add(noteId) })),
-    resetSelected: () =>
-      set({ selectedNotes: new Set<number>() }),
+    resetSelected: () => set({ selectedNotes: new Set<number>() }),
+    updateCellDimensions: (width, height) =>
+      set({ cellWidth: width, cellHeight: height }),
   },
 }));
 

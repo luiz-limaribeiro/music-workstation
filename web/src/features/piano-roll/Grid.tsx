@@ -1,41 +1,81 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "./styles/Grid.css";
-import usePianoRollStore from "../../store/pianoRollStore";
 
 interface Props {
   cellWidth: number;
   cellHeight: number;
+  offsetX: number;
+  offsetY: number;
+  timelineLength: number;
 }
 
-const NUMBER_OF_KEYS = 12 * 9;
+function Grid({
+  cellWidth,
+  cellHeight,
+  offsetX,
+  offsetY,
+  timelineLength,
+}: Props) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-function Grid({ cellWidth, cellHeight }: Props) {
-  const timelineLength = usePianoRollStore(state => state.length)
-  
+  useEffect(() => {
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext("2d")!;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
+    ctx.scale(dpr, dpr);
+
+    drawGrid(ctx);
+  }, [cellWidth, cellHeight, offsetX, offsetY, timelineLength]);
+
+  function drawGrid(ctx: CanvasRenderingContext2D) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    const width = ctx.canvas.width / (window.devicePixelRatio || 1);
+    const height = ctx.canvas.height / (window.devicePixelRatio || 1);
+
+    ctx.strokeStyle = "#1115";
+    ctx.lineWidth = 1;
+
+    for (let x = -offsetX % cellWidth; x < width; x += cellWidth) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+
+    for (let y = 0; y < height; y += cellHeight) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = "#111";
+    ctx.lineWidth = 2;
+
+    for (let x = -offsetX % (cellWidth * 4); x < width; x += cellWidth * 4) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+
+    for (let y = 0; y < height; y += cellHeight * 12) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+  }
+
   return (
-    <div
+    <canvas
+      ref={canvasRef}
       className="grid"
-      style={{
-        gridTemplateColumns: `repeat(${timelineLength}, ${cellWidth}px)`,
-        gridTemplateRows: `repeat(${NUMBER_OF_KEYS}, ${cellHeight}px)`,
-      }}
-    >
-      {Array.from({ length: NUMBER_OF_KEYS }).flatMap((_, rowIndex) =>
-        Array.from({ length: timelineLength }).map((_, colIndex) => (
-          <div
-            key={`${rowIndex}-${colIndex}`}
-            style={{
-              width: cellWidth,
-              height: cellHeight,
-              borderLeft:
-                colIndex % 4 === 0 ? "2px solid #1115" : "1px solid #1115",
-              borderTop:
-                rowIndex % 12 === 0 ? "2px solid #1115" : "1px solid #1115",
-            }}
-          />
-        ))
-      )}
-    </div>
+    />
   );
 }
 
