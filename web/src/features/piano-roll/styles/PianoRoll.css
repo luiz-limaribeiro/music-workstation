@@ -5,24 +5,30 @@
 
 .piano-roll::-webkit-scrollbar { display: none;}
 
-.zoom-in {
+.zoom {
   position: fixed;
-  right: 20px;
   top: 0;
+  right: 0;
+  background-color: #335;
+  opacity: .7;
   z-index: 2;
-  width: 20px;
 }
 
-.zoom-out {
-  position: fixed;
-  right: 0;
-  top: 0;
-  z-index: 2;
-  width: 20px;
+.horizontal-zoom {
+  width: 100vw;
+  height: 10px;
+  right: 10px;
+  cursor: ew-resize;
+}
+
+.vertical-zoom {
+  width: 10px;
+  height: 100vh;
+  top: 10px;
+  cursor: ns-resize;
 }
 
 .keys-container {
-  width: 7em;
   flex-shrink: 0;
 }
 

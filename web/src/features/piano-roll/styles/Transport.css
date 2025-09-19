@@ -1,0 +1,19 @@
+.transport {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #3359;
+  color: white;
+  padding: 1.4em 2em;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.transport button {
+  width: 4em;
+  height: 2em;
+  background-color: #335;
+  color: white;
+}

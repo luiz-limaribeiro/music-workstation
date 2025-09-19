@@ -18,6 +18,7 @@ function Key({
   onKeyUp,
 }: Props) {
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
+  const cellWidth = usePianoRollStore(state => state.cellWidth)
   const highlighted = usePianoRollStore((state) =>
     state.highlightedKeys.includes(pianoKey.id)
   );
@@ -35,7 +36,7 @@ function Key({
             ${pianoKey.note.length > 1 ? "black-key" : "white-key"}
             ${highlighted ? "active" : ""}
           `}
-      style={{ height: cellHeight }}
+      style={{ height: cellHeight, width: cellWidth * 3 }}
       onMouseDown={() => {
         highlightKey(pianoKey.id);
         onKeyDown(pianoKey);

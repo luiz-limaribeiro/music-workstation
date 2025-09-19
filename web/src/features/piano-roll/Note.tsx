@@ -52,6 +52,7 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         className={`resize-handler`}
         onMouseDown={(e) => {
           if (e.buttons & 1) {
+            if (!selected) resetSelected()
             e.stopPropagation();
             selectNote(noteId)
             onResize(e as unknown as MouseEvent);

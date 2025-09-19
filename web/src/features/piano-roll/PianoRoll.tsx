@@ -6,10 +6,16 @@ import "./styles/PianoRoll.css";
 import { startMove } from "../../common/startMove";
 import { pianoKeys, type PianoKey } from "../../data/pianoKeys";
 import usePianoRollStore from "../../store/pianoRollStore";
+import { newPianoSampler } from "../../samples/piano";
+import Transport from "./Transport";
 
 export default function PianoRoll() {
+  const pianoRollRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const samplerRef = useRef<Tone.Sampler>(null);
+  const horizontalRef = useRef<HTMLDivElement>(null);
+  const verticalRef = useRef<HTMLDivElement>(null);
+
   const [isLoaded, setIsLoaded] = useState(false);
 
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
@@ -22,50 +28,58 @@ export default function PianoRoll() {
 
   // Setup sampler
   useEffect(() => {
-    samplerRef.current = new Tone.Sampler({
-      urls: {
-        A0: "A0.mp3",
-        A1: "A1.mp3",
-        A2: "A2.mp3",
-        A3: "A3.mp3",
-        A4: "A4.mp3",
-        A5: "A5.mp3",
-        A6: "A6.mp3",
-        A7: "A7.mp3",
-        C1: "C1.mp3",
-        C2: "C2.mp3",
-        C3: "C3.mp3",
-        C4: "C4.mp3",
-        C5: "C5.mp3",
-        C6: "C6.mp3",
-        C7: "C7.mp3",
-        C8: "C8.mp3",
-        "D#1": "Ds1.mp3",
-        "D#2": "Ds2.mp3",
-        "D#3": "Ds3.mp3",
-        "D#4": "Ds4.mp3",
-        "D#5": "Ds5.mp3",
-        "D#6": "Ds6.mp3",
-        "D#7": "Ds7.mp3",
-        "F#1": "Fs1.mp3",
-        "F#2": "Fs2.mp3",
-        "F#3": "Fs3.mp3",
-        "F#4": "Fs4.mp3",
-        "F#5": "Fs5.mp3",
-        "F#6": "Fs6.mp3",
-        "F#7": "Fs7.mp3",
-      },
-      release: 1,
-      baseUrl: "https://tonejs.github.io/audio/salamander/",
-      onload: () => {
-        setIsLoaded(true);
-      },
-    }).toDestination();
+    samplerRef.current = newPianoSampler(() => {
+      setIsLoaded(true);
+    });
 
     return () => {
       samplerRef.current?.dispose();
     };
   }, []);
+
+  useEffect(() => {
+    const el = pianoRollRef.current;
+    if (!el) return;
+
+    function handleZoom(e: WheelEvent) {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const factor = (e.deltaY / 120) * -1;
+        updateCellDimensions(cellWidth + factor, cellHeight + factor);
+      }
+    }
+
+    el.addEventListener("wheel", handleZoom, { passive: false });
+    return () => el.removeEventListener("wheel", handleZoom);
+  }, [updateCellDimensions, cellWidth, cellHeight]);
+
+  useEffect(() => {
+    const el = horizontalRef.current;
+    if (!el) return;
+
+    function handleZoom(e: WheelEvent) {
+      e.preventDefault();
+      const factor = (e.deltaY / 120) * -1;
+      updateCellDimensions(cellWidth + factor, cellHeight);
+    }
+
+    el.addEventListener("wheel", handleZoom, { passive: false });
+    return () => el.removeEventListener("wheel", handleZoom);
+  }, [updateCellDimensions, cellWidth, cellHeight]);
+
+  useEffect(() => {
+    const el = verticalRef.current;
+    if (!el) return;
+
+    function handleZoom(e: WheelEvent) {
+      e.preventDefault();
+      const factor = (e.deltaY / 120) * -1;
+      updateCellDimensions(cellWidth, cellHeight + factor);
+    }
+
+    el.addEventListener("wheel", handleZoom, { passive: false });
+    return () => el.removeEventListener("wheel", handleZoom);
+  }, [updateCellDimensions, cellWidth, cellHeight]);
 
   function handleHorizontalScroll(e: MouseEvent) {
     if (!timelineRef.current) return;
@@ -98,29 +112,9 @@ export default function PianoRoll() {
   }
 
   return (
-    <div className="piano-roll">
-      <button
-        className="zoom-in"
-        onClick={() => {
-          updateCellDimensions(
-            Math.min(cellWidth + 4, 48),
-            Math.min(cellHeight + 4, 28)
-          );
-        }}
-      >
-        +
-      </button>
-      <button
-        className="zoom-out"
-        onClick={() => {
-          updateCellDimensions(
-            Math.max(24, cellWidth - 4),
-            Math.max(14, cellHeight - 4)
-          );
-        }}
-      >
-        -
-      </button>
+    <div className="piano-roll" ref={pianoRollRef}>
+      <div className="zoom horizontal-zoom" ref={horizontalRef} />
+      <div className="zoom vertical-zoom" ref={verticalRef} />
       <div
         className="keys-container"
         onMouseDown={() => {
@@ -143,9 +137,13 @@ export default function PianoRoll() {
           }
         }}
       >
-        <NotesTimeline playNote={playNote} timelineOffsetX={timelineRef.current?.scrollLeft || 0} />
+        <NotesTimeline
+          playNote={playNote}
+          timelineOffsetX={timelineRef.current?.scrollLeft || 0}
+        />
       </div>
       {!isLoaded && <span className="loading">Loading...</span>}
+      <Transport />
     </div>
   );
 }

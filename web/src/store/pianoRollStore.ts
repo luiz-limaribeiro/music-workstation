@@ -8,6 +8,7 @@ export type PianoRollStore = {
   cellWidth: number;
   cellHeight: number;
   selectedNotes: Set<number>;
+  recentNoteLength: number;
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
     highlightKey: (keyId: number) => void;
@@ -21,6 +22,7 @@ export type PianoRollStore = {
     selectNote: (noteId: number) => void;
     resetSelected: () => void;
     updateCellDimensions: (width: number, height: number) => void;
+    setRecentNoteLength: (length: number) => void;
   };
 };
 
@@ -28,9 +30,10 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
   highlightedKeys: [],
   notes: { byId: {}, allIds: [] },
   length: 80,
-  cellWidth: 48,
+  cellWidth: 38,
   cellHeight: 28,
   selectedNotes: new Set<number>(),
+  recentNoteLength: 4,
   pianoRollActions: {
     setHighlightedKeys: (keyIds) => set(() => ({ highlightedKeys: keyIds })),
     highlightKey: (keyId) =>
@@ -76,7 +79,11 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
       set((state) => ({ selectedNotes: state.selectedNotes.add(noteId) })),
     resetSelected: () => set({ selectedNotes: new Set<number>() }),
     updateCellDimensions: (width, height) =>
-      set({ cellWidth: width, cellHeight: height }),
+      set({
+        cellWidth: Math.max(28, Math.min(width, 38)),
+        cellHeight: Math.max(18, Math.min(height, 28)),
+      }),
+    setRecentNoteLength: (length) => set({ recentNoteLength: length }),
   },
 }));
 

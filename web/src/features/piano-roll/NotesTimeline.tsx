@@ -8,7 +8,7 @@ import { startMove } from "../../common/startMove";
 import { pianoKeys } from "../../data/pianoKeys";
 
 interface Props {
-  timelineOffsetX: number
+  timelineOffsetX: number;
   playNote: (midi: number) => void;
 }
 
@@ -27,6 +27,9 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
   const resetSelected = usePianoRollStore(
     (state) => state.pianoRollActions.resetSelected
   );
+  const setRecentNoteLength = usePianoRollStore(
+    (state) => state.pianoRollActions.setRecentNoteLength
+  );
 
   const timelineRef = useRef<HTMLDivElement>(null);
   const selectionOverlayRef = useRef<HTMLDivElement>(null);
@@ -44,10 +47,11 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
     const timelineRect = timelineRef.current?.getBoundingClientRect();
     if (!timelineRect) return;
 
+    const length = usePianoRollStore.getState().recentNoteLength;
     const x = e.clientX - timelineRect.x;
     const y = e.clientY - timelineRect.y;
     const pos = pixelsToGrid(x, y);
-    addNote(newPianoNote(pos.col, 4, pos.row));
+    addNote(newPianoNote(pos.col, length, pos.row));
     playNote(pos.row);
   }
 
@@ -72,6 +76,10 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
           Math.max(0, originalMidi + deltaRows)
         );
 
+        if (newMidi !== midi) {
+          playNote(newMidi)
+        }
+
         if (newStart !== start || newMidi !== midi) {
           start = newStart;
           midi = newMidi;
@@ -92,18 +100,28 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
       const originalLength = note.length;
       let length = originalLength;
 
-      startMove(e, timelineRef.current, (dx) => {
-        const deltaCols = Math.round(dx / cellWidth);
-        const newLength = originalLength + deltaCols;
+      startMove(
+        e,
+        timelineRef.current,
+        (dx) => {
+          const deltaCols = Math.round(dx / cellWidth);
+          const newLength = originalLength + deltaCols;
 
-        if (newLength !== length) {
-          length = newLength
-          updateNote(note.id, (note) => ({
-            ...note,
-            length: newLength >= 1 ? newLength : 1,
-          }));
+          if (newLength !== length) {
+            length = newLength;
+            updateNote(note.id, (note) => ({
+              ...note,
+              length: newLength >= 1 ? newLength : 1,
+            }));
+          }
+        },
+        () => {
+          for (const noteId of selectedNotes) {
+            const note = usePianoRollStore.getState().notes.byId[noteId];
+            setRecentNoteLength(note.length)
+          }
         }
-      });
+      );
     }
   }
 
