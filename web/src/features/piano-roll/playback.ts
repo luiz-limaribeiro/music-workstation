@@ -42,11 +42,12 @@ export async function play() {
 
   const transport = Tone.getTransport()
   const notes = usePianoRollStore.getState().notes;
+  const bpm = usePianoRollStore.getState().bpm
 
   transport.cancel(0)
   if (part) part.dispose();
 
-  transport.set({ bpm: 120 })
+  transport.set({ bpm: bpm })
   transport.position = 0
   transport.loop = true
   transport.loopEnd = stepsToToneTime(usePianoRollStore.getState().length)
