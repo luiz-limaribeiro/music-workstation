@@ -12,7 +12,27 @@ function stepsToToneTime(steps: number) {
   return `0:0:${steps}`
 }
 
+function formatTime(seconds: number) {
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = Math.floor(seconds % 60)
+  const milliseconds = Math.floor((seconds % 1) * 100)
+
+  const paddedMinutes = String(minutes).padStart(2, '0')
+  const paddedSeconds = String(remainingSeconds).padStart(2, '0')
+  const paddedMilliseconds = String(milliseconds).padStart(2, '0')
+
+  return `${paddedMinutes}:${paddedSeconds}:${paddedMilliseconds}`
+}
+
+function updateClock() {
+  const timeInSeconds = Tone.getTransport().seconds;
+  const setPlaybackTime = usePianoRollStore.getState().pianoRollActions.setPlaybackTime
+
+  setPlaybackTime(formatTime(timeInSeconds))
+}
+
 let part: Tone.Part | null = null
+let scheduleId: number = -1
 
 export async function play() {
   await Tone.start()
@@ -40,10 +60,13 @@ export async function play() {
     }
   })
 
-  // Part
   part = new Tone.Part((time, value) => {
     synth.triggerAttackRelease(value.note, value.dur, time);
   }, events).start(0);
+
+  scheduleId = transport.scheduleRepeat(() => {
+    updateClock()
+  }, 0.05)
 
   transport.start();
 }
@@ -51,4 +74,5 @@ export async function play() {
 export function stop() {
   Tone.getTransport().stop();
   Tone.getTransport().position = 0;
+  Tone.getTransport().cancel(scheduleId)
 }
