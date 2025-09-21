@@ -7,6 +7,9 @@ import { startMove } from "../../common/startMove";
 import { pianoKeys } from "../../data/pianoKeys";
 import Playhead from "./Playhead";
 import Notes from "./Notes";
+import { updateTimelineLength } from "../../common/timelineLength";
+
+const LENGTH = 80
 
 interface Props {
   timelineOffsetX: number;
@@ -16,7 +19,6 @@ interface Props {
 export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
-  const timelineLength = usePianoRollStore((state) => state.length);
   const addNote = usePianoRollStore((state) => state.pianoRollActions.addNote);
   const selectNote = usePianoRollStore(
     (state) => state.pianoRollActions.selectNote
@@ -51,10 +53,11 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
     const x = e.clientX - timelineRect.x;
     const y = e.clientY - timelineRect.y;
     const pos = pixelsToGrid(x, y);
-    addNote(newPianoNote(pos.col, length, pos.row));
+    const newNote = newPianoNote(pos.col, length, pos.row)
+    addNote(newNote);
     playNote(pos.row);
+    updateTimelineLength()
   }
-
 
   function handleSelectionBox(e: MouseEvent) {
     const rect = timelineRef.current?.getBoundingClientRect();
@@ -127,7 +130,7 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
       ref={timelineRef}
       className="notes-timeline"
       style={{
-        width: timelineLength * cellWidth,
+        width: LENGTH * cellWidth,
         height: pianoKeys.length * cellHeight,
         position: "relative",
       }}
@@ -161,11 +164,13 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
       onKeyDown={(e) => {
         if (e.key === "Delete") {
           removeSelected();
+          updateTimelineLength()
         }
 
         if (e.ctrlKey && (e.key === "d" || e.key === "D")) {
           e.preventDefault();
           duplicateSelected()
+          updateTimelineLength()
         }
       }}
       onContextMenu={(e) => e.preventDefault()}
@@ -175,7 +180,6 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
         cellHeight={cellHeight}
         offsetX={timelineOffsetX}
         offsetY={0}
-        timelineLength={timelineLength}
       />
       { timelineRef.current && <Notes timelineRef={timelineRef.current} playNote={playNote} /> }
       <div ref={selectionOverlayRef} className="selection-overlay">

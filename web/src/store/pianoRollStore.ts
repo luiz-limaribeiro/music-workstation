@@ -15,6 +15,7 @@ export type PianoRollStore = {
   bpm: number;
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
+    setLength: (length: number) => void;
     highlightKey: (keyId: number) => void;
     resetKey: (keyId: number) => void;
     addNote: (note: PianoNote) => void;
@@ -39,7 +40,7 @@ export type PianoRollStore = {
 const usePianoRollStore = create<PianoRollStore>((set) => ({
   highlightedKeys: [],
   notes: { byId: {}, allIds: [] },
-  length: 80,
+  length: 16,
   cellWidth: 38,
   cellHeight: 28,
   selectedNotes: new Set<number>(),
@@ -50,6 +51,7 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
   bpm: 120,
   pianoRollActions: {
     setHighlightedKeys: (keyIds) => set(() => ({ highlightedKeys: keyIds })),
+    setLength: (length) => set({ length: length }),
     highlightKey: (keyId) =>
       set((state) => ({ highlightedKeys: [...state.highlightedKeys, keyId] })),
     resetKey: (keyId) =>
@@ -110,25 +112,25 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
     resetSelected: () => set({ selectedNotes: new Set<number>() }),
     duplicatedSelected: () =>
       set((state) => {
-        const newNotes: PianoNote[] = []
-        const newSelectedIds = new Set<number>()
+        const newNotes: PianoNote[] = [];
+        const newSelectedIds = new Set<number>();
 
-        state.selectedNotes.forEach(id => {
-          const note = state.notes.byId[id]
-          const newNote = newPianoNote(note.start + 1, note.length, note.keyId)
-          newNotes.push(newNote)
-          newSelectedIds.add(newNote.id)
-        })
+        state.selectedNotes.forEach((id) => {
+          const note = state.notes.byId[id];
+          const newNote = newPianoNote(note.start + 1, note.length, note.keyId);
+          newNotes.push(newNote);
+          newSelectedIds.add(newNote.id);
+        });
 
         const newById = {
           ...state.notes.byId,
-          ...Object.fromEntries(newNotes.map(note => [note.id, note]))
-        }
+          ...Object.fromEntries(newNotes.map((note) => [note.id, note])),
+        };
 
         const newAllIds = [
           ...state.notes.allIds,
-          ...newNotes.map(note => note.id)
-        ]
+          ...newNotes.map((note) => note.id),
+        ];
 
         return {
           notes: {

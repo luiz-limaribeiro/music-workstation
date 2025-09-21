@@ -1,4 +1,5 @@
 import { startMove } from "../../common/startMove";
+import { updateTimelineLength } from "../../common/timelineLength";
 import { pianoKeys } from "../../data/pianoKeys";
 import usePianoRollStore from "../../store/pianoRollStore";
 import Note from "./Note";
@@ -50,7 +51,9 @@ export default function Notes({ timelineRef, playNote }: Props) {
             keyId: newMidi,
           }));
         }
-      });
+      },
+      () => { updateTimelineLength() }
+    );
     }
   }
 
@@ -80,6 +83,7 @@ export default function Notes({ timelineRef, playNote }: Props) {
           for (const noteId of selectedNotes) {
             const note = usePianoRollStore.getState().notes.byId[noteId];
             setRecentNoteLength(note.length);
+            updateTimelineLength()
           }
         }
       );

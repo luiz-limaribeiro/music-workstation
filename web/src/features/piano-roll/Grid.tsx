@@ -1,21 +1,16 @@
 import React, { useEffect, useRef } from "react";
 import "./styles/Grid.css";
+import usePianoRollStore from "../../store/pianoRollStore";
 
 interface Props {
   cellWidth: number;
   cellHeight: number;
   offsetX: number;
   offsetY: number;
-  timelineLength: number;
 }
 
-function Grid({
-  cellWidth,
-  cellHeight,
-  offsetX,
-  offsetY,
-  timelineLength,
-}: Props) {
+function Grid({ cellWidth, cellHeight, offsetX, offsetY }: Props) {
+  const timelineLength = usePianoRollStore((state) => state.length);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -29,6 +24,11 @@ function Grid({
       const width = ctx.canvas.width / (window.devicePixelRatio || 1);
       const height = ctx.canvas.height / (window.devicePixelRatio || 1);
 
+      // Active area
+      ctx.fillStyle = "#252535";
+      ctx.fillRect(0, 0, timelineLength * cellWidth, ctx.canvas.height / dpr);
+
+      // Lines
       ctx.strokeStyle = "#1115";
       ctx.lineWidth = 1;
 
@@ -47,7 +47,7 @@ function Grid({
       }
 
       ctx.strokeStyle = "#111";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1;
 
       for (let x = -offsetX % (cellWidth * 4); x < width; x += cellWidth * 4) {
         ctx.beginPath();
@@ -60,6 +60,19 @@ function Grid({
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      ctx.lineWidth = 3;
+
+      for (
+        let x = -offsetX % (cellWidth * 16);
+        x < width;
+        x += cellWidth * 16
+      ) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
         ctx.stroke();
       }
     }

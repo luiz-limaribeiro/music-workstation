@@ -1,6 +1,7 @@
 import React from "react";
 import "./styles/Note.css";
 import usePianoRollStore from "../../store/pianoRollStore";
+import { updateTimelineLength } from "../../common/timelineLength";
 
 interface Props {
   noteId: number;
@@ -13,26 +14,28 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
   const note = usePianoRollStore((state) => state.notes.byId[noteId]);
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
-  const selected = usePianoRollStore(
-    (state) => state.selectedNotes.has(noteId)
+  const selected = usePianoRollStore((state) =>
+    state.selectedNotes.has(noteId)
   );
   const remove = usePianoRollStore(
     (state) => state.pianoRollActions.removeNote
   );
   const resetSelected = usePianoRollStore(
-    state => state.pianoRollActions.resetSelected
-  )
+    (state) => state.pianoRollActions.resetSelected
+  );
 
   return (
     <div
       className={`note ${selected ? "selected" : ""}`}
       onMouseDown={(e) => {
         if (!(e.buttons & 1)) return;
-        if (e.shiftKey) remove(noteId);
+        if (e.shiftKey) {
+          remove(noteId);
+          updateTimelineLength()
+        }
 
         e.stopPropagation();
-        if (!(e.ctrlKey) && !selected)
-          resetSelected()
+        if (!e.ctrlKey && !selected) resetSelected();
 
         selectNote(noteId);
         onMove(e as unknown as MouseEvent);
@@ -45,16 +48,19 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         height: cellHeight,
       }}
       onMouseEnter={(e) => {
-        if (e.buttons & 1 && e.shiftKey) remove(noteId);
+        if (e.buttons & 1 && e.shiftKey) {
+          remove(noteId);
+          updateTimelineLength();
+        }
       }}
     >
       <div
         className={`resize-handler`}
         onMouseDown={(e) => {
           if (e.buttons & 1) {
-            if (!selected) resetSelected()
+            if (!selected) resetSelected();
             e.stopPropagation();
-            selectNote(noteId)
+            selectNote(noteId);
             onResize(e as unknown as MouseEvent);
           }
         }}
