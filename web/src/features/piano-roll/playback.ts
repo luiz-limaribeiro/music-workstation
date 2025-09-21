@@ -9,7 +9,11 @@ function keyIdToNoteName(keyId: number) {
 }
 
 function stepsToToneTime(steps: number) {
-  return `0:0:${steps}`
+  const totalSixteenths = steps;
+  const bars = Math.floor(totalSixteenths / 16)
+  const beats = Math.floor((totalSixteenths % 16) / 4)
+  const sixteenths = totalSixteenths % 4
+  return `${bars}:${beats}:${sixteenths}`
 }
 
 function formatTime(seconds: number) {
@@ -25,10 +29,13 @@ function formatTime(seconds: number) {
 }
 
 function updateClock() {
-  const timeInSeconds = Tone.getTransport().seconds;
+  const position = Tone.getTransport().position
+  const seconds = Tone.Time(position).toSeconds()
   const setPlaybackTime = usePianoRollStore.getState().pianoRollActions.setPlaybackTime
+  const setPlaybackSeconds = usePianoRollStore.getState().pianoRollActions.setPlaybackSeconds
 
-  setPlaybackTime(formatTime(timeInSeconds))
+  setPlaybackTime(formatTime(seconds))
+  setPlaybackSeconds(seconds)
 }
 
 let part: Tone.Part | null = null
@@ -48,7 +55,6 @@ export async function play() {
   if (part) part.dispose();
 
   transport.set({ bpm: bpm })
-  transport.position = 0
   transport.loop = true
   transport.loopEnd = stepsToToneTime(usePianoRollStore.getState().length)
 
@@ -73,7 +79,8 @@ export async function play() {
 }
 
 export function stop() {
-  Tone.getTransport().stop();
-  Tone.getTransport().position = 0;
-  Tone.getTransport().cancel(scheduleId)
+  const transport = Tone.getTransport()
+  transport.stop();
+  transport.cancel(scheduleId)
+  transport.position = 0;
 }

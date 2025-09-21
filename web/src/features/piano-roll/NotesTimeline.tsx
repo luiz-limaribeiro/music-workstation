@@ -1,11 +1,12 @@
 import "./styles/NotesTimeline.css";
 import usePianoRollStore from "../../store/pianoRollStore";
 import Grid from "./Grid";
-import Note from "./Note";
 import { useRef } from "react";
 import { newPianoNote } from "../../data/pianoNote";
 import { startMove } from "../../common/startMove";
 import { pianoKeys } from "../../data/pianoKeys";
+import Playhead from "./Playhead";
+import Notes from "./Notes";
 
 interface Props {
   timelineOffsetX: number;
@@ -15,20 +16,19 @@ interface Props {
 export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
-  const notesIds = usePianoRollStore((state) => state.notes.allIds);
   const timelineLength = usePianoRollStore((state) => state.length);
   const addNote = usePianoRollStore((state) => state.pianoRollActions.addNote);
   const selectNote = usePianoRollStore(
     (state) => state.pianoRollActions.selectNote
   );
-  const updateNote = usePianoRollStore(
-    (state) => state.pianoRollActions.updateNote
-  );
   const resetSelected = usePianoRollStore(
     (state) => state.pianoRollActions.resetSelected
   );
-  const setRecentNoteLength = usePianoRollStore(
-    (state) => state.pianoRollActions.setRecentNoteLength
+  const removeSelected = usePianoRollStore(
+    (state) => state.pianoRollActions.removeSelected
+  );
+  const duplicateSelected = usePianoRollStore(
+    (state) => state.pianoRollActions.duplicatedSelected
   );
 
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -55,75 +55,6 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
     playNote(pos.row);
   }
 
-  function handleNoteMove(e: MouseEvent) {
-    const selectedNotes = usePianoRollStore.getState().selectedNotes;
-
-    for (const noteId of selectedNotes) {
-      const note = usePianoRollStore.getState().notes.byId[noteId];
-      const originalStart = note.start;
-      const originalMidi = note.keyId;
-
-      let start = note.start;
-      let midi = note.keyId;
-
-      startMove(e, timelineRef.current, (dx, dy) => {
-        const deltaCols = Math.round(dx / cellWidth);
-        const deltaRows = Math.round(dy / cellHeight);
-
-        const newStart = Math.max(0, originalStart + deltaCols);
-        const newMidi = Math.min(
-          pianoKeys.length - 1,
-          Math.max(0, originalMidi + deltaRows)
-        );
-
-        if (newMidi !== midi) {
-          playNote(newMidi)
-        }
-
-        if (newStart !== start || newMidi !== midi) {
-          start = newStart;
-          midi = newMidi;
-          updateNote(note.id, (note) => ({
-            ...note,
-            start: newStart,
-            keyId: newMidi,
-          }));
-        }
-      });
-    }
-  }
-
-  function handleNoteResize(e: MouseEvent) {
-    const selectedNotes = usePianoRollStore.getState().selectedNotes;
-    for (const noteId of selectedNotes) {
-      const note = usePianoRollStore.getState().notes.byId[noteId];
-      const originalLength = note.length;
-      let length = originalLength;
-
-      startMove(
-        e,
-        timelineRef.current,
-        (dx) => {
-          const deltaCols = Math.round(dx / cellWidth);
-          const newLength = originalLength + deltaCols;
-
-          if (newLength !== length) {
-            length = newLength;
-            updateNote(note.id, (note) => ({
-              ...note,
-              length: newLength >= 1 ? newLength : 1,
-            }));
-          }
-        },
-        () => {
-          for (const noteId of selectedNotes) {
-            const note = usePianoRollStore.getState().notes.byId[noteId];
-            setRecentNoteLength(note.length)
-          }
-        }
-      );
-    }
-  }
 
   function handleSelectionBox(e: MouseEvent) {
     const rect = timelineRef.current?.getBoundingClientRect();
@@ -214,8 +145,10 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
         if (boxRef.current) {
           const rect = boxRef.current.getBoundingClientRect();
 
-          if (adding.current && rect.width < 20 && rect.height < 20)
+          if (adding.current && rect.width < 20 && rect.height < 20) {
             handleAddNote(e);
+            if (timelineRef.current) timelineRef.current.focus();
+          }
         }
 
         adding.current = false;
@@ -226,13 +159,13 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
       }}
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === "Shift") {
-          if (timelineRef.current) timelineRef.current.style.cursor = "cell";
+        if (e.key === "Delete") {
+          removeSelected();
         }
-      }}
-      onKeyUp={(e) => {
-        if (e.key === "Shift") {
-          if (timelineRef.current) timelineRef.current.style.cursor = "default";
+
+        if (e.ctrlKey && (e.key === "d" || e.key === "D")) {
+          e.preventDefault();
+          duplicateSelected()
         }
       }}
       onContextMenu={(e) => e.preventDefault()}
@@ -244,18 +177,11 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
         offsetY={0}
         timelineLength={timelineLength}
       />
-      {notesIds.map((id) => (
-        <Note
-          key={id}
-          noteId={id}
-          selectNote={selectNote}
-          onMove={handleNoteMove}
-          onResize={handleNoteResize}
-        />
-      ))}
+      { timelineRef.current && <Notes timelineRef={timelineRef.current} playNote={playNote} /> }
       <div ref={selectionOverlayRef} className="selection-overlay">
         <div ref={boxRef} className="selection-box" />
       </div>
+      <Playhead />
     </div>
   );
 }

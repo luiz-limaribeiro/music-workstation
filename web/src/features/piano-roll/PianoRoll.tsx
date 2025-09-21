@@ -112,7 +112,10 @@ export default function PianoRoll() {
   }
 
   return (
-    <div className="piano-roll" ref={pianoRollRef}>
+    <div
+      className="piano-roll"
+      ref={pianoRollRef}
+    >
       <div className="zoom horizontal-zoom" ref={horizontalRef} />
       <div className="zoom vertical-zoom" ref={verticalRef} />
       <div

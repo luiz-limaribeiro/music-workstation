@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { PianoNote } from "../data/pianoNote";
+import { newPianoNote, type PianoNote } from "../data/pianoNote";
 
 export type PianoRollStore = {
   highlightedKeys: number[];
@@ -11,6 +11,7 @@ export type PianoRollStore = {
   recentNoteLength: number;
   isPlaying: boolean;
   playbackTime: string;
+  playbackSeconds: number;
   bpm: number;
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
@@ -22,12 +23,15 @@ export type PianoRollStore = {
       noteId: number,
       updater: (note: PianoNote) => PianoNote
     ) => void;
+    removeSelected: () => void;
     selectNote: (noteId: number) => void;
     resetSelected: () => void;
+    duplicatedSelected: () => void;
     updateCellDimensions: (width: number, height: number) => void;
     setRecentNoteLength: (length: number) => void;
     setIsPlaying: (isPlaying: boolean) => void;
     setPlaybackTime: (time: string) => void;
+    setPlaybackSeconds: (seconds: number) => void;
     setBpm: (bpm: number) => void;
   };
 };
@@ -42,6 +46,7 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
   recentNoteLength: 4,
   isPlaying: false,
   playbackTime: "00:00:00",
+  playbackSeconds: 0,
   bpm: 120,
   pianoRollActions: {
     setHighlightedKeys: (keyIds) => set(() => ({ highlightedKeys: keyIds })),
@@ -69,6 +74,22 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
           },
         };
       }),
+    removeSelected: () =>
+      set((state) => {
+        let newAllIds = state.notes.allIds;
+
+        for (const id of state.selectedNotes) {
+          delete state.notes.byId[id];
+          newAllIds = newAllIds.filter((i) => i !== id);
+        }
+
+        return {
+          notes: {
+            ...state.notes,
+            allIds: newAllIds,
+          },
+        };
+      }),
     updateNote: (noteId, updater) =>
       set((state) => {
         const prevNote = state.notes.byId[noteId];
@@ -87,6 +108,36 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
     selectNote: (noteId) =>
       set((state) => ({ selectedNotes: state.selectedNotes.add(noteId) })),
     resetSelected: () => set({ selectedNotes: new Set<number>() }),
+    duplicatedSelected: () =>
+      set((state) => {
+        const newNotes: PianoNote[] = []
+        const newSelectedIds = new Set<number>()
+
+        state.selectedNotes.forEach(id => {
+          const note = state.notes.byId[id]
+          const newNote = newPianoNote(note.start + 1, note.length, note.keyId)
+          newNotes.push(newNote)
+          newSelectedIds.add(newNote.id)
+        })
+
+        const newById = {
+          ...state.notes.byId,
+          ...Object.fromEntries(newNotes.map(note => [note.id, note]))
+        }
+
+        const newAllIds = [
+          ...state.notes.allIds,
+          ...newNotes.map(note => note.id)
+        ]
+
+        return {
+          notes: {
+            byId: newById,
+            allIds: newAllIds,
+          },
+          selectedNotes: newSelectedIds,
+        };
+      }),
     updateCellDimensions: (width, height) =>
       set({
         cellWidth: Math.max(18, Math.min(width, 38)),
@@ -95,6 +146,7 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
     setRecentNoteLength: (length) => set({ recentNoteLength: length }),
     setIsPlaying: (isPlaying) => set({ isPlaying: isPlaying }),
     setPlaybackTime: (time) => set({ playbackTime: time }),
+    setPlaybackSeconds: (seconds) => set({ playbackSeconds: seconds }),
     setBpm: (bpm) => set({ bpm: bpm }),
   },
 }));
