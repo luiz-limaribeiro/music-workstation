@@ -3,14 +3,11 @@ import { useEffect, useRef } from "react";
 import usePianoRollStore from "../../store/pianoRollStore";
 import "./styles/Playhead.css";
 import { startMove } from "../../common/startMove";
+import { stepsToToneTime, toneTimeToSteps } from "../../common/syncHelper";
 
 export default function Playhead() {
-  const playbackSeconds = usePianoRollStore((state) => state.playbackSeconds);
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const isPlaying = usePianoRollStore((state) => state.isPlaying);
-  const setPlaybackSeconds = usePianoRollStore(
-    (state) => state.pianoRollActions.setPlaybackSeconds
-  );
 
   const playheadRef = useRef<HTMLDivElement>(null);
   const animationId = useRef(0);
@@ -23,8 +20,7 @@ export default function Playhead() {
 
     function movePlayhead() {
       const pos = transport.position;
-      const [bars, beats, sixteenths] = pos.toString().split(":");
-      const steps = Number(bars) * 16 + Number(beats) * 4 + Number(sixteenths);
+      const steps = toneTimeToSteps(pos.toString())
       const pixelPos = steps * cellWidth;
 
       if (el) el.style.left = `${pixelPos}px`;
@@ -46,18 +42,19 @@ export default function Playhead() {
 
   function handleMouseDown(e: MouseEvent) {
     e.stopPropagation();
-    const initialSeconds = playbackSeconds;
+    const transport = Tone.getTransport()
+    const initialStep = toneTimeToSteps(transport.position.toString())
 
     startMove(
       e,
       playheadRef.current,
       (dx) => {
         const numberOfSixteenthsMoved = dx / cellWidth;
-        const secondsMoved =
-          numberOfSixteenthsMoved * Tone.Time("16n").toSeconds();
-        const newPos = Math.max(0, initialSeconds + secondsMoved);
-        setPlaybackSeconds(newPos);
-        Tone.getTransport().position = newPos;
+        const newPos = initialStep + numberOfSixteenthsMoved
+        const pixelPos = newPos * cellWidth
+        transport.position = stepsToToneTime(newPos)
+        if (playheadRef.current)
+          playheadRef.current.style.left = `${pixelPos}px`
       },
       undefined,
       false

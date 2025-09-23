@@ -14,11 +14,10 @@ import { buildPlayback } from "./playback";
 const LENGTH = 80
 
 interface Props {
-  timelineOffsetX: number;
   playNote: (midi: number) => void;
 }
 
-export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
+export default function NotesTimeline({ playNote }: Props) {
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
   const addNote = usePianoRollStore((state) => state.pianoRollActions.addNote);
@@ -186,7 +185,6 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
       <Grid
         cellWidth={cellWidth}
         cellHeight={cellHeight}
-        offsetX={timelineOffsetX}
         offsetY={0}
       />
       { timelineRef.current && <Notes timelineRef={timelineRef.current} playNote={playNote} /> }

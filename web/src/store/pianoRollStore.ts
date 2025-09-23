@@ -11,7 +11,6 @@ export type PianoRollStore = {
   recentNoteLength: number;
   isPlaying: boolean;
   playbackClock: string;
-  playbackSeconds: number;
   bpm: number;
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
@@ -33,7 +32,6 @@ export type PianoRollStore = {
     setRecentNoteLength: (length: number) => void;
     setIsPlaying: (isPlaying: boolean) => void;
     setPlaybackClock: (time: string) => void;
-    setPlaybackSeconds: (seconds: number) => void;
     setBpm: (bpm: number) => void;
   };
 };
@@ -48,7 +46,6 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
   recentNoteLength: 4,
   isPlaying: false,
   playbackClock: "00:00:00",
-  playbackSeconds: 0,
   bpm: 120,
   pianoRollActions: {
     setHighlightedKeys: (keyIds) => set(() => ({ highlightedKeys: keyIds })),
@@ -113,12 +110,11 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
     unselectNote: (noteId) =>
       set((state) => {
         const selected = new Set<number>();
-        selected.clear()
+        selected.clear();
 
-        state.selectedNotes.forEach(id => {
-          if (id !== noteId)
-            selected.add(id)
-        })
+        state.selectedNotes.forEach((id) => {
+          if (id !== noteId) selected.add(id);
+        });
 
         return { selectedNotes: selected };
       }),
@@ -161,7 +157,6 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
     setRecentNoteLength: (length) => set({ recentNoteLength: length }),
     setIsPlaying: (isPlaying) => set({ isPlaying: isPlaying }),
     setPlaybackClock: (time) => set({ playbackClock: time }),
-    setPlaybackSeconds: (seconds) => set({ playbackSeconds: seconds }),
     setBpm: (bpm) => set({ bpm: bpm }),
   },
 }));

@@ -26,11 +26,8 @@ function updateClock() {
   const seconds = Tone.Time(position).toSeconds();
   const setPlaybackTime =
     usePianoRollStore.getState().pianoRollActions.setPlaybackClock;
-  const setPlaybackSeconds =
-    usePianoRollStore.getState().pianoRollActions.setPlaybackSeconds;
 
   setPlaybackTime(formatTime(seconds));
-  setPlaybackSeconds(seconds);
 }
 
 let part: Tone.Part | null = null;
@@ -82,5 +79,4 @@ export function pausePlayback() {
   transport.stop();
   transport.cancel(scheduleId);
   transport.position = 0;
-  usePianoRollStore.getState().pianoRollActions.setPlaybackSeconds(0)
 }

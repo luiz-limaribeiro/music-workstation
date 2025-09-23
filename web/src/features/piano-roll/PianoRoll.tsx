@@ -142,7 +142,6 @@ export default function PianoRoll() {
       >
         <NotesTimeline
           playNote={playNote}
-          timelineOffsetX={timelineRef.current?.scrollLeft || 0}
         />
       </div>
       {!isLoaded && <span className="loading">Loading...</span>}
