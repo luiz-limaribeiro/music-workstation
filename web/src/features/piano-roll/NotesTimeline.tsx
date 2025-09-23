@@ -8,6 +8,7 @@ import { pianoKeys } from "../../data/pianoKeys";
 import Playhead from "./Playhead";
 import Notes from "./Notes";
 import { updateTimelineLength } from "../../common/timelineLength";
+import { buildPlayback } from "./playback";
 
 const LENGTH = 80
 
@@ -57,6 +58,7 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
     addNote(newNote);
     playNote(pos.row);
     updateTimelineLength()
+    buildPlayback()
   }
 
   function handleSelectionBox(e: MouseEvent) {

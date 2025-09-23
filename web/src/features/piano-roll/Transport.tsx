@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import usePianoRollStore from "../../store/pianoRollStore";
-import { play, stop } from "./playback";
+import { startPlayback, pausePlayback } from "./playback";
 import "./styles/Transport.css";
 
 export default function Transport() {
@@ -14,9 +14,9 @@ export default function Transport() {
 
   useEffect(() => {
     if (isPlaying) {
-      play()
+      startPlayback()
     } else {
-      stop()
+      pausePlayback()
     }
   }, [isPlaying])
 

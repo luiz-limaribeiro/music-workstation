@@ -2,6 +2,7 @@ import React from "react";
 import "./styles/Note.css";
 import usePianoRollStore from "../../store/pianoRollStore";
 import { updateTimelineLength } from "../../common/timelineLength";
+import { buildPlayback } from "./playback";
 
 interface Props {
   noteId: number;
@@ -32,6 +33,7 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         if (e.shiftKey) {
           remove(noteId);
           updateTimelineLength()
+          buildPlayback()
         }
 
         e.stopPropagation();
@@ -51,6 +53,7 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         if (e.buttons & 1 && e.shiftKey) {
           remove(noteId);
           updateTimelineLength();
+          buildPlayback()
         }
       }}
     >
