@@ -24,6 +24,9 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
   const resetSelected = usePianoRollStore(
     (state) => state.pianoRollActions.resetSelected
   );
+  const unselectNote = usePianoRollStore(
+    (state) => state.pianoRollActions.unselectNote
+  );
 
   return (
     <div
@@ -32,12 +35,18 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         if (!(e.buttons & 1)) return;
         if (e.shiftKey) {
           remove(noteId);
-          updateTimelineLength()
-          buildPlayback()
+          updateTimelineLength();
+          buildPlayback();
         }
 
         e.stopPropagation();
         if (!e.ctrlKey && !selected) resetSelected();
+        if (e.ctrlKey) {
+          if (selected) {
+            unselectNote(noteId);
+            return
+          }
+        }
 
         selectNote(noteId);
         onMove(e as unknown as MouseEvent);
@@ -53,7 +62,7 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         if (e.buttons & 1 && e.shiftKey) {
           remove(noteId);
           updateTimelineLength();
-          buildPlayback()
+          buildPlayback();
         }
       }}
     >

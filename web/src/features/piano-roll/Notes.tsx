@@ -1,3 +1,4 @@
+import * as Tone from 'tone'
 import { startMove } from "../../common/startMove";
 import { updateTimelineLength } from "../../common/timelineLength";
 import { pianoKeys } from "../../data/pianoKeys";
@@ -48,7 +49,7 @@ export default function Notes({ timelineRef, playNote }: Props) {
             Math.max(0, originalMidi + deltaRows)
           );
 
-          if (newMidi !== midi) {
+          if (newMidi !== midi && Tone.getTransport().state !== "started") {
             playNote(newMidi);
           }
 

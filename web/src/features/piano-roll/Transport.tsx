@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import usePianoRollStore from "../../store/pianoRollStore";
-import { startPlayback, pausePlayback } from "./playback";
+import { startPlayback, pausePlayback, buildPlayback } from "./playback";
 import "./styles/Transport.css";
 
 export default function Transport() {
-  const time = usePianoRollStore((state) => state.playbackTime);
+  const time = usePianoRollStore((state) => state.playbackClock);
   const isPlaying = usePianoRollStore((state) => state.isPlaying);
   const bpm = usePianoRollStore((state) => state.bpm)
   const setIsPlaying = usePianoRollStore((state) => state.pianoRollActions.setIsPlaying)
@@ -28,6 +28,7 @@ export default function Transport() {
       e.preventDefault()
       const amount = e.deltaY / 120 * -1
       setBpm(bpm + (amount < 0 ? -1 : 1))
+      buildPlayback()
     }
 
     el.addEventListener('wheel', handleScroll, { passive: false })

@@ -2,18 +2,11 @@ import * as Tone from "tone";
 import { sampler } from "../../samples/piano";
 import usePianoRollStore from "../../store/pianoRollStore";
 import { pianoKeys } from "../../data/pianoKeys";
+import { stepsToToneTime } from "../../common/syncHelper";
 
 function keyIdToNoteName(keyId: number) {
   const key = pianoKeys[keyId];
   return key.note + key.octave;
-}
-
-function stepsToToneTime(steps: number) {
-  const totalSixteenths = steps;
-  const bars = Math.floor(totalSixteenths / 16);
-  const beats = Math.floor((totalSixteenths % 16) / 4);
-  const sixteenths = totalSixteenths % 4;
-  return `${bars}:${beats}:${sixteenths}`;
 }
 
 function formatTime(seconds: number) {
@@ -32,7 +25,7 @@ function updateClock() {
   const position = Tone.getTransport().position;
   const seconds = Tone.Time(position).toSeconds();
   const setPlaybackTime =
-    usePianoRollStore.getState().pianoRollActions.setPlaybackTime;
+    usePianoRollStore.getState().pianoRollActions.setPlaybackClock;
   const setPlaybackSeconds =
     usePianoRollStore.getState().pianoRollActions.setPlaybackSeconds;
 
@@ -79,7 +72,7 @@ export async function startPlayback() {
 
   scheduleId = transport.scheduleRepeat(() => {
     updateClock();
-  }, 0.05);
+  }, 0.05, 0);
 
   transport.start();
 }

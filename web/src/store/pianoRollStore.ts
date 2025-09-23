@@ -10,7 +10,7 @@ export type PianoRollStore = {
   selectedNotes: Set<number>;
   recentNoteLength: number;
   isPlaying: boolean;
-  playbackTime: string;
+  playbackClock: string;
   playbackSeconds: number;
   bpm: number;
   pianoRollActions: {
@@ -26,12 +26,13 @@ export type PianoRollStore = {
     ) => void;
     removeSelected: () => void;
     selectNote: (noteId: number) => void;
+    unselectNote: (noteId: number) => void;
     resetSelected: () => void;
     duplicatedSelected: () => void;
     updateCellDimensions: (width: number, height: number) => void;
     setRecentNoteLength: (length: number) => void;
     setIsPlaying: (isPlaying: boolean) => void;
-    setPlaybackTime: (time: string) => void;
+    setPlaybackClock: (time: string) => void;
     setPlaybackSeconds: (seconds: number) => void;
     setBpm: (bpm: number) => void;
   };
@@ -46,7 +47,7 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
   selectedNotes: new Set<number>(),
   recentNoteLength: 4,
   isPlaying: false,
-  playbackTime: "00:00:00",
+  playbackClock: "00:00:00",
   playbackSeconds: 0,
   bpm: 120,
   pianoRollActions: {
@@ -109,6 +110,18 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
       }),
     selectNote: (noteId) =>
       set((state) => ({ selectedNotes: state.selectedNotes.add(noteId) })),
+    unselectNote: (noteId) =>
+      set((state) => {
+        const selected = new Set<number>();
+        selected.clear()
+
+        state.selectedNotes.forEach(id => {
+          if (id !== noteId)
+            selected.add(id)
+        })
+
+        return { selectedNotes: selected };
+      }),
     resetSelected: () => set({ selectedNotes: new Set<number>() }),
     duplicatedSelected: () =>
       set((state) => {
@@ -147,7 +160,7 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
       }),
     setRecentNoteLength: (length) => set({ recentNoteLength: length }),
     setIsPlaying: (isPlaying) => set({ isPlaying: isPlaying }),
-    setPlaybackTime: (time) => set({ playbackTime: time }),
+    setPlaybackClock: (time) => set({ playbackClock: time }),
     setPlaybackSeconds: (seconds) => set({ playbackSeconds: seconds }),
     setBpm: (bpm) => set({ bpm: bpm }),
   },

@@ -1,3 +1,4 @@
+import * as Tone from 'tone'
 import "./styles/NotesTimeline.css";
 import usePianoRollStore from "../../store/pianoRollStore";
 import Grid from "./Grid";
@@ -56,7 +57,10 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
     const pos = pixelsToGrid(x, y);
     const newNote = newPianoNote(pos.col, length, pos.row)
     addNote(newNote);
-    playNote(pos.row);
+
+    if (Tone.getTransport().state !== 'started')
+      playNote(pos.row);
+    
     updateTimelineLength()
     buildPlayback()
   }
@@ -167,12 +171,14 @@ export default function NotesTimeline({ timelineOffsetX, playNote }: Props) {
         if (e.key === "Delete") {
           removeSelected();
           updateTimelineLength()
+          buildPlayback()
         }
 
         if (e.ctrlKey && (e.key === "d" || e.key === "D")) {
           e.preventDefault();
           duplicateSelected()
           updateTimelineLength()
+          buildPlayback()
         }
       }}
       onContextMenu={(e) => e.preventDefault()}

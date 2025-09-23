@@ -13,20 +13,35 @@ export default function Playhead() {
   );
 
   const playheadRef = useRef<HTMLDivElement>(null);
+  const animationId = useRef(0);
 
   useEffect(() => {
-    if (playheadRef.current) {
-      const sixteenthNoteInSeconds = Tone.Time("16n").toSeconds();
-      const totalSixteenths = playbackSeconds / sixteenthNoteInSeconds;
-      const leftPosition = totalSixteenths * cellWidth;
+    const el = playheadRef.current;
+    if (!el) return;
 
-      playheadRef.current.style.left = `${leftPosition}px`;
+    const transport = Tone.getTransport();
+
+    function movePlayhead() {
+      const pos = transport.position;
+      const [bars, beats, sixteenths] = pos.toString().split(":");
+      const steps = Number(bars) * 16 + Number(beats) * 4 + Number(sixteenths);
+      const pixelPos = steps * cellWidth;
+
+      if (el) el.style.left = `${pixelPos}px`;
+
+      animationId.current = requestAnimationFrame(movePlayhead)
     }
-  }, [playbackSeconds, cellWidth]);
 
-  useEffect(() => {
-    if (isPlaying === false && playheadRef.current)
-      playheadRef.current.style.left = `${0}px`;
+    if (isPlaying) {
+      movePlayhead();
+    } else {
+      el.style.left = `${0}px`;
+      cancelAnimationFrame(animationId.current);
+    }
+
+    return () => {
+      cancelAnimationFrame(animationId.current);
+    }
   }, [isPlaying]);
 
   function handleMouseDown(e: MouseEvent) {
@@ -40,8 +55,9 @@ export default function Playhead() {
         const numberOfSixteenthsMoved = dx / cellWidth;
         const secondsMoved =
           numberOfSixteenthsMoved * Tone.Time("16n").toSeconds();
-        setPlaybackSeconds(initialSeconds + secondsMoved);
-        Tone.getTransport().position = initialSeconds + secondsMoved
+        const newPos = Math.max(0, initialSeconds + secondsMoved);
+        setPlaybackSeconds(newPos);
+        Tone.getTransport().position = newPos;
       },
       undefined,
       false
@@ -50,9 +66,8 @@ export default function Playhead() {
 
   return (
     <div
-      className="playhead"
+      className='playhead'
       ref={playheadRef}
-      style={{ transition: isPlaying ? "all .2s ease-out" : "" }}
       onMouseDown={(e) => handleMouseDown(e as unknown as MouseEvent)}
     />
   );
