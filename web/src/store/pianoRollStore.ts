@@ -23,20 +23,21 @@ export type PianoRollStore = {
       noteId: number,
       updater: (note: PianoNote) => PianoNote
     ) => void;
-    removeSelected: () => void;
+    removeSelected: () => PianoNote[];
     selectNote: (noteId: number) => void;
     unselectNote: (noteId: number) => void;
     resetSelected: () => void;
-    duplicatedSelected: () => void;
+    duplicateSelected: () => PianoNote[];
     updateCellDimensions: (width: number, height: number) => void;
     setRecentNoteLength: (length: number) => void;
     setIsPlaying: (isPlaying: boolean) => void;
     setPlaybackClock: (time: string) => void;
     setBpm: (bpm: number) => void;
+    setSelectedNotes: (ids: Set<number>) => void;
   };
 };
 
-const usePianoRollStore = create<PianoRollStore>((set) => ({
+const usePianoRollStore = create<PianoRollStore>((set, get) => ({
   highlightedKeys: [],
   notes: { byId: {}, allIds: [] },
   length: 16,
@@ -74,22 +75,40 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
           },
         };
       }),
-    removeSelected: () =>
-      set((state) => {
-        let newAllIds = state.notes.allIds;
+    removeSelected: () => {
+      const state = get();
+      const allNotes = state.notes.byId;
+      const selectedIds = state.selectedNotes;
+      const removedNotes: PianoNote[] = [];
 
-        for (const id of state.selectedNotes) {
-          delete state.notes.byId[id];
-          newAllIds = newAllIds.filter((i) => i !== id);
+      selectedIds.forEach((id) => {
+        if (allNotes[id]) {
+          removedNotes.push(allNotes[id]);
         }
+      });
+
+      set((state) => {
+        const newById = { ...state.notes.byId };
+        const newAllIds = [...state.notes.allIds];
+
+        selectedIds.forEach((id) => {
+          delete newById[id];
+
+          const index = newAllIds.indexOf(id);
+          if (index > -1) newAllIds.splice(index, 1);
+        });
 
         return {
           notes: {
-            ...state.notes,
+            byId: newById,
             allIds: newAllIds,
           },
+          selectedNotes: new Set(),
         };
-      }),
+      });
+
+      return removedNotes;
+    },
     updateNote: (noteId, updater) =>
       set((state) => {
         const prevNote = state.notes.byId[noteId];
@@ -119,18 +138,20 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
         return { selectedNotes: selected };
       }),
     resetSelected: () => set({ selectedNotes: new Set<number>() }),
-    duplicatedSelected: () =>
+    duplicateSelected: () => {
+      const state = get();
+      const newNotes: PianoNote[] = [];
+      const newSelectedIds = new Set<number>();
+
+      state.selectedNotes.forEach((id) => {
+        const note = state.notes.byId[id];
+        if (!note) return;
+        const newNote = newPianoNote(note.start + 1, note.length, note.keyId);
+        newNotes.push(newNote);
+        newSelectedIds.add(newNote.id);
+      });
+
       set((state) => {
-        const newNotes: PianoNote[] = [];
-        const newSelectedIds = new Set<number>();
-
-        state.selectedNotes.forEach((id) => {
-          const note = state.notes.byId[id];
-          const newNote = newPianoNote(note.start + 1, note.length, note.keyId);
-          newNotes.push(newNote);
-          newSelectedIds.add(newNote.id);
-        });
-
         const newById = {
           ...state.notes.byId,
           ...Object.fromEntries(newNotes.map((note) => [note.id, note])),
@@ -148,7 +169,10 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
           },
           selectedNotes: newSelectedIds,
         };
-      }),
+      })
+      
+      return newNotes
+    },
     updateCellDimensions: (width, height) =>
       set({
         cellWidth: Math.max(18, Math.min(width, 38)),
@@ -158,6 +182,7 @@ const usePianoRollStore = create<PianoRollStore>((set) => ({
     setIsPlaying: (isPlaying) => set({ isPlaying: isPlaying }),
     setPlaybackClock: (time) => set({ playbackClock: time }),
     setBpm: (bpm) => set({ bpm: bpm }),
+    setSelectedNotes: (ids) => set({ selectedNotes: ids }),
   },
 }));
 

@@ -1,10 +1,11 @@
-import * as Tone from 'tone'
+import * as Tone from "tone";
 import { startMove } from "../../common/startMove";
-import { updateTimelineLength } from "../../common/timelineLength";
 import { pianoKeys } from "../../data/pianoKeys";
 import usePianoRollStore from "../../store/pianoRollStore";
 import Note from "./Note";
-import { buildPlayback } from "./playback";
+import type { PianoNote } from "../../data/pianoNote";
+import { UpdateNoteCommand, type NoteStateChange } from "../../common/command";
+import { dawHistory } from "../../common/historyManager";
 
 interface Props {
   timelineRef: HTMLDivElement;
@@ -18,23 +19,43 @@ export default function Notes({ timelineRef, playNote }: Props) {
   const selectNote = usePianoRollStore(
     (state) => state.pianoRollActions.selectNote
   );
-  const updateNote = usePianoRollStore(
-    (state) => state.pianoRollActions.updateNote
-  );
+
   const setRecentNoteLength = usePianoRollStore(
     (state) => state.pianoRollActions.setRecentNoteLength
   );
 
   function handleNoteMove(e: MouseEvent) {
-    const selectedNotes = usePianoRollStore.getState().selectedNotes;
+    const store = usePianoRollStore.getState();
+    const selectedNotes = store.selectedNotes;
+
+    const changes = new Map<number, NoteStateChange>();
+    const initialNoteStates = new Map<number, PianoNote>();
 
     for (const noteId of selectedNotes) {
-      const note = usePianoRollStore.getState().notes.byId[noteId];
+      initialNoteStates.set(noteId, { ...store.notes.byId[noteId] });
+    }
+
+    const updateNote = store.pianoRollActions.updateNote;
+
+    let completedMoves = 0;
+    const totalMoves = selectedNotes.size;
+
+    const completeMove = () => {
+      if (completedMoves === totalMoves) {
+        if (changes.size > 0) {
+          const command = new UpdateNoteCommand(changes);
+          dawHistory.doCommand(command);
+        }
+      }
+    };
+
+    for (const noteId of selectedNotes) {
+      const note = initialNoteStates.get(noteId)!;
       const originalStart = note.start;
       const originalMidi = note.keyId;
 
-      let start = note.start;
-      let midi = note.keyId;
+      let start = originalStart;
+      let midi = originalMidi;
 
       startMove(
         e,
@@ -64,19 +85,54 @@ export default function Notes({ timelineRef, playNote }: Props) {
           }
         },
         () => {
-          {
-            updateTimelineLength();
-            buildPlayback();
+          const initialNote = initialNoteStates.get(noteId)!;
+          const updatedStore = usePianoRollStore.getState();
+          const updatedNote = updatedStore.notes.byId[noteId];
+
+          if (
+            initialNote.start !== updatedNote.start ||
+            initialNote.keyId !== updatedNote.keyId
+          ) {
+            changes.set(noteId, {
+              before: initialNote,
+              after: updatedNote,
+            });
           }
+
+          ++completedMoves;
+          completeMove();
         }
       );
     }
   }
 
   function handleNoteResize(e: MouseEvent) {
-    const selectedNotes = usePianoRollStore.getState().selectedNotes;
+    const store = usePianoRollStore.getState();
+    const selectedNotes = store.selectedNotes;
+
+    const changes = new Map<number, NoteStateChange>();
+    const initialNoteStates = new Map<number, PianoNote>();
+
     for (const noteId of selectedNotes) {
-      const note = usePianoRollStore.getState().notes.byId[noteId];
+      initialNoteStates.set(noteId, { ...store.notes.byId[noteId] });
+    }
+
+    const updateNote = store.pianoRollActions.updateNote;
+
+    let completedMoves = 0;
+    const totalMoves = selectedNotes.size;
+
+    const completeMove = () => {
+      if (completedMoves === totalMoves) {
+        if (changes.size > 0) {
+          const command = new UpdateNoteCommand(changes);
+          dawHistory.doCommand(command);
+        }
+      }
+    };
+
+    for (const noteId of selectedNotes) {
+      const note = initialNoteStates.get(noteId)!;
       const originalLength = note.length;
       let length = originalLength;
 
@@ -96,12 +152,20 @@ export default function Notes({ timelineRef, playNote }: Props) {
           }
         },
         () => {
-          for (const noteId of selectedNotes) {
-            const note = usePianoRollStore.getState().notes.byId[noteId];
-            setRecentNoteLength(note.length);
-            updateTimelineLength();
-            buildPlayback()
+          const initialNote = initialNoteStates.get(noteId)!;
+          const updatedStore = usePianoRollStore.getState();
+          const updatedNote = updatedStore.notes.byId[noteId];
+
+          if (initialNote.length !== updatedNote.length) {
+            changes.set(noteId, {
+              before: initialNote,
+              after: updatedNote,
+            });
           }
+
+          ++completedMoves;
+          completeMove();
+          setRecentNoteLength(note.length);
         }
       );
     }

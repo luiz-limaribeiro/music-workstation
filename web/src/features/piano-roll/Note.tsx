@@ -1,8 +1,8 @@
 import React from "react";
 import "./styles/Note.css";
 import usePianoRollStore from "../../store/pianoRollStore";
-import { updateTimelineLength } from "../../common/timelineLength";
-import { buildPlayback } from "./playback";
+import { dawHistory } from "../../common/historyManager";
+import { RemoveNoteCommand } from "../../common/command";
 
 interface Props {
   noteId: number;
@@ -18,9 +18,7 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
   const selected = usePianoRollStore((state) =>
     state.selectedNotes.has(noteId)
   );
-  const remove = usePianoRollStore(
-    (state) => state.pianoRollActions.removeNote
-  );
+
   const resetSelected = usePianoRollStore(
     (state) => state.pianoRollActions.resetSelected
   );
@@ -33,18 +31,21 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
       className={`note ${selected ? "selected" : ""}`}
       onMouseDown={(e) => {
         if (!(e.buttons & 1)) return;
+        e.stopPropagation();
+
         if (e.shiftKey) {
-          remove(noteId);
-          updateTimelineLength();
-          buildPlayback();
+          const command = new RemoveNoteCommand(note);
+          dawHistory.doCommand(command);
+          resetSelected()
+          return
         }
 
-        e.stopPropagation();
         if (!e.ctrlKey && !selected) resetSelected();
+
         if (e.ctrlKey) {
           if (selected) {
             unselectNote(noteId);
-            return
+            return;
           }
         }
 
@@ -60,9 +61,8 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
       }}
       onMouseEnter={(e) => {
         if (e.buttons & 1 && e.shiftKey) {
-          remove(noteId);
-          updateTimelineLength();
-          buildPlayback();
+          const command = new RemoveNoteCommand(note);
+          dawHistory.doCommand(command);
         }
       }}
     >

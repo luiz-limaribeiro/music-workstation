@@ -8,8 +8,8 @@ import { startMove } from "../../common/startMove";
 import { pianoKeys } from "../../data/pianoKeys";
 import Playhead from "./Playhead";
 import Notes from "./Notes";
-import { updateTimelineLength } from "../../common/timelineLength";
-import { buildPlayback } from "./playback";
+import { AddNoteCommand } from '../../common/command';
+import { dawHistory } from '../../common/historyManager';
 
 const LENGTH = 80
 
@@ -20,18 +20,11 @@ interface Props {
 export default function NotesTimeline({ playNote }: Props) {
   const cellWidth = usePianoRollStore((state) => state.cellWidth);
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
-  const addNote = usePianoRollStore((state) => state.pianoRollActions.addNote);
   const selectNote = usePianoRollStore(
     (state) => state.pianoRollActions.selectNote
   );
   const resetSelected = usePianoRollStore(
     (state) => state.pianoRollActions.resetSelected
-  );
-  const removeSelected = usePianoRollStore(
-    (state) => state.pianoRollActions.removeSelected
-  );
-  const duplicateSelected = usePianoRollStore(
-    (state) => state.pianoRollActions.duplicatedSelected
   );
 
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -55,13 +48,12 @@ export default function NotesTimeline({ playNote }: Props) {
     const y = e.clientY - timelineRect.y;
     const pos = pixelsToGrid(x, y);
     const newNote = newPianoNote(pos.col, length, pos.row)
-    addNote(newNote);
+    const command = new AddNoteCommand(newNote)
+
+    dawHistory.doCommand(command)
 
     if (Tone.getTransport().state !== 'started')
       playNote(pos.row);
-    
-    updateTimelineLength()
-    buildPlayback()
   }
 
   function handleSelectionBox(e: MouseEvent) {
@@ -164,21 +156,6 @@ export default function NotesTimeline({ playNote }: Props) {
       }}
       onMouseLeave={() => {
         document.body.classList.remove("grabbing-cursor");
-      }}
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Delete") {
-          removeSelected();
-          updateTimelineLength()
-          buildPlayback()
-        }
-
-        if (e.ctrlKey && (e.key === "d" || e.key === "D")) {
-          e.preventDefault();
-          duplicateSelected()
-          updateTimelineLength()
-          buildPlayback()
-        }
       }}
       onContextMenu={(e) => e.preventDefault()}
     >
