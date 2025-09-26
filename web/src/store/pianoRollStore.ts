@@ -1,5 +1,10 @@
 import { create } from "zustand";
 import { newPianoNote, type PianoNote } from "../data/pianoNote";
+import {
+  clearPianoRollState,
+  loadPianoRollState,
+  savePianoRollState,
+} from "../data/pianoRollDB";
 
 export type PianoRollStore = {
   highlightedKeys: number[];
@@ -12,6 +17,7 @@ export type PianoRollStore = {
   isPlaying: boolean;
   playbackClock: string;
   bpm: number;
+  nextNoteId: number;
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
     setLength: (length: number) => void;
@@ -34,6 +40,10 @@ export type PianoRollStore = {
     setPlaybackClock: (time: string) => void;
     setBpm: (bpm: number) => void;
     setSelectedNotes: (ids: Set<number>) => void;
+    loadStateFromDB: () => Promise<void>;
+    saveStateToDB: () => Promise<void>;
+    clearStateInDB: () => Promise<void>;
+    incrementNoteId: () => void;
   };
 };
 
@@ -46,8 +56,9 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
   selectedNotes: new Set<number>(),
   recentNoteLength: 4,
   isPlaying: false,
-  playbackClock: "00:00:00",
+  playbackClock: "00:00",
   bpm: 120,
+  nextNoteId: 0,
   pianoRollActions: {
     setHighlightedKeys: (keyIds) => set(() => ({ highlightedKeys: keyIds })),
     setLength: (length) => set({ length: length }),
@@ -169,9 +180,9 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
           },
           selectedNotes: newSelectedIds,
         };
-      })
-      
-      return newNotes
+      });
+
+      return newNotes;
     },
     updateCellDimensions: (width, height) =>
       set({
@@ -183,6 +194,39 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
     setPlaybackClock: (time) => set({ playbackClock: time }),
     setBpm: (bpm) => set({ bpm: bpm }),
     setSelectedNotes: (ids) => set({ selectedNotes: ids }),
+    saveStateToDB: async () => {
+      const state = get();
+      await savePianoRollState({
+        notes: state.notes,
+        length: state.length,
+        bpm: state.bpm,
+        nextNoteId: state.nextNoteId,
+      });
+    },
+    loadStateFromDB: async () => {
+      const saved = await loadPianoRollState();
+      if (saved) {
+        set({
+          ...saved,
+          highlightedKeys: [],
+          cellWidth: 38,
+          cellHeight: 28,
+          selectedNotes: new Set<number>(),
+          recentNoteLength: 4,
+          isPlaying: false,
+          playbackClock: "00:00",
+        });
+      }
+    },
+    clearStateInDB: async () => {
+      await clearPianoRollState();
+    },
+    incrementNoteId: () => {
+      const store = get();
+      const nextId = store.nextNoteId += 1
+
+      set({ nextNoteId: nextId });
+    },
   },
 }));
 

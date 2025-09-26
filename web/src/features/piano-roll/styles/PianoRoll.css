@@ -51,3 +51,10 @@
   background: #1114;
   color: white;
 }
+
+.controls {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 2;
+}

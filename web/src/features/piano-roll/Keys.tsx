@@ -1,15 +1,14 @@
-import { type PianoKey } from "../../data/pianoKeys";
+import { pianoKeys, type PianoKey } from "../../data/pianoKeys";
 import usePianoRollStore from "../../store/pianoRollStore";
 import Key from "./Key";
 import "./styles/Keys.css";
 
 interface Props {
-  keys: PianoKey[]
   onKeyDown: (pianoKey: PianoKey) => void;
   onKeyUp: (pianoKey: PianoKey) => void;
 }
 
-export default function Keys({keys, onKeyDown, onKeyUp }: Props) {
+export default function Keys({ onKeyDown, onKeyUp }: Props) {
   const highlightKey = usePianoRollStore(
     (state) => state.pianoRollActions.highlightKey
   );
@@ -19,7 +18,7 @@ export default function Keys({keys, onKeyDown, onKeyUp }: Props) {
 
   return (
     <div className="keys">
-      {keys.map((key) => (
+      {pianoKeys.map((key) => (
         <Key
           key={key.id}
           pianoKey={key}

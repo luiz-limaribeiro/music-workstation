@@ -8,6 +8,7 @@ import { pianoKeys, type PianoKey } from "../../data/pianoKeys";
 import usePianoRollStore from "../../store/pianoRollStore";
 import { newPianoSampler } from "../../samples/piano";
 import Transport from "./Transport";
+import AutoSaver from "./AutoSaver";
 
 export default function PianoRoll() {
   const pianoRollRef = useRef<HTMLDivElement>(null);
@@ -24,7 +25,13 @@ export default function PianoRoll() {
     (state) => state.pianoRollActions.updateCellDimensions
   );
 
-  const keys = pianoKeys;
+  const loadState = usePianoRollStore(
+    (s) => s.pianoRollActions.loadStateFromDB
+  );
+  const saveState = usePianoRollStore((s) => s.pianoRollActions.saveStateToDB);
+  const clearState = usePianoRollStore(
+    (s) => s.pianoRollActions.clearStateInDB
+  );
 
   // Setup sampler
   useEffect(() => {
@@ -37,6 +44,7 @@ export default function PianoRoll() {
     };
   }, []);
 
+  // Handle wheel zoom
   useEffect(() => {
     const el = pianoRollRef.current;
     if (!el) return;
@@ -53,6 +61,7 @@ export default function PianoRoll() {
     return () => el.removeEventListener("wheel", handleZoom);
   }, [updateCellDimensions, cellWidth, cellHeight]);
 
+  // Horizontal zoom
   useEffect(() => {
     const el = horizontalRef.current;
     if (!el) return;
@@ -67,6 +76,7 @@ export default function PianoRoll() {
     return () => el.removeEventListener("wheel", handleZoom);
   }, [updateCellDimensions, cellWidth, cellHeight]);
 
+  // Vertical zoom
   useEffect(() => {
     const el = verticalRef.current;
     if (!el) return;
@@ -80,6 +90,11 @@ export default function PianoRoll() {
     el.addEventListener("wheel", handleZoom, { passive: false });
     return () => el.removeEventListener("wheel", handleZoom);
   }, [updateCellDimensions, cellWidth, cellHeight]);
+
+  // Load state
+  useEffect(() => {
+    loadState();
+  }, [loadState]);
 
   function handleHorizontalScroll(e: MouseEvent) {
     if (!timelineRef.current) return;
@@ -112,12 +127,14 @@ export default function PianoRoll() {
   }
 
   return (
-    <div
-      className="piano-roll"
-      ref={pianoRollRef}
-    >
+    <div className="piano-roll" ref={pianoRollRef}>
       <div className="zoom horizontal-zoom" ref={horizontalRef} />
       <div className="zoom vertical-zoom" ref={verticalRef} />
+      <div className="controls">
+        <button onClick={saveState}>save</button>
+        <button onClick={clearState}>clear</button>
+        <button onClick={loadState}>load</button>
+      </div>
       <div
         className="keys-container"
         onMouseDown={() => {
@@ -127,7 +144,7 @@ export default function PianoRoll() {
           }
         }}
       >
-        <Keys keys={keys} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} />
+        <Keys onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} />
       </div>
       <div
         className="timeline-container"
@@ -140,12 +157,11 @@ export default function PianoRoll() {
           }
         }}
       >
-        <NotesTimeline
-          playNote={playNote}
-        />
+        <NotesTimeline playNote={playNote} />
       </div>
       {!isLoaded && <span className="loading">Loading...</span>}
       <Transport />
+      <AutoSaver />
     </div>
   );
 }
