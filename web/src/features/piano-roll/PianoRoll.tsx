@@ -8,7 +8,6 @@ import { pianoKeys, type PianoKey } from "../../data/pianoKeys";
 import usePianoRollStore from "../../store/pianoRollStore";
 import { newPianoSampler } from "../../samples/piano";
 import Transport from "./Transport";
-import AutoSaver from "./AutoSaver";
 
 export default function PianoRoll() {
   const pianoRollRef = useRef<HTMLDivElement>(null);
@@ -23,14 +22,6 @@ export default function PianoRoll() {
   const cellHeight = usePianoRollStore((state) => state.cellHeight);
   const updateCellDimensions = usePianoRollStore(
     (state) => state.pianoRollActions.updateCellDimensions
-  );
-
-  const loadState = usePianoRollStore(
-    (s) => s.pianoRollActions.loadStateFromDB
-  );
-  const saveState = usePianoRollStore((s) => s.pianoRollActions.saveStateToDB);
-  const clearState = usePianoRollStore(
-    (s) => s.pianoRollActions.clearStateInDB
   );
 
   // Setup sampler
@@ -91,11 +82,6 @@ export default function PianoRoll() {
     return () => el.removeEventListener("wheel", handleZoom);
   }, [updateCellDimensions, cellWidth, cellHeight]);
 
-  // Load state
-  useEffect(() => {
-    loadState();
-  }, [loadState]);
-
   function handleHorizontalScroll(e: MouseEvent) {
     if (!timelineRef.current) return;
     const startLeft = timelineRef.current.scrollLeft;
@@ -130,11 +116,6 @@ export default function PianoRoll() {
     <div className="piano-roll" ref={pianoRollRef}>
       <div className="zoom horizontal-zoom" ref={horizontalRef} />
       <div className="zoom vertical-zoom" ref={verticalRef} />
-      <div className="controls">
-        <button onClick={saveState}>save</button>
-        <button onClick={clearState}>clear</button>
-        <button onClick={loadState}>load</button>
-      </div>
       <div
         className="keys-container"
         onMouseDown={() => {
@@ -161,7 +142,6 @@ export default function PianoRoll() {
       </div>
       {!isLoaded && <span className="loading">Loading...</span>}
       <Transport />
-      <AutoSaver />
     </div>
   );
 }

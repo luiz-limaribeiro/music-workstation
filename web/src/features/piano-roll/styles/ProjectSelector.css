@@ -1,0 +1,37 @@
+.projects-icon {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
+
+.project-selector-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #1117;
+  display: grid;
+  place-items: center;
+  z-index: 10;
+}
+
+.project-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #334;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+}
+
+.project-selector .sections {
+  display: flex;
+  gap: 3rem;
+}
+
+.project-selector .sections .new-section {
+  display: flex;
+  flex-direction: column;
+}

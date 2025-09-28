@@ -3,6 +3,7 @@ import { dawHistory } from "./historyManager";
 import { updateTimelineLength } from "./timelineLength";
 import { buildPlayback } from "../features/piano-roll/playback";
 import { DuplicateSelectedNotesCommand, RemoveSelectedNotesCommand } from "./command";
+import usePianoRollStore from "../store/pianoRollStore";
 
 export const useGlobalKeyBindings = () => {
   useEffect(() => {
@@ -21,6 +22,8 @@ export const useGlobalKeyBindings = () => {
       const isDuplicate =
         (e.ctrlKey || e.metaKey) && (e.key === "d" || e.key === "D");
       const isDelete = e.key === "Delete"
+      const isSave =
+        (e.ctrlKey || e.metaKey) && (e.key === "s" || e.key === "S");
 
 
       if (isUndo) {
@@ -40,6 +43,10 @@ export const useGlobalKeyBindings = () => {
         e.preventDefault()
         const command = new DuplicateSelectedNotesCommand()
         dawHistory.doCommand(command)
+      }
+      else if (isSave) {
+        e.preventDefault()
+        usePianoRollStore.getState().pianoRollActions.saveStateToDB()
       }
     }
 
