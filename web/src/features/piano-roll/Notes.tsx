@@ -6,23 +6,85 @@ import Note from "./Note";
 import type { PianoNote } from "../../data/pianoNote";
 import { UpdateNoteCommand, type NoteStateChange } from "../../common/command";
 import { dawHistory } from "../../common/historyManager";
+import { useEffect, useMemo, useState } from "react";
 
 interface Props {
   timelineRef: HTMLDivElement;
+  timelineContainerRef: HTMLDivElement | null;
   playNote: (midi: number) => void;
 }
 
-export default function Notes({ timelineRef, playNote }: Props) {
+export default function Notes({
+  timelineRef,
+  timelineContainerRef,
+  playNote,
+}: Props) {
+  const [viewport, setViewport] = useState({
+    scrollLeft: 0,
+    scrollTop: 0,
+    width: 0,
+    height: 0,
+  });
+
   const notesIds = usePianoRollStore((state) => state.notes.allIds);
-  const cellWidth = usePianoRollStore((state) => state.cellWidth);
-  const cellHeight = usePianoRollStore((state) => state.cellHeight);
+  const notes = usePianoRollStore((s) => s.notes.byId);
+  const stepWidth = usePianoRollStore((state) => state.stepWidth);
+  const stepHeight = usePianoRollStore((state) => state.stepHeight);
   const selectNote = usePianoRollStore(
     (state) => state.pianoRollActions.selectNote
   );
-
   const setRecentNoteLength = usePianoRollStore(
     (state) => state.pianoRollActions.setRecentNoteLength
   );
+
+  const visibleNotes = useMemo(() => {
+    const { scrollLeft, scrollTop, width, height } = viewport;
+    const overscan = 100;
+
+    return notesIds.filter((id) => {
+      const note = notes[id];
+
+      const left = note.start * stepWidth;
+      const top = note.keyId * stepHeight;
+      const noteWidth = note.length * stepWidth;
+      const noteHeight = stepHeight;
+
+      const horizontalVisible =
+        left + noteWidth >= scrollLeft - overscan &&
+        left <= scrollLeft + width + overscan;
+
+      const verticalVisible =
+        top + noteHeight >= scrollTop - overscan &&
+        top <= scrollTop + height + overscan;
+
+      return horizontalVisible && verticalVisible;
+    });
+  }, [notesIds, viewport, stepWidth, stepHeight, notes]);
+
+  useEffect(() => {
+    const el = timelineContainerRef;
+    if (!el) return;
+
+    function update() {
+      if (!el) return;
+      setViewport({
+        scrollLeft: el.scrollLeft,
+        scrollTop: el.scrollTop,
+        width: el.clientWidth,
+        height: el.clientHeight,
+      });
+    }
+
+    update();
+
+    el.addEventListener("scroll", update);
+    window.addEventListener("resize", update);
+
+    return () => {
+      el.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [timelineContainerRef, stepWidth, stepHeight]);
 
   function handleNoteMove(e: MouseEvent) {
     const store = usePianoRollStore.getState();
@@ -61,8 +123,8 @@ export default function Notes({ timelineRef, playNote }: Props) {
         e,
         timelineRef,
         (dx, dy) => {
-          const deltaCols = Math.round(dx / cellWidth);
-          const deltaRows = Math.round(dy / cellHeight);
+          const deltaCols = Math.round(dx / stepWidth);
+          const deltaRows = Math.round(dy / stepHeight);
 
           const newStart = Math.max(0, originalStart + deltaCols);
           const newMidi = Math.min(
@@ -140,7 +202,7 @@ export default function Notes({ timelineRef, playNote }: Props) {
         e,
         timelineRef,
         (dx) => {
-          const deltaCols = Math.round(dx / cellWidth);
+          const deltaCols = Math.round(dx / stepWidth);
           const newLength = originalLength + deltaCols;
 
           if (newLength !== length) {
@@ -173,15 +235,17 @@ export default function Notes({ timelineRef, playNote }: Props) {
 
   return (
     <div>
-      {notesIds.map((id) => (
-        <Note
-          key={id}
-          noteId={id}
-          selectNote={selectNote}
-          onMove={handleNoteMove}
-          onResize={handleNoteResize}
-        />
-      ))}
+      {visibleNotes.map((id) => {
+        return (
+          <Note
+            key={id}
+            noteId={id}
+            selectNote={selectNote}
+            onMove={handleNoteMove}
+            onResize={handleNoteResize}
+          />
+        );
+      })}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import * as Tone from 'tone'
+import * as Tone from "tone";
 import "./styles/NotesTimeline.css";
 import usePianoRollStore from "../../store/pianoRollStore";
 import Grid from "./Grid";
@@ -8,17 +8,18 @@ import { startMove } from "../../common/startMove";
 import { pianoKeys } from "../../data/pianoKeys";
 import Playhead from "./Playhead";
 import Notes from "./Notes";
-import { AddNoteCommand } from '../../common/command';
-import { dawHistory } from '../../common/historyManager';
+import { AddNoteCommand } from "../../common/command";
+import { dawHistory } from "../../common/historyManager";
 
 interface Props {
+  containerRef: HTMLDivElement | null;
   playNote: (midi: number) => void;
 }
 
-export default function NotesTimeline({ playNote }: Props) {
-  const cellWidth = usePianoRollStore((s) => s.cellWidth);
-  const cellHeight = usePianoRollStore((s) => s.cellHeight);
-  const gridLength = usePianoRollStore(s => s.gridLength)
+export default function NotesTimeline({ containerRef, playNote }: Props) {
+  const cellWidth = usePianoRollStore((s) => s.stepWidth);
+  const cellHeight = usePianoRollStore((s) => s.stepHeight);
+  const gridLength = usePianoRollStore((s) => s.gridLength);
   const selectNote = usePianoRollStore(
     (state) => state.pianoRollActions.selectNote
   );
@@ -46,13 +47,12 @@ export default function NotesTimeline({ playNote }: Props) {
     const x = e.clientX - timelineRect.x;
     const y = e.clientY - timelineRect.y;
     const pos = pixelsToGrid(x, y);
-    const newNote = newPianoNote(pos.col, length, pos.row)
-    const command = new AddNoteCommand(newNote)
+    const newNote = newPianoNote(pos.col, length, pos.row);
+    const command = new AddNoteCommand(newNote);
 
-    dawHistory.doCommand(command)
+    dawHistory.doCommand(command);
 
-    if (Tone.getTransport().state !== 'started')
-      playNote(pos.row);
+    if (Tone.getTransport().state !== "started") playNote(pos.row);
   }
 
   function handleSelectionBox(e: MouseEvent) {
@@ -158,12 +158,14 @@ export default function NotesTimeline({ playNote }: Props) {
       }}
       onContextMenu={(e) => e.preventDefault()}
     >
-      <Grid
-        cellWidth={cellWidth}
-        cellHeight={cellHeight}
-        offsetY={0}
-      />
-      { timelineRef.current && <Notes timelineRef={timelineRef.current} playNote={playNote} /> }
+      <Grid cellWidth={cellWidth} cellHeight={cellHeight} offsetY={0} />
+      {timelineRef.current && (
+        <Notes
+          timelineRef={timelineRef.current}
+          playNote={playNote}
+          timelineContainerRef={containerRef}
+        />
+      )}
       <div ref={selectionOverlayRef} className="selection-overlay">
         <div ref={boxRef} className="selection-box" />
       </div>

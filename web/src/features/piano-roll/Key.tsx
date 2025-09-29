@@ -17,8 +17,8 @@ function Key({
   onKeyDown,
   onKeyUp,
 }: Props) {
-  const cellHeight = usePianoRollStore((state) => state.cellHeight);
-  const cellWidth = usePianoRollStore(state => state.cellWidth)
+  const cellHeight = usePianoRollStore((state) => state.stepHeight);
+  const cellWidth = usePianoRollStore(state => state.stepWidth)
   const highlighted = usePianoRollStore((state) =>
     state.highlightedKeys.includes(pianoKey.id)
   );

@@ -13,8 +13,8 @@ export type PianoRollStore = {
   notes: { byId: { [id: number]: PianoNote }; allIds: number[] };
   loopLength: number;
   gridLength: number;
-  cellWidth: number;
-  cellHeight: number;
+  stepWidth: number;
+  stepHeight: number;
   selectedNotes: Set<number>;
   recentNoteLength: number;
   isPlaying: boolean;
@@ -61,8 +61,8 @@ const defaultState = {
   notes: { byId: {}, allIds: [] },
   loopLength: 16,
   gridLength: 80,
-  cellWidth: 38,
-  cellHeight: 28,
+  stepWidth: 38,
+  stepHeight: 28,
   selectedNotes: new Set<number>(),
   recentNoteLength: 4,
   isPlaying: false,
@@ -208,8 +208,8 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
     },
     updateCellDimensions: (width, height) =>
       set({
-        cellWidth: Math.max(18, Math.min(width, 38)),
-        cellHeight: Math.max(18, Math.min(height, 28)),
+        stepWidth: Math.max(18, Math.min(width, 38)),
+        stepHeight: Math.max(18, Math.min(height, 28)),
       }),
     setRecentNoteLength: (length) => set({ recentNoteLength: length }),
     setIsPlaying: (isPlaying) => set({ isPlaying: isPlaying }),
@@ -260,8 +260,8 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
         set({
           ...saved,
           highlightedKeys: [],
-          cellWidth: 38,
-          cellHeight: 28,
+          stepWidth: 38,
+          stepHeight: 28,
           selectedNotes: new Set<number>(),
           recentNoteLength: 4,
           isPlaying: false,

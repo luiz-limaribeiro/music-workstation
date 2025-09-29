@@ -35,7 +35,7 @@
 .timeline-container {
   flex-grow: 1;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   scrollbar-width: none;
   position: relative;
 }

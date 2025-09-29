@@ -18,8 +18,8 @@ export default function PianoRoll() {
 
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const cellWidth = usePianoRollStore((state) => state.cellWidth);
-  const cellHeight = usePianoRollStore((state) => state.cellHeight);
+  const stepWidth = usePianoRollStore((state) => state.stepWidth);
+  const stepHeight = usePianoRollStore((state) => state.stepHeight);
   const updateCellDimensions = usePianoRollStore(
     (state) => state.pianoRollActions.updateCellDimensions
   );
@@ -44,13 +44,13 @@ export default function PianoRoll() {
       if (e.ctrlKey) {
         e.preventDefault();
         const factor = (e.deltaY / 120) * -1;
-        updateCellDimensions(cellWidth + factor, cellHeight + factor);
+        updateCellDimensions(stepWidth + factor, stepHeight + factor);
       }
     }
 
     el.addEventListener("wheel", handleZoom, { passive: false });
     return () => el.removeEventListener("wheel", handleZoom);
-  }, [updateCellDimensions, cellWidth, cellHeight]);
+  }, [updateCellDimensions, stepWidth, stepHeight]);
 
   // Horizontal zoom
   useEffect(() => {
@@ -60,12 +60,12 @@ export default function PianoRoll() {
     function handleZoom(e: WheelEvent) {
       e.preventDefault();
       const factor = (e.deltaY / 120) * -1;
-      updateCellDimensions(cellWidth + factor, cellHeight);
+      updateCellDimensions(stepWidth + factor, stepHeight);
     }
 
     el.addEventListener("wheel", handleZoom, { passive: false });
     return () => el.removeEventListener("wheel", handleZoom);
-  }, [updateCellDimensions, cellWidth, cellHeight]);
+  }, [updateCellDimensions, stepWidth, stepHeight]);
 
   // Vertical zoom
   useEffect(() => {
@@ -75,12 +75,12 @@ export default function PianoRoll() {
     function handleZoom(e: WheelEvent) {
       e.preventDefault();
       const factor = (e.deltaY / 120) * -1;
-      updateCellDimensions(cellWidth, cellHeight + factor);
+      updateCellDimensions(stepWidth, stepHeight + factor);
     }
 
     el.addEventListener("wheel", handleZoom, { passive: false });
     return () => el.removeEventListener("wheel", handleZoom);
-  }, [updateCellDimensions, cellWidth, cellHeight]);
+  }, [updateCellDimensions, stepWidth, stepHeight]);
 
   function handleHorizontalScroll(e: MouseEvent) {
     if (!timelineRef.current) return;
@@ -138,7 +138,7 @@ export default function PianoRoll() {
           }
         }}
       >
-        <NotesTimeline playNote={playNote} />
+        <NotesTimeline playNote={playNote} containerRef={timelineRef.current} />
       </div>
       {!isLoaded && <span className="loading">Loading...</span>}
       <Transport />

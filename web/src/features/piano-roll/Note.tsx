@@ -13,8 +13,8 @@ interface Props {
 
 function Note({ noteId, selectNote, onMove, onResize }: Props) {
   const note = usePianoRollStore((state) => state.notes.byId[noteId]);
-  const cellWidth = usePianoRollStore((state) => state.cellWidth);
-  const cellHeight = usePianoRollStore((state) => state.cellHeight);
+  const cellWidth = usePianoRollStore((state) => state.stepWidth);
+  const cellHeight = usePianoRollStore((state) => state.stepHeight);
   const selected = usePianoRollStore((state) =>
     state.selectedNotes.has(noteId)
   );

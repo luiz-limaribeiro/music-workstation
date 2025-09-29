@@ -6,7 +6,7 @@ import { startMove } from "../../common/startMove";
 import { stepsToToneTime, toneTimeToSteps } from "../../common/syncHelper";
 
 export default function Playhead() {
-  const cellWidth = usePianoRollStore((state) => state.cellWidth);
+  const cellWidth = usePianoRollStore((state) => state.stepWidth);
   const isPlaying = usePianoRollStore((state) => state.isPlaying);
 
   const playheadRef = useRef<HTMLDivElement>(null);
