@@ -33,6 +33,27 @@ export async function saveProjectMeta(projectId: string, projectName: string) {
   );
 }
 
+export async function clearProjectMeta(projectId: string) {
+  const db = await getDB()
+  await db.delete("metadata", projectId)
+  await db.delete("projects", projectId)
+}
+
+export async function renameProject(projectId: string, newName: string) {
+  const db = await getDB()
+  const existingMeta = await db.get("metadata", projectId);
+
+  await db.put(
+    "metadata",
+    {
+      id: projectId,
+      name: newName,
+      createdAt: existingMeta.createdAt,
+      updatedAt: Date.now()
+    }
+  )
+}
+
 export async function savePianoRollState(
   projectId: string,
   state: Partial<PianoRollStore>

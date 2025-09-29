@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { newPianoNote, type PianoNote } from "../data/pianoNote";
 import {
-  clearPianoRollState,
+  clearProjectMeta,
   loadPianoRollState,
+  renameProject,
   savePianoRollState,
   saveProjectMeta,
 } from "../data/pianoRollDB";
@@ -20,6 +21,7 @@ export type PianoRollStore = {
   bpm: number;
   nextNoteId: number;
   activeProjectId: string | null;
+  projectSaved: boolean;
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
     setLength: (length: number) => void;
@@ -44,9 +46,10 @@ export type PianoRollStore = {
     setSelectedNotes: (ids: Set<number>) => void;
     setActiveProjectId: (id: string) => void;
     saveProjectToDB: (projectId: string, name: string) => Promise<void>;
+    deleteProjectInDB: (projectId: string) => Promise<void>;
+    renameProject: (projectId: string, newName: string) => Promise<void>;
     saveStateToDB: () => Promise<void>;
     loadStateFromDB: (projectId: string) => Promise<void>;
-    clearStateInDB: () => Promise<void>;
     incrementNoteId: () => void;
   };
 };
@@ -64,6 +67,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
   bpm: 120,
   nextNoteId: 0,
   activeProjectId: null,
+  projectSaved: true,
   pianoRollActions: {
     setHighlightedKeys: (keyIds) => set(() => ({ highlightedKeys: keyIds })),
     setLength: (length) => set({ length: length }),
@@ -79,6 +83,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
           byId: { ...state.notes.byId, [note.id]: note },
           allIds: [...state.notes.allIds, note.id],
         },
+        projectSaved: false,
       })),
     removeNote: (noteId) =>
       set((state) => {
@@ -89,6 +94,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
             ...state.notes,
             allIds: state.notes.allIds.filter((id) => id !== noteId),
           },
+          projectSaved: false,
         };
       }),
     removeSelected: () => {
@@ -120,6 +126,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
             allIds: newAllIds,
           },
           selectedNotes: new Set(),
+          projectSaved: false,
         };
       });
 
@@ -138,6 +145,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
               [noteId]: updatedNote,
             },
           },
+          projectSaved: false,
         };
       }),
     selectNote: (noteId) =>
@@ -184,6 +192,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
             allIds: newAllIds,
           },
           selectedNotes: newSelectedIds,
+          projectSaved: false,
         };
       });
 
@@ -197,7 +206,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
     setRecentNoteLength: (length) => set({ recentNoteLength: length }),
     setIsPlaying: (isPlaying) => set({ isPlaying: isPlaying }),
     setPlaybackClock: (time) => set({ playbackClock: time }),
-    setBpm: (bpm) => set({ bpm: bpm }),
+    setBpm: (bpm) => set({ bpm: bpm, projectSaved: false }),
     setSelectedNotes: (ids) => set({ selectedNotes: ids }),
     setActiveProjectId: (id) => set({ activeProjectId: id }),
     saveProjectToDB: async (id, name) => {
@@ -209,7 +218,17 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
         nextNoteId: 0,
         activeProjectId: id,
       });
-      await loadPianoRollState(id)
+      await loadPianoRollState(id);
+    },
+    deleteProjectInDB: async (id) => {
+      const state = get();
+      if (!state.activeProjectId) return;
+      await clearProjectMeta(id);
+
+      set({ activeProjectId: null })
+    },
+    renameProject: async (id, name) => {
+      await renameProject(id, name)
     },
     saveStateToDB: async () => {
       const state = get();
@@ -222,6 +241,8 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
         nextNoteId: state.nextNoteId,
         activeProjectId: state.activeProjectId,
       });
+
+      set({ projectSaved: true });
     },
     loadStateFromDB: async (projectId) => {
       const saved = await loadPianoRollState(projectId);
@@ -237,12 +258,23 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
           playbackClock: "00:00",
           activeProjectId: projectId,
         });
+      } else {
+        set({
+          highlightedKeys: [],
+          notes: { byId: {}, allIds: [] },
+          length: 16,
+          cellWidth: 38,
+          cellHeight: 28,
+          selectedNotes: new Set<number>(),
+          recentNoteLength: 4,
+          isPlaying: false,
+          playbackClock: "00:00",
+          bpm: 120,
+          nextNoteId: 0,
+          activeProjectId: null,
+          projectSaved: true,
+        });
       }
-    },
-    clearStateInDB: async () => {
-      const state = get();
-      if (!state.activeProjectId) return;
-      await clearPianoRollState(state.activeProjectId);
     },
     incrementNoteId: () => {
       const store = get();

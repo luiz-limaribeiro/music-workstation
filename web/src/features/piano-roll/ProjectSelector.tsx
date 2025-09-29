@@ -1,82 +1,164 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./styles/ProjectSelector.css";
 import { listAllProjects } from "../../data/pianoRollDB";
 import usePianoRollStore from "../../store/pianoRollStore";
-import { type ProjectMeta, type ProjectMetaList } from "../../data/projectMeta";
+import { type ProjectMetaList } from "../../data/projectMeta";
+import { useShallow } from "zustand/shallow";
 
 export default function ProjectSelector() {
   const [active, setActive] = useState(false);
   const [projects, setProjects] = useState<ProjectMetaList>([]);
   const [newName, setNewName] = useState("");
-  const loadStateFromDB = usePianoRollStore(
-    (s) => s.pianoRollActions.loadStateFromDB
-  );
-  const saveProjectToDB = usePianoRollStore(
-    s => s.pianoRollActions.saveProjectToDB
-  )
+  const [projectName, setProjectName] = useState("");
+  const [projectToOpenSettings, setProjectToOpenSettings] = useState("");
+  const [projectToRename, setProjectToRename] = useState("");
+  const [rename, setRename] = useState("");
+
+  const projectSaved = usePianoRollStore((s) => s.projectSaved);
+  const activeProjectId = usePianoRollStore((s) => s.activeProjectId);
+  const { loadStateFromDB, saveProjectToDB, deleteProjectInDB, renameProject } =
+    usePianoRollStore(
+      useShallow((s) => ({
+        loadStateFromDB: s.pianoRollActions.loadStateFromDB,
+        saveProjectToDB: s.pianoRollActions.saveProjectToDB,
+        deleteProjectInDB: s.pianoRollActions.deleteProjectInDB,
+        renameProject: s.pianoRollActions.renameProject,
+      }))
+    );
 
   useEffect(() => {
-    listAllProjects().then(projects => {
-      if (projects.length === 0)
-        saveProjectToDB(crypto.randomUUID(), "New project")
-      else
-        loadStateFromDB(projects[0].id)
+    listAllProjects().then((projects) => {
+      if (projects.length === 0) {
+        setActive(true);
+      }
 
-      setProjects(projects)
+      loadStateFromDB(projects[0].id);
+      setProjectName(projects[0].name);
+      setProjects(projects);
     });
   }, []);
 
   async function createProject() {
     if (!newName.trim()) return;
-    await saveProjectToDB(crypto.randomUUID(), newName)
+    const id = crypto.randomUUID();
+    await saveProjectToDB(id, newName);
+    await loadStateFromDB(id);
     setActive(false);
     setProjects(await listAllProjects());
+    setProjectName(newName);
+    setNewName("");
+  }
+
+  async function handleProjectClick(id: string) {
+    await loadStateFromDB(id);
+    clearState();
+    const project = projects.find((p) => p.id === id);
+    if (project) setProjectName(project.name);
+  }
+
+  async function handleDelete(id: string) {
+    await deleteProjectInDB(id);
+    listAllProjects().then(setProjects);
+  }
+
+  async function handleRename(id: string, name: string) {
+    await renameProject(id, name);
+    await listAllProjects().then(setProjects)
+    setProjectName(name)
+  }
+
+  function clearState() {
+    setActive(false);
+    setProjectToRename("");
+    setProjectToOpenSettings("");
+    setNewName("");
+    setRename("");
   }
 
   return (
     <div>
       {active ? (
-        <div className="project-selector-container" onClick={() => setActive(false)}>
-          <div className="project-selector" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="project-selector-container"
+          onClick={() => {
+            if (activeProjectId) clearState();
+          }}
+        >
+          <div
+            className="project-selector"
+            onClick={(e) => {
+              e.stopPropagation();
+              setProjectToOpenSettings("");
+              setProjectToRename("");
+            }}
+          >
             <h2>Projects</h2>
+            <ul className="projects">
+              {projects.map((project) => (
+                <li key={project.id} onClick={() => handleProjectClick(project.id)}>
+                  {projectToRename === project.id ? (
+                    <input
+                      type="text"
+                      value={rename}
+                      onChange={(e) => {
+                        setRename(e.target.value);
+                        handleRename(project.id, e.target.value)
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <span>{project.name}</span>
+                  )}
 
-            <div className="sections">
-              <div>
-                <h4>load</h4>
-                <select
-                  onChange={async (e) => {
-                    const id = e.target.value;
-                    if (id) {
-                      await loadStateFromDB(id);
-                      setActive(false);
-                    }
-                  }}
-                >
-                  <option value="">-- Select Project--</option>
-                  {projects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="new-section">
-                <h4>new</h4>
-                <input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="New project name"
-                />
-                <button onClick={createProject}>Create</button>
-              </div>
-            </div>
+                  {projectToOpenSettings === project.id ? (
+                    <div
+                      className="settings"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        onClick={() => {
+                          setProjectToRename(project.id);
+                          setProjectToOpenSettings("");
+                          setRename(project.name);
+                        }}
+                      >
+                        Rename
+                      </button>
+                      <button onClick={() => handleDelete(project.id)}>
+                        Delete
+                      </button>
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
+                  <button
+                    className="settings-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setProjectToOpenSettings(project.id);
+                    }}
+                  >
+                    ⋮
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="New project name"
+            />
+            <button onClick={createProject} disabled={newName.length === 0}>
+              Create
+            </button>
           </div>
         </div>
       ) : (
-        <button className="projects-icon" onClick={() => setActive(true)}>
-          Projects
-        </button>
+        <h4 className="project-name" onClick={() => setActive(true)}>
+          {projectName}
+          {projectSaved === false ? "*" : ""}
+        </h4>
       )}
     </div>
   );
