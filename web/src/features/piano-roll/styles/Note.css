@@ -1,12 +1,14 @@
 .note {
-  background: rgba(0, 255, 255, 0.808);
+  background: var(--highlight);
+  opacity: .8;
   display: flex;
   justify-content: end;
 }
 
 .selected {
-  background: cyan;
-  box-shadow: 0px 0px 8px cyan;
+  opacity: 1;
+  background: var(--highlight);
+  box-shadow: 0px 0px 8px var(--highlight);
   cursor: grab;
   user-select: none;
 }

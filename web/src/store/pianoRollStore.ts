@@ -23,6 +23,7 @@ export type PianoRollStore = {
   nextNoteId: number;
   activeProjectId: string | null;
   projectSaved: boolean;
+  loadingWAV: boolean;
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
     setLoopLength: (length: number) => void;
@@ -53,6 +54,7 @@ export type PianoRollStore = {
     saveStateToDB: () => Promise<void>;
     loadStateFromDB: (projectId: string) => Promise<void>;
     incrementNoteId: () => void;
+    setLoadingWAV: (loading: boolean) => void;
   };
 };
 
@@ -71,7 +73,8 @@ const defaultState = {
   nextNoteId: 0,
   activeProjectId: null,
   projectSaved: true,
-}
+  loadingWAV: false,
+};
 
 const usePianoRollStore = create<PianoRollStore>((set, get) => ({
   ...defaultState,
@@ -234,10 +237,10 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
       if (!state.activeProjectId) return;
       await clearProjectMeta(id);
 
-      set({ activeProjectId: null })
+      set({ activeProjectId: null });
     },
     renameProject: async (id, name) => {
-      await renameProject(id, name)
+      await renameProject(id, name);
     },
     saveStateToDB: async () => {
       const state = get();
@@ -270,7 +273,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
         });
       } else {
         set({
-          ...defaultState
+          ...defaultState,
         });
       }
     },
@@ -280,6 +283,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
 
       set({ nextNoteId: nextId });
     },
+    setLoadingWAV: (loading) => set({ loadingWAV: loading }),
   },
 }));
 
