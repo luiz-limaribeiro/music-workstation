@@ -44,7 +44,7 @@ export function buildPlayback() {
 
   transport.set({ bpm: bpm });
   transport.loop = true;
-  transport.loopEnd = stepsToToneTime(usePianoRollStore.getState().length);
+  transport.loopEnd = stepsToToneTime(usePianoRollStore.getState().loopLength);
 
   const events = notes.allIds.map((id) => {
     const note = notes.byId[id];

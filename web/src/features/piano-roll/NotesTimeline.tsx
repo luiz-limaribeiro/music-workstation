@@ -11,15 +11,14 @@ import Notes from "./Notes";
 import { AddNoteCommand } from '../../common/command';
 import { dawHistory } from '../../common/historyManager';
 
-const LENGTH = 80
-
 interface Props {
   playNote: (midi: number) => void;
 }
 
 export default function NotesTimeline({ playNote }: Props) {
-  const cellWidth = usePianoRollStore((state) => state.cellWidth);
-  const cellHeight = usePianoRollStore((state) => state.cellHeight);
+  const cellWidth = usePianoRollStore((s) => s.cellWidth);
+  const cellHeight = usePianoRollStore((s) => s.cellHeight);
+  const gridLength = usePianoRollStore(s => s.gridLength)
   const selectNote = usePianoRollStore(
     (state) => state.pianoRollActions.selectNote
   );
@@ -127,7 +126,7 @@ export default function NotesTimeline({ playNote }: Props) {
       ref={timelineRef}
       className="notes-timeline"
       style={{
-        width: LENGTH * cellWidth,
+        width: gridLength * cellWidth,
         height: pianoKeys.length * cellHeight,
         position: "relative",
       }}

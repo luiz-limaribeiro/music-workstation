@@ -9,7 +9,7 @@ interface Props {
 }
 
 function Grid({ cellWidth, cellHeight, offsetY }: Props) {
-  const timelineLength = usePianoRollStore((state) => state.length);
+  const loopLength = usePianoRollStore((state) => state.loopLength);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ function Grid({ cellWidth, cellHeight, offsetY }: Props) {
 
       // Active area
       ctx.fillStyle = "#334";
-      ctx.fillRect(0, 0, timelineLength * cellWidth, ctx.canvas.height / dpr);
+      ctx.fillRect(0, 0, loopLength * cellWidth, ctx.canvas.height / dpr);
 
       // Lines
       ctx.strokeStyle = "#1115";
@@ -81,7 +81,7 @@ function Grid({ cellWidth, cellHeight, offsetY }: Props) {
     ctx.scale(dpr, dpr);
 
     drawGrid(ctx);
-  }, [cellWidth, cellHeight, offsetY, timelineLength]);
+  }, [cellWidth, cellHeight, offsetY, loopLength]);
 
   return <canvas ref={canvasRef} className="grid" />;
 }

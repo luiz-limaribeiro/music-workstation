@@ -1,7 +1,8 @@
 import usePianoRollStore from "../store/pianoRollStore";
 
 export function updateTimelineLength() {
-  const setLength = usePianoRollStore.getState().pianoRollActions.setLength;
+  const setLoopLength = usePianoRollStore.getState().pianoRollActions.setLoopLength;
+  const setGridLength = usePianoRollStore.getState().pianoRollActions.setGridLength;
   const notesIds = usePianoRollStore.getState().notes.allIds;
 
   let largestLength = 16;
@@ -13,5 +14,6 @@ export function updateTimelineLength() {
     if (newLength > largestLength) largestLength = newLength;
   });
 
-  setLength(largestLength);
+  setLoopLength(largestLength);
+  setGridLength(largestLength + 16)
 }
