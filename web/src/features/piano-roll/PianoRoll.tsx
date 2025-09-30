@@ -113,18 +113,13 @@ export default function PianoRoll() {
   }
 
   return (
-    <div className="piano-roll" ref={pianoRollRef}>
+    <div
+      className="piano-roll"
+      ref={pianoRollRef}
+    >
       <div className="zoom horizontal-zoom" ref={horizontalRef} />
       <div className="zoom vertical-zoom" ref={verticalRef} />
-      <div
-        className="keys-container"
-        onMouseDown={() => {
-          if (Tone.getContext().state !== "running") {
-            Tone.start();
-            Tone.getContext().resume();
-          }
-        }}
-      >
+      <div className="keys-container">
         <Keys onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} />
       </div>
       <div

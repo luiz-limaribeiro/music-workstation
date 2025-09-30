@@ -1,3 +1,4 @@
+import * as Tone from "tone";
 import { useEffect, useState } from "react";
 import "./styles/ProjectSelector.css";
 import { listAllProjects } from "../../data/pianoRollDB";
@@ -5,6 +6,7 @@ import usePianoRollStore from "../../store/pianoRollStore";
 import { type ProjectMetaList } from "../../data/projectMeta";
 import { useShallow } from "zustand/shallow";
 import React from "react";
+import { buildPlayback } from "./playback";
 
 function ProjectSelector() {
   const [active, setActive] = useState(true);
@@ -15,8 +17,8 @@ function ProjectSelector() {
   const [projectToRename, setProjectToRename] = useState("");
   const [rename, setRename] = useState("");
 
-  const projectSaved = usePianoRollStore(s => s.projectSaved)
-  const activeProjectId = usePianoRollStore(s => s.activeProjectId)
+  const projectSaved = usePianoRollStore((s) => s.projectSaved);
+  const activeProjectId = usePianoRollStore((s) => s.activeProjectId);
   const { loadStateFromDB, saveProjectToDB, deleteProjectInDB, renameProject } =
     usePianoRollStore(
       useShallow((s) => ({
@@ -29,10 +31,7 @@ function ProjectSelector() {
 
   useEffect(() => {
     listAllProjects().then((projects) => {
-      if (usePianoRollStore.getState().activeProjectId) return
-
-      loadStateFromDB(projects[0].id);
-      setProjectName(projects[0].name);
+      if (usePianoRollStore.getState().activeProjectId) return;
       setProjects(projects);
     });
   }, []);
@@ -46,6 +45,12 @@ function ProjectSelector() {
     setProjects(await listAllProjects());
     setProjectName(newName);
     setNewName("");
+    buildPlayback()
+
+    if (Tone.getContext().state !== "running") {
+      Tone.start();
+      Tone.getContext().resume();
+    }
   }
 
   async function handleProjectClick(id: string) {
@@ -53,6 +58,12 @@ function ProjectSelector() {
     clearState();
     const project = projects.find((p) => p.id === id);
     if (project) setProjectName(project.name);
+    buildPlayback()
+
+    if (Tone.getContext().state !== "running") {
+      Tone.start();
+      Tone.getContext().resume();
+    }
   }
 
   async function handleDelete(id: string) {
@@ -62,8 +73,8 @@ function ProjectSelector() {
 
   async function handleRename(id: string, name: string) {
     await renameProject(id, name);
-    await listAllProjects().then(setProjects)
-    setProjectName(name)
+    await listAllProjects().then(setProjects);
+    setProjectName(name);
   }
 
   function clearState() {
@@ -94,14 +105,17 @@ function ProjectSelector() {
             <h2>Projects</h2>
             <ul className="projects">
               {projects.map((project) => (
-                <li key={project.id} onClick={() => handleProjectClick(project.id)}>
+                <li
+                  key={project.id}
+                  onClick={() => handleProjectClick(project.id)}
+                >
                   {projectToRename === project.id ? (
                     <input
                       type="text"
                       value={rename}
                       onChange={(e) => {
                         setRename(e.target.value);
-                        handleRename(project.id, e.target.value)
+                        handleRename(project.id, e.target.value);
                       }}
                       onClick={(e) => e.stopPropagation()}
                     />
@@ -163,4 +177,4 @@ function ProjectSelector() {
   );
 }
 
-export default React.memo(ProjectSelector)
+export default React.memo(ProjectSelector);
