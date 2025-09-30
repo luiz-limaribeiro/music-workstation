@@ -9,9 +9,10 @@ interface Props {
   selectNote: (noteId: number) => void;
   onMove: (e: MouseEvent) => void;
   onResize: (e: MouseEvent) => void;
+  onVelocityChange: (e: MouseEvent) => void;
 }
 
-function Note({ noteId, selectNote, onMove, onResize }: Props) {
+function Note({ noteId, selectNote, onMove, onResize, onVelocityChange }: Props) {
   const note = usePianoRollStore((state) => state.notes.byId[noteId]);
   const cellWidth = usePianoRollStore((state) => state.stepWidth);
   const cellHeight = usePianoRollStore((state) => state.stepHeight);
@@ -36,8 +37,8 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         if (e.shiftKey) {
           const command = new RemoveNoteCommand(note);
           dawHistory.doCommand(command);
-          resetSelected()
-          return
+          resetSelected();
+          return;
         }
 
         if (!e.ctrlKey && !selected) resetSelected();
@@ -53,7 +54,6 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
         onMove(e as unknown as MouseEvent);
       }}
       style={{
-        position: "absolute",
         left: note.start * cellWidth,
         top: note.keyId * cellHeight,
         width: note.length * cellWidth,
@@ -67,7 +67,7 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
       }}
     >
       <div
-        className={`resize-handler`}
+        className="resize-handler"
         onMouseDown={(e) => {
           if (e.buttons & 1) {
             if (!selected) resetSelected();
@@ -77,6 +77,20 @@ function Note({ noteId, selectNote, onMove, onResize }: Props) {
           }
         }}
       />
+      {selected && (
+        <div
+          className="velocity-handler"
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            onVelocityChange(e as unknown as MouseEvent)
+          }}
+          title={`Velocity: ${note.velocity}`}
+        >
+          <div className="velocity-indicator" style={{
+            height: `${Math.max(15, (note.velocity / 127) * 100)}%`
+          }} />
+        </div>
+      )}
     </div>
   );
 }

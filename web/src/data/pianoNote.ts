@@ -5,9 +5,10 @@ export type PianoNote = {
   start: number;
   length: number;
   keyId: number;
+  velocity: number;
 };
 
-export function newPianoNote(start: number, length: number, keyId: number) {
+export function newPianoNote(start: number, length: number, keyId: number, velocity: number = 127) {
   const nextId = usePianoRollStore.getState().nextNoteId
   usePianoRollStore.getState().pianoRollActions.incrementNoteId()
 
@@ -16,5 +17,6 @@ export function newPianoNote(start: number, length: number, keyId: number) {
     start,
     length,
     keyId,
+    velocity
   };
 }

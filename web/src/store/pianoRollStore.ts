@@ -181,7 +181,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
       state.selectedNotes.forEach((id) => {
         const note = state.notes.byId[id];
         if (!note) return;
-        const newNote = newPianoNote(note.start + 1, note.length, note.keyId);
+        const newNote = newPianoNote(note.start + 1, note.length, note.keyId, note.velocity);
         newNotes.push(newNote);
         newSelectedIds.add(newNote.id);
       });

@@ -104,11 +104,12 @@ export function buildPlayback() {
       time: stepsToToneTime(note.start),
       note: keyIdToNoteName(note.keyId),
       dur: Tone.Time(stepsToToneTime(note.length)).toSeconds(),
+      velocity: note.velocity / 127
     };
   });
 
   part = new Tone.Part((time, value) => {
-    synth.triggerAttackRelease(value.note, value.dur, time);
+    synth.triggerAttackRelease(value.note, value.dur, time, value.velocity);
   }, events).start(0);
 }
 
@@ -152,11 +153,12 @@ export async function exportToWav() {
         time: stepsToToneTime(note.start),
         note: keyIdToNoteName(note.keyId),
         dur: Tone.Time(stepsToToneTime(note.length)).toSeconds(),
+        velocity: note.velocity / 127
       };
     });
 
     new Tone.Part((time, value) => {
-      sampler.triggerAttackRelease(value.note, value.dur, time);
+      sampler.triggerAttackRelease(value.note, value.dur, time, value.velocity);
     }, events).start(0);
 
     transport.start();
@@ -170,7 +172,7 @@ export async function exportToWav() {
   const url = URL.createObjectURL(wavBlob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "export.wav";
+  a.download = "musicworkstation.wav";
   document.body.appendChild(a);
   a.click();
   a.remove();

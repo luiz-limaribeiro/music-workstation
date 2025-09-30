@@ -233,6 +233,69 @@ export default function Notes({
     }
   }
 
+  function handleVelocityChange(e: MouseEvent) {
+    const store = usePianoRollStore.getState();
+    const selectedNotes = store.selectedNotes;
+
+    const changes = new Map<number, NoteStateChange>();
+    const initialNoteStates = new Map<number, PianoNote>();
+
+    for (const noteId of selectedNotes) {
+      initialNoteStates.set(noteId, { ...store.notes.byId[noteId] });
+    }
+
+    const updateNote = store.pianoRollActions.updateNote;
+
+    let completedMoves = 0;
+    const totalMoves = selectedNotes.size;
+
+    const completeMove = () => {
+      if (completedMoves === totalMoves) {
+        if (changes.size > 0) {
+          const command = new UpdateNoteCommand(changes);
+          dawHistory.doCommand(command);
+        }
+      }
+    };
+
+    for (const noteId of selectedNotes) {
+      const note = initialNoteStates.get(noteId)!;
+      const startVelocity = note.velocity;
+
+      startMove(
+        e,
+        timelineRef,
+        (_, dy) => {
+          const velocityChange = Math.floor(dy / 3);
+          const newVelocity = Math.min(
+            127,
+            Math.max(1, startVelocity + velocityChange)
+          );
+
+          updateNote(note.id, (note) => ({
+            ...note,
+            velocity: newVelocity,
+          }));
+        },
+        () => {
+          const initialNote = initialNoteStates.get(noteId)!;
+          const updatedStore = usePianoRollStore.getState();
+          const updatedNote = updatedStore.notes.byId[noteId];
+
+          if (initialNote.velocity !== updatedNote.velocity) {
+            changes.set(noteId, {
+              before: initialNote,
+              after: updatedNote,
+            });
+          }
+
+          ++completedMoves;
+          completeMove();
+        }
+      );
+    }
+  }
+
   return (
     <div>
       {visibleNotes.map((id) => {
@@ -243,6 +306,7 @@ export default function Notes({
             selectNote={selectNote}
             onMove={handleNoteMove}
             onResize={handleNoteResize}
+            onVelocityChange={handleVelocityChange}
           />
         );
       })}
