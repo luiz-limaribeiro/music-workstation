@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import "./styles/Note.css";
 import usePianoRollStore from "../../store/pianoRollStore";
 import { dawHistory } from "../../common/historyManager";
@@ -12,8 +12,16 @@ interface Props {
   onVelocityChange: (e: MouseEvent) => void;
 }
 
-function Note({ noteId, selectNote, onMove, onResize, onVelocityChange }: Props) {
-  const note = usePianoRollStore((state) => state.notes.byId[noteId]);
+function Note({
+  noteId,
+  selectNote,
+  onMove,
+  onResize,
+  onVelocityChange,
+}: Props) {
+  const note = usePianoRollStore(
+    useCallback((state) => state.notes.byId[noteId], [noteId])
+  );
   const cellWidth = usePianoRollStore((state) => state.stepWidth);
   const cellHeight = usePianoRollStore((state) => state.stepHeight);
   const selected = usePianoRollStore((state) =>
@@ -82,13 +90,16 @@ function Note({ noteId, selectNote, onMove, onResize, onVelocityChange }: Props)
           className="velocity-handler"
           onMouseDown={(e) => {
             e.stopPropagation();
-            onVelocityChange(e as unknown as MouseEvent)
+            onVelocityChange(e as unknown as MouseEvent);
           }}
           title={`Velocity: ${note.velocity}`}
         >
-          <div className="velocity-indicator" style={{
-            height: `${Math.max(15, (note.velocity / 127) * 100)}%`
-          }} />
+          <div
+            className="velocity-indicator"
+            style={{
+              height: `${Math.max(15, (note.velocity / 127) * 100)}%`,
+            }}
+          />
         </div>
       )}
     </div>

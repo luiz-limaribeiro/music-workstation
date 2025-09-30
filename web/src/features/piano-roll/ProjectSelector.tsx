@@ -4,9 +4,10 @@ import { listAllProjects } from "../../data/pianoRollDB";
 import usePianoRollStore from "../../store/pianoRollStore";
 import { type ProjectMetaList } from "../../data/projectMeta";
 import { useShallow } from "zustand/shallow";
+import React from "react";
 
-export default function ProjectSelector() {
-  const [active, setActive] = useState(false);
+function ProjectSelector() {
+  const [active, setActive] = useState(true);
   const [projects, setProjects] = useState<ProjectMetaList>([]);
   const [newName, setNewName] = useState("");
   const [projectName, setProjectName] = useState("");
@@ -14,8 +15,8 @@ export default function ProjectSelector() {
   const [projectToRename, setProjectToRename] = useState("");
   const [rename, setRename] = useState("");
 
-  const projectSaved = usePianoRollStore((s) => s.projectSaved);
-  const activeProjectId = usePianoRollStore((s) => s.activeProjectId);
+  const projectSaved = usePianoRollStore(s => s.projectSaved)
+  const activeProjectId = usePianoRollStore(s => s.activeProjectId)
   const { loadStateFromDB, saveProjectToDB, deleteProjectInDB, renameProject } =
     usePianoRollStore(
       useShallow((s) => ({
@@ -28,9 +29,7 @@ export default function ProjectSelector() {
 
   useEffect(() => {
     listAllProjects().then((projects) => {
-      if (projects.length === 0) {
-        setActive(true);
-      }
+      if (usePianoRollStore.getState().activeProjectId) return
 
       loadStateFromDB(projects[0].id);
       setProjectName(projects[0].name);
@@ -163,3 +162,5 @@ export default function ProjectSelector() {
     </div>
   );
 }
+
+export default React.memo(ProjectSelector)
