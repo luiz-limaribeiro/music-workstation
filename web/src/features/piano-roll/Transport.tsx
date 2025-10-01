@@ -14,6 +14,7 @@ export default function Transport() {
 
   useEffect(() => {
     if (isPlaying) {
+      buildPlayback()
       startPlayback()
     } else {
       pausePlayback()

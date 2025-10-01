@@ -18,13 +18,17 @@ export class AddNoteCommand implements Command {
   do(store: PianoRollStore) {
     store.pianoRollActions.addNote(this.note);
     updateTimelineLength();
-    buildPlayback();
+
+    if (store.isPlaying)
+      buildPlayback();
   }
 
   undo(store: PianoRollStore) {
     store.pianoRollActions.removeNote(this.note.id);
     updateTimelineLength();
-    buildPlayback();
+
+    if (store.isPlaying)
+      buildPlayback();
   }
 }
 
@@ -38,13 +42,17 @@ export class RemoveNoteCommand implements Command {
   do(store: PianoRollStore) {
     store.pianoRollActions.removeNote(this.note.id);
     updateTimelineLength();
-    buildPlayback();
+
+    if (store.isPlaying)
+      buildPlayback();
   }
 
   undo(store: PianoRollStore): void {
     store.pianoRollActions.addNote(this.note);
     updateTimelineLength();
-    buildPlayback();
+
+    if (store.isPlaying)
+      buildPlayback();
   }
 }
 
@@ -54,7 +62,9 @@ export class RemoveSelectedNotesCommand implements Command {
   do(store: PianoRollStore): void {
     this.notes = store.pianoRollActions.removeSelected();
     updateTimelineLength();
-    buildPlayback();
+
+    if (store.isPlaying)
+      buildPlayback();
   }
 
   undo(store: PianoRollStore): void {
@@ -67,7 +77,9 @@ export class RemoveSelectedNotesCommand implements Command {
     );
 
     updateTimelineLength();
-    buildPlayback();
+
+    if (store.isPlaying)
+      buildPlayback();
   }
 }
 
@@ -85,11 +97,12 @@ export class DuplicateSelectedNotesCommand implements Command {
       this.notes.forEach((note) => {
         store.pianoRollActions.addNote(note)
       })
-
       store.pianoRollActions.setSelectedNotes(new Set(this.notes.map(note => note.id)))
     }
 
     updateTimelineLength();
+    if (store.isPlaying)
+      buildPlayback()
   }
 
   undo(store: PianoRollStore): void {
@@ -100,7 +113,8 @@ export class DuplicateSelectedNotesCommand implements Command {
     store.pianoRollActions.setSelectedNotes(this.originalSelection);
 
     updateTimelineLength();
-    buildPlayback();
+    if (store.isPlaying)
+      buildPlayback();
   }
 }
 
@@ -124,7 +138,9 @@ export class UpdateNoteCommand implements Command {
     });
 
     updateTimelineLength();
-    buildPlayback();
+
+    if (store.isPlaying)
+      buildPlayback();
   }
 
   undo(store: PianoRollStore): void {
@@ -135,6 +151,8 @@ export class UpdateNoteCommand implements Command {
     });
 
     updateTimelineLength();
-    buildPlayback();
+
+    if (store.isPlaying)
+      buildPlayback();
   }
 }
