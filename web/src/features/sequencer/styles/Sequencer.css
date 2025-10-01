@@ -15,7 +15,7 @@
 .sequencer {
   background-color: #111;
   border: 2px solid #FFF2;
-  color: white;
+  color: var(--text);
   padding: 4rem;
   padding-top: 3rem;
   padding-bottom: 2rem;
@@ -53,7 +53,7 @@
   background: transparent;
   border: 1px solid #FFF3;
   border-radius: 10px;
-  color: white;
+  color: var(--text);
   font-family: 'Roboto Mono Variable', sans-serif;
   filter: brightness(2);
 }

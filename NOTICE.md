@@ -2,6 +2,18 @@
 
 This file provides notices for third-party open source components used in this project.
 
+## Audio Samples Attribution
+
+The piano samples are from the **Salamander Grand Piano** (Yamaha C5) sample set, recorded by Alexander Holm, and are distributed under the Creative Commons Attribution 3.0 license.
+
+Hosting URL: [https://tonejs.github.io/audio/salamander/](https://tonejs.github.io/audio/salamander/)
+
+## Tone.js Library
+
+This project uses the Tone.js library, which is licensed under the **MIT License**.
+
+**Source:** [https://github.com/Tonejs/Tone.js](https://github.com/Tonejs/Tone.js)
+
 ## Fonts
 
 This project uses fonts from [Google Fonts](https://fonts.google.com/):

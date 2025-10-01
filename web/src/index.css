@@ -2,7 +2,7 @@
 @import "@fontsource-variable/roboto-mono";
 
 :root {
-  font-family: 'Inter Variable', sans-serif;
+  font-family: "Inter Variable", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -10,6 +10,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  color: var(--text);
 }
 
 * {
@@ -19,10 +21,52 @@
 }
 
 button {
-  font-family: 'Inter Variable', sans-serif;
+  font-family: "Inter Variable", sans-serif;
 }
 
 body.grabbing-cursor,
 body.grabbing-cursor * {
   cursor: grabbing !important;
+}
+
+body[data-theme="light"] {
+  --primary: cyan;
+  --secondary: rgb(36, 180, 180);
+
+  --bg: #223;
+  --surface: #335;
+
+  --text: #f8f9fa;
+  --muted-text: #d8d9da;
+
+  --border: #111;
+
+  --highlight: cyan;
+
+  --error: red;
+  --success: lightgreen;
+  --warning: gold;
+
+  --disabled: rgba(255, 255, 255, 0.274);
+}
+
+body[data-theme="dark"] {
+  --primary: cyan;
+  --secondary: rgb(36, 180, 180);
+
+  --bg: #223;
+  --surface: #335;
+
+  --text: #f8f9fa;
+  --muted-text: #d8d9da;
+
+  --border: #111;
+
+  --highlight: cyan;
+
+  --error: red;
+  --success: lightgreen;
+  --warning: gold;
+  
+  --disabled: rgba(255, 255, 255, 0.274);
 }

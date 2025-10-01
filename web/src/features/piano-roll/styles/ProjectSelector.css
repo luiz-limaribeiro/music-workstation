@@ -1,0 +1,88 @@
+.project-name {
+  color: var(--text);
+  min-width: 6em;
+  max-width: 12em;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  text-wrap-mode: nowrap;
+  user-select: none;
+  text-align: end;
+  cursor: pointer;
+}
+
+.project-selector-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #1117;
+  display: grid;
+  place-items: center;
+  z-index: 10;
+}
+
+.project-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #334;
+  color: var(--text);
+  padding: 1rem 1.4rem;
+  border-radius: 10px;
+}
+
+.projects {
+  list-style: none;
+  max-height: 10em;
+  min-height: 5em;
+  overflow-y: scroll;
+}
+
+.projects li {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  max-width: 12em;
+}
+
+.settings-button {
+  background-color: transparent;
+  border: none;
+  color: #fffd;
+  font-size: large;
+  width: .8em;
+}
+
+.settings {
+  padding: .4em;
+  background-color: #2a2a3a;
+  position: absolute;
+  top: 0;
+  right: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: .6em;
+  z-index: 2;
+  cursor: default;
+}
+
+.settings button {
+  background-color: transparent;
+  color: var(--text);
+  border: none;
+}
+
+.projects li, .project-selector input {
+  border: 1px solid #282838;
+  padding: .4em .6em;
+  border-radius: 10px;
+}
+
+.project-selector input {
+  background-color: transparent;
+  color: var(--text);
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}

@@ -1,0 +1,15 @@
+.notes-timeline {
+  position: relative;
+  user-select: none;
+}
+
+.selection-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.selection-box {
+  position: absolute;
+  background: rgba(0, 255, 255, 0.308);
+}

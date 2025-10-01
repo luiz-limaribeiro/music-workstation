@@ -1,0 +1,45 @@
+.note {
+  position: absolute;
+  background: var(--highlight);
+  opacity: .8;
+  display: flex;
+  justify-content: end;
+}
+
+.selected {
+  opacity: 1;
+  background: var(--highlight);
+  box-shadow: 0px 0px 8px var(--highlight);
+  cursor: grab;
+  user-select: none;
+}
+
+.selected:active {
+  cursor: grabbing;
+}
+
+.resize-handler {
+  width: 4px;
+  height: 100%;
+  cursor: ew-resize;
+}
+
+.velocity-handler {
+  width: 12px;
+  height: 100%;
+  position: absolute;
+  bottom: -110%;
+  left: calc(50% - 6px);
+  pointer-events: all;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 2;
+  cursor: ns-resize;
+}
+
+.velocity-indicator {
+  width: 2px;
+  background: var(--highlight);
+  pointer-events: none;
+}

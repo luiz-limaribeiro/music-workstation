@@ -1,0 +1,60 @@
+.piano-roll {
+  display: flex;
+  position: relative;
+}
+
+.piano-roll::-webkit-scrollbar { display: none;}
+
+.zoom {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #335;
+  opacity: .7;
+  z-index: 2;
+}
+
+.horizontal-zoom {
+  width: 100vw;
+  height: 10px;
+  right: 10px;
+  cursor: ew-resize;
+}
+
+.vertical-zoom {
+  width: 10px;
+  height: 100vh;
+  top: 10px;
+  cursor: ns-resize;
+}
+
+.keys-container {
+  flex-shrink: 0;
+}
+
+.timeline-container {
+  flex-grow: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  scrollbar-width: none;
+  position: relative;
+}
+
+.timeline-container::-webkit-scrollbar { display: none;}
+
+.loading {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #1114;
+  color: white;
+}
+
+.controls {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 2;
+}

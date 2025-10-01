@@ -1,0 +1,34 @@
+.transport {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #3359;
+  color: var(--text);
+  padding: 1.4em 2em;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  user-select: none;
+}
+
+.transport button {
+  width: 4em;
+  height: 2em;
+  background-color: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.transport button:disabled {
+  color: var(--disabled)
+}
+
+.bpm {
+  cursor: ns-resize;
+  width: 4.5em;
+}
+
+.time {
+  width: 4.3em;
+}
