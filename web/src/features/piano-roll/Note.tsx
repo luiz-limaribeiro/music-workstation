@@ -66,6 +66,7 @@ function Note({
         top: note.keyId * cellHeight,
         width: note.length * cellWidth,
         height: cellHeight,
+        opacity: Math.max(.12, note.velocity / 127)
       }}
       onMouseEnter={(e) => {
         if (e.buttons & 1 && e.shiftKey) {

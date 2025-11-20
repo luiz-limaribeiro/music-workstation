@@ -7,7 +7,7 @@ import { newPianoNote } from "../../data/pianoNote";
 import { startMove } from "../../common/startMove";
 import { pianoKeys } from "../../data/pianoKeys";
 import Playhead from "./Playhead";
-import Notes from "./Notes";
+import Notes from "./NotesContainer";
 import { AddNoteCommand } from "../../common/command";
 import { dawHistory } from "../../common/historyManager";
 
