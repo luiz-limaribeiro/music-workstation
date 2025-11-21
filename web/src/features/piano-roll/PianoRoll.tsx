@@ -2,12 +2,12 @@ import * as Tone from "tone";
 import { useEffect, useRef, useState } from "react";
 import Keys from "./Keys";
 import NotesTimeline from "./NotesTimeline";
-import "./styles/PianoRoll.css";
 import { startMove } from "../../common/startMove";
 import { pianoKeys, type PianoKey } from "../../data/pianoKeys";
 import usePianoRollStore from "../../store/pianoRollStore";
 import { newPianoSampler } from "../../samples/piano";
 import Transport from "./Transport";
+import "./styles/PianoRoll.css";
 
 export default function PianoRoll() {
   const pianoRollRef = useRef<HTMLDivElement>(null);
@@ -99,6 +99,17 @@ export default function PianoRoll() {
     );
   }
 
+  function handleVerticalScroll(e: MouseEvent) {
+    if (!pianoRollRef.current) return;
+    const startTop = pianoRollRef.current.scrollTop;
+
+    startMove(e, pianoRollRef.current, (_, dy) => {
+      if (pianoRollRef.current) {
+        pianoRollRef.current.scrollTop = startTop - dy;
+      }
+    });
+  }
+
   function handleKeyDown(key: PianoKey) {
     samplerRef.current?.triggerAttack(key.note + key.octave);
   }
@@ -116,9 +127,13 @@ export default function PianoRoll() {
     <div
       className="piano-roll"
       ref={pianoRollRef}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        if (e.buttons & 2) {
+          handleVerticalScroll(e as unknown as MouseEvent);
+        }
+      }}
     >
-      <div className="zoom horizontal-zoom" ref={horizontalRef} />
-      <div className="zoom vertical-zoom" ref={verticalRef} />
       <div className="keys-container">
         <Keys onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} />
       </div>

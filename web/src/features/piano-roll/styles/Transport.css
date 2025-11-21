@@ -1,8 +1,12 @@
 .transport {
   position: fixed;
   bottom: 20px;
-  right: 20px;
-  background-color: #3359;
+  right: 50%;
+  translate: 50%;
+  background-color: #3341;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 4px rgb(19, 19, 24);
+  border-radius: 1px solid black;
   color: var(--text);
   padding: 1.4em 2em;
   border-radius: 20px;

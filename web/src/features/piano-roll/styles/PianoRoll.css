@@ -3,14 +3,16 @@
   position: relative;
 }
 
-.piano-roll::-webkit-scrollbar { display: none;}
+.piano-roll::-webkit-scrollbar {
+  display: none;
+}
 
 .zoom {
   position: fixed;
   top: 0;
   right: 0;
   background-color: #335;
-  opacity: .7;
+  opacity: 0.7;
   z-index: 2;
 }
 
@@ -40,7 +42,9 @@
   position: relative;
 }
 
-.timeline-container::-webkit-scrollbar { display: none;}
+.timeline-container::-webkit-scrollbar {
+  display: none;
+}
 
 .loading {
   position: fixed;

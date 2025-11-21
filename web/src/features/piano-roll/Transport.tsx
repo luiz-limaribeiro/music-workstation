@@ -38,12 +38,8 @@ export default function Transport() {
 
   return (
     <div className="transport">
-      <button className="start" onClick={() => setIsPlaying(true)} disabled={isPlaying}>
-        start
-      </button>
-      <button className="stop" onClick={() => setIsPlaying(false)} disabled={!isPlaying}>
-        stop
-      </button>
+      <button onClick={() => setIsPlaying(!isPlaying)}>{isPlaying ? 'stop' : 'play'}</button>
+      
       <span ref={bpmRef} className="bpm">BPM: {bpm}</span>
       <span className="time">{time}</span>
     </div>
