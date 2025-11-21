@@ -9,7 +9,7 @@
   border-radius: 1px solid black;
   color: var(--text);
   padding: 1.4em 2em;
-  border-radius: 20px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   gap: 1em;
@@ -19,9 +19,20 @@
 .transport button {
   width: 4em;
   height: 2em;
-  background-color: var(--surface);
   color: var(--text);
   cursor: pointer;
+  border: 1px solid black;
+  border-radius: 4px;
+  background-color: transparent;
+  letter-spacing: .8px;
+}
+
+.transport button:hover {
+  background-color: #3a3a4a;
+}
+
+.transport button:active {
+  background-color: #2a2a3a;
 }
 
 .transport button:disabled {

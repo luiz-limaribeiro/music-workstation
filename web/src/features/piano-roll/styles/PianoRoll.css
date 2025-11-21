@@ -1,6 +1,8 @@
 .piano-roll {
   display: flex;
   position: relative;
+  overflow-x: auto;
+  height: 100vh;
 }
 
 .piano-roll::-webkit-scrollbar {
@@ -16,29 +18,17 @@
   z-index: 2;
 }
 
-.horizontal-zoom {
-  width: 100vw;
-  height: 10px;
-  right: 10px;
-  cursor: ew-resize;
-}
-
-.vertical-zoom {
-  width: 10px;
-  height: 100vh;
-  top: 10px;
-  cursor: ns-resize;
-}
-
 .keys-container {
   flex-shrink: 0;
+  overflow-x: auto;
+  pointer-events: none;
+  scrollbar-width: none;
 }
 
 .timeline-container {
   flex-grow: 1;
   overflow-x: auto;
   overflow-y: auto;
-  scrollbar-width: none;
   position: relative;
 }
 

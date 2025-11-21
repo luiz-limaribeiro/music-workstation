@@ -11,6 +11,7 @@ import "./styles/PianoRoll.css";
 
 export default function PianoRoll() {
   const pianoRollRef = useRef<HTMLDivElement>(null);
+  const keysRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const samplerRef = useRef<Tone.Sampler>(null);
   const horizontalRef = useRef<HTMLDivElement>(null);
@@ -82,33 +83,36 @@ export default function PianoRoll() {
     return () => el.removeEventListener("wheel", handleZoom);
   }, [updateCellDimensions, stepWidth, stepHeight]);
 
-  function handleHorizontalScroll(e: MouseEvent) {
-    if (!timelineRef.current) return;
-    const startLeft = timelineRef.current.scrollLeft;
+  function handlePan(e: MouseEvent) {
+    const timeline = timelineRef.current;
+    const keys = keysRef.current;
+    if (!timeline || !keys) return;
 
-    startMove(
-      e,
-      timelineRef.current,
-      (dx) => {
-        if (timelineRef.current) {
-          timelineRef.current.scrollLeft = startLeft - dx;
-        }
-      },
-      undefined,
-      false
-    );
-  }
+    const startTop = timeline.scrollTop;
+    const startLeft = timeline.scrollLeft;
 
-  function handleVerticalScroll(e: MouseEvent) {
-    if (!pianoRollRef.current) return;
-    const startTop = pianoRollRef.current.scrollTop;
-
-    startMove(e, pianoRollRef.current, (_, dy) => {
-      if (pianoRollRef.current) {
-        pianoRollRef.current.scrollTop = startTop - dy;
+    startMove(e, timeline, (dx, dy) => {
+      if (timeline) {
+        const newTop = startTop - dy;
+        timeline.scrollTop = newTop;
+        timeline.scrollLeft = startLeft - dx;
       }
-    });
+    }, undefined, false);
   }
+
+  // sync keys with timeline vertical scroll
+  useEffect(() => {
+    const timeline = timelineRef.current;
+    const keys = keysRef.current;
+    if (!timeline || !keys) return;
+
+    const syncScroll = () => {
+      keys.scrollTop = timeline.scrollTop;
+    };
+
+    timeline.addEventListener("scroll", syncScroll);
+    return () => timeline.removeEventListener("scroll", syncScroll);
+  });
 
   function handleKeyDown(key: PianoKey) {
     samplerRef.current?.triggerAttack(key.note + key.octave);
@@ -124,26 +128,18 @@ export default function PianoRoll() {
   }
 
   return (
-    <div
-      className="piano-roll"
-      ref={pianoRollRef}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        if (e.buttons & 2) {
-          handleVerticalScroll(e as unknown as MouseEvent);
-        }
-      }}
-    >
-      <div className="keys-container">
+    <div className="piano-roll" ref={pianoRollRef}>
+      <div className="keys-container" ref={keysRef}>
         <Keys onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} />
       </div>
       <div
         className="timeline-container"
         ref={timelineRef}
+        onContextMenu={(e) => e.preventDefault()}
         onMouseDown={(e) => {
           if (e.buttons & 2) {
             e.preventDefault();
-            handleHorizontalScroll(e as unknown as MouseEvent);
+            handlePan(e as unknown as MouseEvent);
             document.body.classList.add("grabbing-cursor");
           }
         }}
