@@ -17,7 +17,6 @@ function ProjectSelector() {
   const [projectToRename, setProjectToRename] = useState("");
   const [rename, setRename] = useState("");
 
-  const projectSaved = usePianoRollStore((s) => s.projectSaved);
   const activeProjectId = usePianoRollStore((s) => s.activeProjectId);
   const { loadStateFromDB, saveProjectToDB, deleteProjectInDB, renameProject } =
     usePianoRollStore(
@@ -170,7 +169,6 @@ function ProjectSelector() {
       ) : (
         <h4 className="project-name" onClick={() => setActive(true)}>
           {projectName}
-          {projectSaved === false ? "*" : ""}
         </h4>
       )}
     </div>

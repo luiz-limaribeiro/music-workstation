@@ -119,6 +119,7 @@ export default function PianoRoll() {
     return () => timeline.removeEventListener("scroll", syncScroll);
   });
 
+  // sync timeline y pos with keys vertical scroll
   useEffect(() => {
     const timeline = timelineRef.current;
     const keys = keysRef.current;
@@ -130,6 +131,17 @@ export default function PianoRoll() {
 
     keys.addEventListener("scroll", syncScroll);
     return () => keys.removeEventListener("scroll", syncScroll);
+  });
+
+  // autosave
+  useEffect(() => {
+    const interval = setInterval(() => {
+      usePianoRollStore.getState().pianoRollActions.saveStateToDB();
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+    };
   });
 
   function handleKeyDown(key: PianoKey) {
