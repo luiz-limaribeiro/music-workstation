@@ -46,17 +46,19 @@ export default function Playhead() {
     e.stopPropagation();
     const transport = Tone.getTransport()
     const initialStep = toneTimeToSteps(transport.position.toString())
+    const playhead = playheadRef.current
 
     startMove(
       e,
-      playheadRef.current,
+      playhead,
       (dx) => {
         const numberOfSixteenthsMoved = dx / cellWidth;
-        const newPos = initialStep + numberOfSixteenthsMoved
+        const newPos = Math.max(0, initialStep + numberOfSixteenthsMoved)
+        console.log('new pos:', newPos)
         const pixelPos = newPos * cellWidth
         transport.position = stepsToToneTime(newPos)
-        if (playheadRef.current)
-          playheadRef.current.style.left = `${pixelPos}px`
+        if (playhead)
+          playhead.style.left = `${pixelPos}px`
         updateClock()
       },
       () => {
