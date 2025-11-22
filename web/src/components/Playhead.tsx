@@ -54,7 +54,6 @@ export default function Playhead() {
       (dx) => {
         const numberOfSixteenthsMoved = dx / cellWidth;
         const newPos = Math.max(0, initialStep + numberOfSixteenthsMoved)
-        console.log('new pos:', newPos)
         const pixelPos = newPos * cellWidth
         transport.position = stepsToToneTime(newPos)
         if (playhead)

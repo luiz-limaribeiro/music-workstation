@@ -11,8 +11,8 @@ import {
 export type PianoRollStore = {
   highlightedKeys: number[];
   notes: { byId: { [id: number]: PianoNote }; allIds: number[] };
-  loopLength: number;
-  gridLength: number;
+  loopLengthInSteps: number;
+  gridLengthInSteps: number;
   stepWidth: number;
   stepHeight: number;
   selectedNotes: Set<number>;
@@ -41,7 +41,7 @@ export type PianoRollStore = {
     unselectNote: (noteId: number) => void;
     resetSelected: () => void;
     duplicateSelected: () => PianoNote[];
-    updateCellDimensions: (width: number, height: number) => void;
+    updateStepsDimension: (width: number, height: number) => void;
     setRecentNoteLength: (length: number) => void;
     setIsPlaying: (isPlaying: boolean) => void;
     setPlaybackClock: (time: string) => void;
@@ -61,8 +61,8 @@ export type PianoRollStore = {
 const defaultState = {
   highlightedKeys: [],
   notes: { byId: {}, allIds: [] },
-  loopLength: 16,
-  gridLength: 80,
+  loopLengthInSteps: 16,
+  gridLengthInSteps: 80,
   stepWidth: 38,
   stepHeight: 28,
   selectedNotes: new Set<number>(),
@@ -80,8 +80,8 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
   ...defaultState,
   pianoRollActions: {
     setHighlightedKeys: (keyIds) => set(() => ({ highlightedKeys: keyIds })),
-    setLoopLength: (length) => set({ loopLength: length }),
-    setGridLength: (length) => set({ gridLength: length < 80 ? 80 : length }),
+    setLoopLength: (length) => set({ loopLengthInSteps: length }),
+    setGridLength: (length) => set({ gridLengthInSteps: length < 80 ? 80 : length }),
     highlightKey: (keyId) =>
       set((state) => ({ highlightedKeys: [...state.highlightedKeys, keyId] })),
     resetKey: (keyId) =>
@@ -209,10 +209,10 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
 
       return newNotes;
     },
-    updateCellDimensions: (width, height) =>
+    updateStepsDimension: (width, height) =>
       set({
-        stepWidth: Math.max(18, Math.min(width, 38)),
-        stepHeight: Math.max(18, Math.min(height, 28)),
+        stepWidth: Math.max(10, Math.min(width, 38)),
+        stepHeight: Math.max(14, Math.min(height, 28)),
       }),
     setRecentNoteLength: (length) => set({ recentNoteLength: length }),
     setIsPlaying: (isPlaying) => set({ isPlaying: isPlaying }),
@@ -224,8 +224,8 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
       await saveProjectMeta(id, name);
       await savePianoRollState(id, {
         notes: { byId: {}, allIds: [] },
-        loopLength: 16,
-        gridLength: 80,
+        loopLengthInSteps: 16,
+        gridLengthInSteps: 80,
         bpm: 120,
         nextNoteId: 0,
         activeProjectId: id,
@@ -248,8 +248,8 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
 
       await savePianoRollState(state.activeProjectId, {
         notes: state.notes,
-        loopLength: state.loopLength,
-        gridLength: state.gridLength,
+        loopLengthInSteps: state.loopLengthInSteps,
+        gridLengthInSteps: state.gridLengthInSteps,
         bpm: state.bpm,
         nextNoteId: state.nextNoteId,
         activeProjectId: state.activeProjectId,

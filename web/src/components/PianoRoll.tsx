@@ -20,8 +20,8 @@ export default function PianoRoll() {
 
   const stepWidth = usePianoRollStore((state) => state.stepWidth);
   const stepHeight = usePianoRollStore((state) => state.stepHeight);
-  const updateCellDimensions = usePianoRollStore(
-    (state) => state.pianoRollActions.updateCellDimensions
+  const updateStepsDimension = usePianoRollStore(
+    (state) => state.pianoRollActions.updateStepsDimension
   );
 
   // Setup sampler
@@ -44,13 +44,13 @@ export default function PianoRoll() {
       if (e.ctrlKey) {
         e.preventDefault();
         const factor = (e.deltaY / 120) * -1;
-        updateCellDimensions(stepWidth + factor, stepHeight + factor);
+        updateStepsDimension(stepWidth + factor, stepHeight + factor);
       }
     }
 
     el.addEventListener("wheel", handleZoom, { passive: false });
     return () => el.removeEventListener("wheel", handleZoom);
-  }, [updateCellDimensions, stepWidth, stepHeight]);
+  }, [updateStepsDimension, stepWidth, stepHeight]);
 
   // Horizontal zoom
   useEffect(() => {
@@ -60,12 +60,12 @@ export default function PianoRoll() {
     function handleZoom(e: WheelEvent) {
       e.preventDefault();
       const factor = (e.deltaY / 120) * -1;
-      updateCellDimensions(stepWidth + factor, stepHeight);
+      updateStepsDimension(stepWidth + factor, stepHeight);
     }
 
     el.addEventListener("wheel", handleZoom, { passive: false });
     return () => el.removeEventListener("wheel", handleZoom);
-  }, [updateCellDimensions, stepWidth, stepHeight]);
+  }, [updateStepsDimension, stepWidth, stepHeight]);
 
   // Vertical zoom
   useEffect(() => {
@@ -75,12 +75,12 @@ export default function PianoRoll() {
     function handleZoom(e: WheelEvent) {
       e.preventDefault();
       const factor = (e.deltaY / 120) * -1;
-      updateCellDimensions(stepWidth, stepHeight + factor);
+      updateStepsDimension(stepWidth, stepHeight + factor);
     }
 
     el.addEventListener("wheel", handleZoom, { passive: false });
     return () => el.removeEventListener("wheel", handleZoom);
-  }, [updateCellDimensions, stepWidth, stepHeight]);
+  }, [updateStepsDimension, stepWidth, stepHeight]);
 
   function handlePan(e: MouseEvent) {
     const timeline = timelineRef.current;

@@ -13,7 +13,7 @@ const stepLineColor = "#1115"
 const barLineColor = "#111"
 
 function Grid({ cellWidth, cellHeight, offsetY }: Props) {
-  const loopLength = usePianoRollStore((state) => state.loopLength);
+  const loopLength = usePianoRollStore((state) => state.loopLengthInSteps);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {

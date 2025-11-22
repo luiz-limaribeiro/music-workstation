@@ -79,7 +79,7 @@ export function buildPlayback() {
 
   transport.set({ bpm: bpm });
   transport.loop = true;
-  transport.loopEnd = stepsToToneTime(usePianoRollStore.getState().loopLength);
+  transport.loopEnd = stepsToToneTime(usePianoRollStore.getState().loopLengthInSteps);
 
   const events = notes.allIds.map((id) => {
     const note = notes.byId[id];
@@ -122,7 +122,7 @@ export function pausePlayback() {
 export async function exportToWav() {
   const notes = usePianoRollStore.getState().notes;
   const bpm = usePianoRollStore.getState().bpm;
-  const loopLength = usePianoRollStore.getState().loopLength;
+  const loopLength = usePianoRollStore.getState().loopLengthInSteps;
   const setLoadingWAV = usePianoRollStore.getState().pianoRollActions.setLoadingWAV
 
   const duration = stepsToSeconds(loopLength, bpm); // Full loop length in seconds

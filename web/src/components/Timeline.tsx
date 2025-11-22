@@ -19,7 +19,7 @@ interface Props {
 export default function Timeline({ containerRef, playNote }: Props) {
   const cellWidth = usePianoRollStore((s) => s.stepWidth);
   const cellHeight = usePianoRollStore((s) => s.stepHeight);
-  const gridLength = usePianoRollStore((s) => s.gridLength);
+  const gridLength = usePianoRollStore((s) => s.gridLengthInSteps);
   const selectNote = usePianoRollStore(
     (state) => state.pianoRollActions.selectNote
   );
