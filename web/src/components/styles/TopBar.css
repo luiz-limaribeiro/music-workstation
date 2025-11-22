@@ -6,3 +6,13 @@
   color: white;
   padding: 0 8px;
 }
+
+.icon {
+  cursor: pointer;
+  user-select: none;
+  transition: .1s ease-out;
+}
+
+.icon:hover {
+  color: #0ff;
+}

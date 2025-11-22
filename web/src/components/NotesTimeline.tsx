@@ -124,6 +124,7 @@ export default function NotesTimeline({ containerRef, playNote }: Props) {
   return (
     <div
       ref={timelineRef}
+      tabIndex={-1}
       className="notes-timeline"
       style={{
         width: gridLength * cellWidth,

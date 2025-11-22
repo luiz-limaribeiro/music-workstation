@@ -45,34 +45,6 @@
   max-width: 12em;
 }
 
-.settings-button {
-  background-color: transparent;
-  border: none;
-  color: #fffd;
-  font-size: large;
-  width: .8em;
-}
-
-.settings {
-  padding: .4em;
-  background-color: #2a2a3a;
-  position: absolute;
-  top: 0;
-  right: 0px;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: .6em;
-  z-index: 2;
-  cursor: default;
-}
-
-.settings button {
-  background-color: transparent;
-  color: var(--text);
-  border: none;
-}
-
 .projects li, .project-selector input {
   border: 1px solid #282838;
   padding: .4em .6em;

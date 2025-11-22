@@ -2,7 +2,7 @@
   display: flex;
   position: relative;
   overflow-x: auto;
-  height: 100vh;
+  height: 96vh;
 }
 
 .piano-roll::-webkit-scrollbar {

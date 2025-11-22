@@ -14,6 +14,7 @@ export default function Transport() {
 
   const bpmRef = useRef<HTMLSpanElement>(null);
 
+  // build and start playback on isPlaying state change
   useEffect(() => {
     if (isPlaying) {
       buildPlayback();
@@ -23,6 +24,7 @@ export default function Transport() {
     }
   }, [isPlaying]);
 
+  // add scroll event to bpm
   useEffect(() => {
     const el = bpmRef.current;
     if (!el) return;

@@ -1,0 +1,53 @@
+.top-bar-transport {
+  display: flex;
+  align-items: center;
+}
+
+.play,
+.pause,
+.stop {
+  font-size: 2em;
+}
+
+.settings {
+  font-size: 1.6em;
+}
+
+.disabled {
+  filter: brightness(.5);
+}
+
+.disabled:hover {
+  color: white;
+  cursor: default;
+}
+
+.bpm-label {
+  margin-left: 1em;
+  margin-right: .4em;
+  font-size: large;
+}
+
+.bpm-input {
+  width: 3em;
+  outline: none;
+  border: none;
+  background-color: transparent;
+  color: cyan;
+  padding: 2px 4px;
+  font-family: monospace;
+  font-size: 1.5em;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  caret-color: orange;
+}
+
+input[type=number] {
+  appearance: textfield;
+  caret-color: orange;
+
+}
