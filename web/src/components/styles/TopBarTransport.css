@@ -14,11 +14,11 @@
 }
 
 .disabled {
-  filter: brightness(.5);
+  color: orange;
 }
 
 .disabled:hover {
-  color: white;
+  color: orange;
   cursor: default;
 }
 
@@ -26,6 +26,7 @@
   margin-left: 1em;
   margin-right: .4em;
   font-size: large;
+  cursor: default;
 }
 
 .bpm-input {
@@ -35,8 +36,9 @@
   background-color: transparent;
   color: cyan;
   padding: 2px 4px;
-  font-family: monospace;
-  font-size: 1.5em;
+  font-family: 'Roboto Mono Variable', sans-serif;
+  font-size: large;
+  font-weight: bold;
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -49,5 +51,11 @@ input[type=number]::-webkit-outer-spin-button {
 input[type=number] {
   appearance: textfield;
   caret-color: orange;
+}
 
+.time {
+  font-weight: bold;
+  font-size: large;
+  width: 6em;
+  font-family: 'Roboto Mono Variable', sans-serif
 }

@@ -1,9 +1,10 @@
 import * as Tone from "tone";
 import { useEffect, useRef } from "react";
-import usePianoRollStore from "../store/pianoRollStore";
-import "./styles/Playhead.css";
 import { startMove } from "../common/startMove";
 import { stepsToToneTime, toneTimeToSteps } from "../common/syncHelper";
+import usePianoRollStore from "../store/pianoRollStore";
+import "./styles/Playhead.css";
+import { updateClock } from "../common/clockHelper";
 
 export default function Playhead() {
   const cellWidth = usePianoRollStore((state) => state.stepWidth);
@@ -12,6 +13,7 @@ export default function Playhead() {
   const playheadRef = useRef<HTMLDivElement>(null);
   const animationId = useRef(0);
 
+  // move playhead on playback start
   useEffect(() => {
     const el = playheadRef.current;
     if (!el) return;
@@ -55,8 +57,12 @@ export default function Playhead() {
         transport.position = stepsToToneTime(newPos)
         if (playheadRef.current)
           playheadRef.current.style.left = `${pixelPos}px`
+        updateClock()
       },
-      undefined,
+      () => {
+        // in case of lag
+        // updateClock()
+      },
       false
     );
   }

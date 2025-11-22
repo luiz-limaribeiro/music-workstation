@@ -13,6 +13,8 @@ export default function TopBarTransport() {
   const bpm = usePianoRollStore((state) => state.bpm);
   const setBpm = usePianoRollStore((state) => state.pianoRollActions.setBpm);
 
+  const time = usePianoRollStore((state) => state.playbackClock);
+
   function handleBpmChange(newValue: string) {
     if (newValue.length > 3) return;
 
@@ -69,6 +71,7 @@ export default function TopBarTransport() {
           onChange={(value) => handleBpmChange(value.currentTarget.value)}
         />
       </div>
+      <span className="time">{time}</span>
     </div>
   );
 }

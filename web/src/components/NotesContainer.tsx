@@ -1,12 +1,12 @@
 import * as Tone from "tone";
 import { startMove } from "../common/startMove";
 import { pianoKeys } from "../data/pianoKeys";
-import usePianoRollStore from "../store/pianoRollStore";
-import Note from "./Note";
-import type { PianoNote } from "../data/pianoNote";
 import { UpdateNoteCommand, type NoteStateChange } from "../common/command";
 import { dawHistory } from "../common/historyManager";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import usePianoRollStore from "../store/pianoRollStore";
+import Note from "./Note";
+import type { PianoNote } from "../data/pianoNote";
 
 interface Props {
   timelineRef: HTMLDivElement;
@@ -14,7 +14,7 @@ interface Props {
   playNote: (midi: number) => void;
 }
 
-export default function Notes({
+export default function NotesContainer({
   timelineRef,
   timelineContainerRef,
   playNote,
@@ -60,11 +60,12 @@ export default function Notes({
     });
   }, [notesIds, viewport, stepWidth, stepHeight]);
 
+  // update viewport size on window resize
   useEffect(() => {
     const el = timelineContainerRef;
     if (!el) return;
 
-    function update() {
+    function updateViewportSize() {
       if (!el) return;
       setViewport({
         scrollLeft: el.scrollLeft,
@@ -74,14 +75,14 @@ export default function Notes({
       });
     }
 
-    update();
+    updateViewportSize();
 
-    el.addEventListener("scroll", update);
-    window.addEventListener("resize", update);
+    el.addEventListener("scroll", updateViewportSize);
+    window.addEventListener("resize", updateViewportSize);
 
     return () => {
-      el.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      el.removeEventListener("scroll", updateViewportSize);
+      window.removeEventListener("resize", updateViewportSize);
     };
   }, [timelineContainerRef, stepWidth, stepHeight]);
 

@@ -68,7 +68,7 @@ const defaultState = {
   selectedNotes: new Set<number>(),
   recentNoteLength: 4,
   isPlaying: false,
-  playbackClock: "00:00",
+  playbackClock: "00:00:00",
   bpm: 120,
   nextNoteId: 0,
   activeProjectId: null,

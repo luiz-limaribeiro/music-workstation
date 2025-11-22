@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 import { useEffect, useRef, useState } from "react";
 import Keys from "./Keys";
-import NotesTimeline from "./NotesTimeline";
+import Timeline from "./Timeline";
 import { startMove } from "../common/startMove";
 import { pianoKeys, type PianoKey } from "../data/pianoKeys";
 import usePianoRollStore from "../store/pianoRollStore";
@@ -180,7 +180,7 @@ export default function PianoRoll() {
           }
         }}
       >
-        <NotesTimeline playNote={playNote} containerRef={timelineRef.current} />
+        <Timeline playNote={playNote} containerRef={timelineRef.current} />
       </div>
       {!isLoaded && <span className="loading">Loading...</span>}
     </div>

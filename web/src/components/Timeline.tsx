@@ -1,22 +1,22 @@
 import * as Tone from "tone";
-import "./styles/NotesTimeline.css";
-import usePianoRollStore from "../store/pianoRollStore";
-import Grid from "./Grid";
 import { useRef } from "react";
 import { newPianoNote } from "../data/pianoNote";
 import { startMove } from "../common/startMove";
 import { pianoKeys } from "../data/pianoKeys";
-import Playhead from "./Playhead";
-import Notes from "./NotesContainer";
 import { AddNoteCommand } from "../common/command";
 import { dawHistory } from "../common/historyManager";
+import Grid from "./Grid";
+import Playhead from "./Playhead";
+import NotesContainer from "./NotesContainer";
+import usePianoRollStore from "../store/pianoRollStore";
+import "./styles/Timeline.css";
 
 interface Props {
   containerRef: HTMLDivElement | null;
   playNote: (midi: number) => void;
 }
 
-export default function NotesTimeline({ containerRef, playNote }: Props) {
+export default function Timeline({ containerRef, playNote }: Props) {
   const cellWidth = usePianoRollStore((s) => s.stepWidth);
   const cellHeight = usePianoRollStore((s) => s.stepHeight);
   const gridLength = usePianoRollStore((s) => s.gridLength);
@@ -125,7 +125,7 @@ export default function NotesTimeline({ containerRef, playNote }: Props) {
     <div
       ref={timelineRef}
       tabIndex={-1}
-      className="notes-timeline"
+      className="timeline"
       style={{
         width: gridLength * cellWidth,
         height: pianoKeys.length * cellHeight,
@@ -161,7 +161,7 @@ export default function NotesTimeline({ containerRef, playNote }: Props) {
     >
       <Grid cellWidth={cellWidth} cellHeight={cellHeight} offsetY={0} />
       {timelineRef.current && (
-        <Notes
+        <NotesContainer
           timelineRef={timelineRef.current}
           playNote={playNote}
           timelineContainerRef={containerRef}

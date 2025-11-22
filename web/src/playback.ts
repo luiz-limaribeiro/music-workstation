@@ -3,6 +3,7 @@ import { newPianoSampler, sampler } from "./samples/piano";
 import usePianoRollStore from "./store/pianoRollStore";
 import { pianoKeys } from "./data/pianoKeys";
 import { stepsToSeconds, stepsToToneTime } from "./common/syncHelper";
+import { updateClock } from "./common/clockHelper";
 
 function keyIdToNoteName(keyId: number) {
   const key = pianoKeys[keyId];
@@ -61,25 +62,6 @@ function bufferToWaveBlob(buffer: Tone.ToneAudioBuffer): Blob {
   return new Blob([view], { type: "audio/wav" });
 }
 
-function formatTime(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
-
-  const paddedMinutes = String(minutes).padStart(2, "0");
-  const paddedSeconds = String(remainingSeconds).padStart(2, "0");
-
-  return `${paddedMinutes}:${paddedSeconds}`;
-}
-
-function updateClock() {
-  const position = Tone.getTransport().position;
-  const seconds = Tone.Time(position).toSeconds();
-  const setPlaybackTime =
-    usePianoRollStore.getState().pianoRollActions.setPlaybackClock;
-
-  setPlaybackTime(formatTime(seconds));
-}
-
 let part: Tone.Part | null = null;
 let scheduleId: number = -1;
 
@@ -92,6 +74,7 @@ export function buildPlayback() {
   const bpm = usePianoRollStore.getState().bpm;
 
   transport.cancel(0);
+  transport.cancel(scheduleId);
   if (part) part.dispose();
 
   transport.set({ bpm: bpm });
@@ -111,6 +94,10 @@ export function buildPlayback() {
   part = new Tone.Part((time, value) => {
     synth.triggerAttackRelease(value.note, value.dur, time, value.velocity);
   }, events).start(0);
+
+  scheduleId = transport.scheduleRepeat(() => {
+    updateClock();
+  }, 0.05, 0);
 }
 
 export async function startPlayback() {
