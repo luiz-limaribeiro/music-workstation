@@ -30,43 +30,15 @@ body.grabbing-cursor * {
 }
 
 body[data-theme="light"] {
-  --primary: cyan;
-  --secondary: rgb(36, 180, 180);
-
-  --bg: #223;
-  --surface: #335;
-
-  --text: #f8f9fa;
-  --muted-text: #d8d9da;
-
-  --border: #111;
-
-  --highlight: cyan;
-
-  --error: red;
-  --success: lightgreen;
-  --warning: gold;
-
-  --disabled: rgba(255, 255, 255, 0.274);
+  --primary: #00ffff;
+  --highlight: #00ffff;
+  --text: #fdfdff;
+  --bg: #000a0a;
 }
 
 body[data-theme="dark"] {
-  --primary: cyan;
-  --secondary: rgb(36, 180, 180);
-
-  --bg: #223;
-  --surface: #335;
-
-  --text: #f8f9fa;
-  --muted-text: #d8d9da;
-
-  --border: #111;
-
-  --highlight: cyan;
-
-  --error: red;
-  --success: lightgreen;
-  --warning: gold;
-  
-  --disabled: rgba(255, 255, 255, 0.274);
+  --primary: #00ffff;
+  --highlight: #00ffff;
+  --text: #fdfdff;
+  --bg: #000a0a;
 }

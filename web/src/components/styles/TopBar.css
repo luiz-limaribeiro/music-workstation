@@ -1,0 +1,8 @@
+.top-bar {
+  display: flex;
+  align-items: center;
+  height: 4vh;
+  background-color: #000;
+  color: white;
+  padding: 0 8px;
+}

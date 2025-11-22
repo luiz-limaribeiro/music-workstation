@@ -1,5 +1,5 @@
 import type { PianoNote } from "../data/pianoNote";
-import { buildPlayback } from "../features/piano-roll/playback";
+import { buildPlayback } from "../playback";
 import { type PianoRollStore } from "../store/pianoRollStore";
 import { updateTimelineLength } from "./timelineLength";
 

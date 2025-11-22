@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { dawHistory } from "./historyManager";
 import { updateTimelineLength } from "./timelineLength";
-import { buildPlayback } from "../features/piano-roll/playback";
+import { buildPlayback } from "../playback";
 import { DuplicateSelectedNotesCommand, RemoveSelectedNotesCommand } from "./command";
 import usePianoRollStore from "../store/pianoRollStore";
 

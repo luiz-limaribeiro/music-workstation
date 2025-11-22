@@ -1,0 +1,45 @@
+.transport {
+  position: fixed;
+  bottom: 20px;
+  right: 50%;
+  translate: 50%;
+  background-color: #000;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 4px #000;
+  border-radius: 1px solid #000;
+  color: var(--text);
+  padding: 1.4em 2em;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  user-select: none;
+}
+
+.transport button {
+  width: 4em;
+  height: 2em;
+  color: var(--text);
+  cursor: pointer;
+  border: 1px solid black;
+  border-radius: 4px;
+  background-color: var(--200);
+  letter-spacing: .8px;
+}
+
+.transport button:hover {
+  filter: brightness(1.2);
+}
+
+.transport button:active {
+  filter: brightness(0.9);
+}
+
+.bpm {
+  cursor: ns-resize;
+  width: 4.5em;
+}
+
+.time {
+  width: 4.3em;
+}
