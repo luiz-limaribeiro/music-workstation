@@ -6,7 +6,7 @@ function App() {
   useGlobalKeyBindings();
 
   return (
-    <main style={{overflowY: 'hidden'}}>
+    <main style={{ overflowY: "hidden" }}>
       <TopBar />
       <PianoRoll />
     </main>

@@ -13,6 +13,50 @@
   transition: .1s ease-out;
 }
 
-.icon:hover {
-  color: #0ff;
+.vertical,
+.horizontal {
+  display: flex;
+  align-items: center;
+}
+
+.horizontal {
+  margin-left: 1em;
+}
+
+.vertical span,
+.horizontal span {
+  cursor: default;
+}
+
+.horizontal span {
+  rotate: 90deg;
+}
+
+input[type=range] {
+  appearance: none;
+  width: 6em;
+  height: 2px;
+  border: none;
+  border-radius: 3px;
+  background-color: white;
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: cyan;
+  border-radius: 50%;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+input[type=range]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: cyan;
+  border-radius: 50%;
+  cursor: pointer;
 }

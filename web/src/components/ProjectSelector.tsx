@@ -44,7 +44,7 @@ function ProjectSelector() {
     setProjects(await listAllProjects());
     setProjectName(newName);
     setNewName("");
-    buildPlayback()
+    buildPlayback();
 
     if (Tone.getContext().state !== "running") {
       Tone.start();
@@ -57,7 +57,7 @@ function ProjectSelector() {
     clearState();
     const project = projects.find((p) => p.id === id);
     if (project) setProjectName(project.name);
-    buildPlayback()
+    buildPlayback();
 
     if (Tone.getContext().state !== "running") {
       Tone.start();
@@ -86,6 +86,9 @@ function ProjectSelector() {
 
   return (
     <div>
+      <h4 className="project-name" onClick={() => setActive(true)}>
+        {projectName ? projectName : ""}
+      </h4>
       {active ? (
         <div
           className="project-selector-container"
@@ -166,11 +169,8 @@ function ProjectSelector() {
             </button>
           </div>
         </div>
-      ) : (
-        <h4 className="project-name" onClick={() => setActive(true)}>
-          {projectName}
-        </h4>
-      )}
+      ) : (<div />)}
+      
     </div>
   );
 }

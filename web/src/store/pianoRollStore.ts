@@ -268,7 +268,7 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
           selectedNotes: new Set<number>(),
           recentNoteLength: 4,
           isPlaying: false,
-          playbackClock: "00:00",
+          playbackClock: "00:00:00",
           activeProjectId: projectId,
         });
       } else {
