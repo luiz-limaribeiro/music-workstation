@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { redo, undo } from "../common/functions";
 import usePianoRollStore from "../store/pianoRollStore";
+import HelpModal from "./HelpModal";
 import ProjectSelector from "./ProjectSelector";
 import TopBarTransport from "./TopBarTransport";
 import "./styles/TopBar.css";
@@ -8,13 +9,13 @@ import "./styles/TopBar.css";
 export default function TopBar() {
   const stepWidth = usePianoRollStore((state) => state.stepWidth);
   const stepHeight = usePianoRollStore((state) => state.stepHeight);
+  const canUndo = usePianoRollStore((s) => s.canUndo);
+  const canRedo = usePianoRollStore((s) => s.canRedo);
   const updateStepsDimension = usePianoRollStore(
     (state) => state.pianoRollActions.updateStepsDimension
   );
-  const canUndo = usePianoRollStore((s) => s.canUndo);
-  const canRedo = usePianoRollStore((s) => s.canRedo);
 
-  useEffect(() => {}, [history]);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   return (
     <div className="top-bar">
@@ -63,12 +64,22 @@ export default function TopBar() {
         redo
       </span>
       <div className="icons">
-        <span className="material-symbols-outlined icon help">help</span>
+        <span
+          className={`material-symbols-outlined icon help ${
+            showHelpModal ? "disabled" : ""
+          }`}
+          onClick={() => setShowHelpModal(true)}
+        >
+          help
+        </span>
         <span className="material-symbols-outlined icon settings">
           settings
         </span>
         <span className="material-symbols-outlined icon home">home</span>
       </div>
+      {showHelpModal && (
+        <HelpModal onCloseClick={() => setShowHelpModal(false)} />
+      )}
     </div>
   );
 }

@@ -77,8 +77,14 @@ input[type=range]::-moz-range-thumb {
   margin-left: .8em;
 }
 
+.undo,
+.redo {
+  transition: none;
+}
+
 .undo.disabled,
-.redo.disabled {
+.redo.disabled,
+.help.disabled {
   color: white;
   filter: brightness(.4);
 }

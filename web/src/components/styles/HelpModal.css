@@ -1,0 +1,31 @@
+.help-modal {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 24em;
+  height: 20em;
+  margin: 2.4em 1em;
+  padding: 1em;
+  font-family: 'Roboto Mono Variable', sans-serif;
+  display: flex;
+  flex-direction: column;
+  background-color: #112;
+  border: 2px solid #334;
+  border-radius: 10px;
+  z-index: 2;
+}
+
+.help-modal b {
+  color: darkcyan;
+}
+
+.close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: .4em;
+  border: none;
+  background-color: transparent;
+  color: white;
+  cursor: pointer;
+}
