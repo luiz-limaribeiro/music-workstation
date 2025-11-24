@@ -1,8 +1,7 @@
 import { useEffect } from "react";
-import { dawHistory } from "./historyManager";
-import { updateTimelineLength } from "./timelineLength";
-import { buildPlayback } from "../playback";
+import { history } from "./historyManager";
 import { DuplicateSelectedNotesCommand, RemoveSelectedNotesCommand } from "./command";
+import { redo, undo } from "./functions";
 
 export const useGlobalKeyBindings = () => {
   useEffect(() => {
@@ -24,21 +23,17 @@ export const useGlobalKeyBindings = () => {
 
       if (isUndo) {
         e.preventDefault();
-        dawHistory.undo();
-        updateTimelineLength()
-        buildPlayback()
+        undo()
       } else if (isRedo) {
         e.preventDefault();
-        dawHistory.redo();
-        updateTimelineLength()
-        buildPlayback()
+        redo()
       } else if (isDelete) {
         const command = new RemoveSelectedNotesCommand()
-        dawHistory.doCommand(command)
+        history.doCommand(command)
       } else if (isDuplicate) {
         e.preventDefault()
         const command = new DuplicateSelectedNotesCommand()
-        dawHistory.doCommand(command)
+        history.doCommand(command)
       }
     }
 

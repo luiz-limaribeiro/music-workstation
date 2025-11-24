@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { redo, undo } from "../common/functions";
 import usePianoRollStore from "../store/pianoRollStore";
 import ProjectSelector from "./ProjectSelector";
 import TopBarTransport from "./TopBarTransport";
@@ -9,6 +11,10 @@ export default function TopBar() {
   const updateStepsDimension = usePianoRollStore(
     (state) => state.pianoRollActions.updateStepsDimension
   );
+  const canUndo = usePianoRollStore((s) => s.canUndo);
+  const canRedo = usePianoRollStore((s) => s.canRedo);
+
+  useEffect(() => {}, [history]);
 
   return (
     <div className="top-bar">
@@ -40,7 +46,29 @@ export default function TopBar() {
           }}
         />
       </div>
-      <span className="material-symbols-outlined icon settings">settings</span>
+      <span
+        className={`material-symbols-outlined icon undo ${
+          canUndo ? "" : "disabled"
+        }`}
+        onClick={() => undo()}
+      >
+        undo
+      </span>
+      <span
+        className={`material-symbols-outlined icon redo ${
+          canRedo ? "" : "disabled"
+        }`}
+        onClick={() => redo()}
+      >
+        redo
+      </span>
+      <div className="icons">
+        <span className="material-symbols-outlined icon help">help</span>
+        <span className="material-symbols-outlined icon settings">
+          settings
+        </span>
+        <span className="material-symbols-outlined icon home">home</span>
+      </div>
     </div>
   );
 }

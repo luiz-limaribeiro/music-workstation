@@ -24,6 +24,8 @@ export type PianoRollStore = {
   activeProjectId: string | null;
   projectSaved: boolean;
   loadingWAV: boolean;
+  canUndo: boolean;
+  canRedo: boolean;
   pianoRollActions: {
     setHighlightedKeys: (keyIds: number[]) => void;
     setLoopLength: (length: number) => void;
@@ -74,6 +76,8 @@ const defaultState = {
   activeProjectId: null,
   projectSaved: true,
   loadingWAV: false,
+  canUndo: false,
+  canRedo: false,
 };
 
 const usePianoRollStore = create<PianoRollStore>((set, get) => ({
@@ -81,7 +85,8 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
   pianoRollActions: {
     setHighlightedKeys: (keyIds) => set(() => ({ highlightedKeys: keyIds })),
     setLoopLength: (length) => set({ loopLengthInSteps: length }),
-    setGridLength: (length) => set({ gridLengthInSteps: length < 80 ? 80 : length }),
+    setGridLength: (length) =>
+      set({ gridLengthInSteps: length < 80 ? 80 : length }),
     highlightKey: (keyId) =>
       set((state) => ({ highlightedKeys: [...state.highlightedKeys, keyId] })),
     resetKey: (keyId) =>
@@ -181,7 +186,12 @@ const usePianoRollStore = create<PianoRollStore>((set, get) => ({
       state.selectedNotes.forEach((id) => {
         const note = state.notes.byId[id];
         if (!note) return;
-        const newNote = newPianoNote(note.start + 1, note.length, note.keyId, note.velocity);
+        const newNote = newPianoNote(
+          note.start + 1,
+          note.length,
+          note.keyId,
+          note.velocity
+        );
         newNotes.push(newNote);
         newSelectedIds.add(newNote.id);
       });

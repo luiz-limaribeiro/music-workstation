@@ -7,15 +7,30 @@ export class HistoryManager {
   private store: StoreApi<PianoRollStore>;
   private undoStack: Command[] = [];
   private redoStack: Command[] = [];
+  private maxSize: number;
 
-  constructor(storeApi: StoreApi<PianoRollStore>) {
-    this.store = storeApi
+  constructor(storeApi: StoreApi<PianoRollStore>, maxSize = 200) {
+    this.store = storeApi;
+    this.maxSize = maxSize;
+  }
+
+  private updateStoreFlags() {
+    this.store.setState({
+      canUndo: this.canUndo(),
+      canRedo: this.canRedo(),
+    });
   }
 
   doCommand(command: Command) {
     command.do(this.store.getState());
     this.undoStack.push(command);
     this.redoStack = [];
+
+    if (this.undoStack.length > this.maxSize) {
+      this.undoStack.shift();
+    }
+
+    this.updateStoreFlags();
   }
 
   undo() {
@@ -23,6 +38,7 @@ export class HistoryManager {
     if (command) {
       command.undo(this.store.getState());
       this.redoStack.push(command);
+      this.updateStoreFlags();
     }
   }
 
@@ -31,6 +47,7 @@ export class HistoryManager {
     if (command) {
       command.do(this.store.getState());
       this.undoStack.push(command);
+      this.updateStoreFlags();
     }
   }
 
@@ -43,4 +60,4 @@ export class HistoryManager {
   }
 }
 
-export const dawHistory = new HistoryManager(usePianoRollStore)
+export const history = new HistoryManager(usePianoRollStore);

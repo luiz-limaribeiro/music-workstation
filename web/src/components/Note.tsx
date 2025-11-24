@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import "./styles/Note.css";
 import usePianoRollStore from "../store/pianoRollStore";
-import { dawHistory } from "../common/historyManager";
+import { history } from "../common/historyManager";
 import { RemoveNoteCommand } from "../common/command";
 
 interface Props {
@@ -44,7 +44,7 @@ function Note({
 
         if (e.shiftKey) {
           const command = new RemoveNoteCommand(note);
-          dawHistory.doCommand(command);
+          history.doCommand(command);
           resetSelected();
           return;
         }
@@ -71,7 +71,7 @@ function Note({
       onMouseEnter={(e) => {
         if (e.buttons & 1 && e.shiftKey) {
           const command = new RemoveNoteCommand(note);
-          dawHistory.doCommand(command);
+          history.doCommand(command);
         }
       }}
     >

@@ -4,7 +4,7 @@ import { newPianoNote } from "../data/pianoNote";
 import { startMove } from "../common/startMove";
 import { pianoKeys } from "../data/pianoKeys";
 import { AddNoteCommand } from "../common/command";
-import { dawHistory } from "../common/historyManager";
+import { history } from "../common/historyManager";
 import Grid from "./Grid";
 import Playhead from "./Playhead";
 import NotesContainer from "./NotesContainer";
@@ -50,7 +50,7 @@ export default function Timeline({ containerRef, playNote }: Props) {
     const newNote = newPianoNote(pos.col, length, pos.row);
     const command = new AddNoteCommand(newNote);
 
-    dawHistory.doCommand(command);
+    history.doCommand(command);
 
     if (Tone.getTransport().state !== "started") playNote(pos.row);
   }

@@ -3,7 +3,7 @@
   align-items: center;
   height: 4vh;
   background-color: #000;
-  color: white;
+  color: #fff;
   padding: 0 8px;
 }
 
@@ -38,7 +38,7 @@ input[type=range] {
   height: 2px;
   border: none;
   border-radius: 3px;
-  background-color: white;
+  background-color: #fff;
   outline: none;
 }
 
@@ -47,16 +47,38 @@ input[type=range]::-webkit-slider-thumb {
   appearance: none;
   width: 14px;
   height: 14px;
-  background: cyan;
+  background: #0ff;
   border-radius: 50%;
-  border: 1px solid black;
+  border: 1px solid #000;
   cursor: pointer;
 }
 
 input[type=range]::-moz-range-thumb {
   width: 14px;
   height: 14px;
-  background: cyan;
+  background: #0ff;
   border-radius: 50%;
   cursor: pointer;
+}
+
+.icons {
+  display: flex;
+  gap: .5em;
+  flex: 1;
+  justify-content: end;
+}
+
+.icons span {
+  font-size: 1.7em;
+}
+
+.undo {
+  margin-right:.4em;
+  margin-left: .8em;
+}
+
+.undo.disabled,
+.redo.disabled {
+  color: white;
+  filter: brightness(.4);
 }
