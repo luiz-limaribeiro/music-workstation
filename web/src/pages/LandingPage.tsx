@@ -1,3 +1,4 @@
+import Playback from "../components/ui/Playback";
 import SongCard from "../components/ui/SongCard";
 import './LandingPage.css'
 
@@ -7,6 +8,7 @@ export default function LandingPage() {
       <h1>Music Workstation</h1>
       <p>Create music in the browser</p>
       <SongCard />
+      <Playback />
     </main>
   );
 }

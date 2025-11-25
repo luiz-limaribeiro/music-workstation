@@ -1,0 +1,31 @@
+.playback {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: .6em 1em;
+  background-color: #aaa2;
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.playback .icons {
+  display: flex;
+  align-items: center;
+}
+
+.playback button {
+  border: none;
+  background-color: transparent;
+  color: white;
+  font-size: 1.7em;
+}
+
+.playback .play {
+  font-size: 2.5em;
+}
+
+.playback .favorite {
+  margin-left: .3em;
+}
