@@ -10,7 +10,7 @@ export default function SongCard() {
         <h4>Song name</h4>
         <span>User name</span>
       </div>
-      <button className="material-symbols-rounded">
+      <button className="material-symbols-rounded icon">
         {!isPlaying ? "play_arrow" : "pause"}
       </button>
       {isPlaying && <div className="waveform" />}

@@ -3,3 +3,10 @@
   background-color: black;
   color: white;
 }
+
+.icon {
+  border: none;
+  background-color: transparent;
+  color: white;
+  font-size: 1.7em;
+}

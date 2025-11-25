@@ -1,3 +1,4 @@
+import Navbar from "../components/ui/Navbar";
 import Playback from "../components/ui/Playback";
 import SongCard from "../components/ui/SongCard";
 import './LandingPage.css'
@@ -9,6 +10,7 @@ export default function LandingPage() {
       <p>Create music in the browser</p>
       <SongCard />
       <Playback />
+      <Navbar />
     </main>
   );
 }

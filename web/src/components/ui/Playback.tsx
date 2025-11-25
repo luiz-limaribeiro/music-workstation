@@ -8,9 +8,9 @@ export default function Playback() {
         <span>User name</span>
       </div>
       <div className='icons'>
-        <button className='material-symbols-rounded'>edit</button>
-        <button className='material-symbols-rounded favorite'>favorite</button>
-        <button className='material-symbols-rounded play'>play_arrow</button>
+        <button className='material-symbols-rounded icon'>edit</button>
+        <button className='material-symbols-rounded icon favorite'>favorite</button>
+        <button className='material-symbols-rounded icon play'>play_arrow</button>
       </div>
     </div>
   )
