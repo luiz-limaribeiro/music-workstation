@@ -1,14 +1,14 @@
-import { pianoKeys, type PianoKey } from "../data/pianoKeys";
-import usePianoRollStore from "../store/pianoRollStore";
-import Key from "./Key";
-import "./styles/Keys.css";
+import { pianoKeys, type PianoKey } from "../../data/pianoKeys";
+import usePianoRollStore from "../../store/pianoRollStore";
+import Key from "./PianoKey";
+import "./styles/PianoKeyboard.css";
 
 interface Props {
   onKeyDown: (pianoKey: PianoKey) => void;
   onKeyUp: (pianoKey: PianoKey) => void;
 }
 
-export default function Keys({ onKeyDown, onKeyUp }: Props) {
+export default function PianoKeyboard({ onKeyDown, onKeyUp }: Props) {
   const highlightKey = usePianoRollStore(
     (state) => state.pianoRollActions.highlightKey
   );

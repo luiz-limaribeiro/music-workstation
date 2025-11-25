@@ -1,10 +1,10 @@
 import * as Tone from "tone";
 import { useEffect, useRef } from "react";
-import { startMove } from "../common/startMove";
-import { stepsToToneTime, toneTimeToSteps } from "../common/syncHelper";
-import usePianoRollStore from "../store/pianoRollStore";
+import { startMove } from "../../utils/startMove";
+import { stepsToToneTime, toneTimeToSteps } from "../../utils/syncHelper";
+import usePianoRollStore from "../../store/pianoRollStore";
 import "./styles/Playhead.css";
-import { updateClock } from "../common/clockHelper";
+import { updateClock } from "../../utils/clockHelper";
 
 export default function Playhead() {
   const cellWidth = usePianoRollStore((state) => state.stepWidth);

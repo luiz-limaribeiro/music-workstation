@@ -1,6 +1,6 @@
 import React from "react";
-import type { PianoKey } from "../data/pianoKeys";
-import usePianoRollStore from "../store/pianoRollStore";
+import type { PianoKey } from "../../data/pianoKeys";
+import usePianoRollStore from "../../store/pianoRollStore";
 
 interface Props {
   pianoKey: PianoKey;

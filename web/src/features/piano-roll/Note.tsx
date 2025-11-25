@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 import "./styles/Note.css";
-import usePianoRollStore from "../store/pianoRollStore";
-import { history } from "../common/historyManager";
-import { RemoveNoteCommand } from "../common/command";
+import usePianoRollStore from "../../store/pianoRollStore";
+import { history } from "../../utils/historyManager";
+import { RemoveNoteCommand } from "../../utils/command";
 
 interface Props {
   noteId: number;

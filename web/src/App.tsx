@@ -1,15 +1,11 @@
-import { useGlobalKeyBindings } from "./common/useGlobalKeyBindings";
-import PianoRoll from "./components/PianoRoll";
-import TopBar from "./components/TopBar";
+import LandingPage from "./pages/LandingPage";
+import { useGlobalKeyBindings } from "./utils/useGlobalKeyBindings";
 
 function App() {
   useGlobalKeyBindings();
 
   return (
-    <main style={{ overflowY: "hidden" }}>
-      <TopBar />
-      <PianoRoll />
-    </main>
+    <LandingPage />
   );
 }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "./styles/Grid.css";
-import usePianoRollStore from "../store/pianoRollStore";
+import usePianoRollStore from "../../store/pianoRollStore";
 
 interface Props {
   cellWidth: number;

@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { redo, undo } from "../common/functions";
-import usePianoRollStore from "../store/pianoRollStore";
+import { redo, undo } from "../../utils/functions";
+import usePianoRollStore from "../../store/pianoRollStore";
 import HelpModal from "./HelpModal";
-import ProjectSelector from "./ProjectSelector";
 import TopBarTransport from "./TopBarTransport";
 import "./styles/TopBar.css";
 
@@ -19,7 +18,7 @@ export default function TopBar() {
 
   return (
     <div className="top-bar">
-      <ProjectSelector />
+      <h4>Project name</h4>
       <TopBarTransport />
       <div className="vertical">
         <span className="material-symbols-outlined">unfold_more</span>
@@ -71,9 +70,6 @@ export default function TopBar() {
           onClick={() => setShowHelpModal(true)}
         >
           help
-        </span>
-        <span className="material-symbols-outlined icon settings">
-          settings
         </span>
         <span className="material-symbols-outlined icon home">home</span>
       </div>

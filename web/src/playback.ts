@@ -1,9 +1,9 @@
 import * as Tone from "tone";
-import { newPianoSampler, sampler } from "./samples/piano";
+import { newPianoSampler, sampler } from "./data/piano";
 import usePianoRollStore from "./store/pianoRollStore";
 import { pianoKeys } from "./data/pianoKeys";
-import { stepsToSeconds, stepsToToneTime } from "./common/syncHelper";
-import { updateClock } from "./common/clockHelper";
+import { stepsToSeconds, stepsToToneTime } from "./utils/syncHelper";
+import { updateClock } from "./utils/clockHelper";
 
 function keyIdToNoteName(keyId: number) {
   const key = pianoKeys[keyId];

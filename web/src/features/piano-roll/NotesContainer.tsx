@@ -1,12 +1,12 @@
 import * as Tone from "tone";
-import { startMove } from "../common/startMove";
-import { pianoKeys } from "../data/pianoKeys";
-import { UpdateNoteCommand, type NoteStateChange } from "../common/command";
-import { history } from "../common/historyManager";
+import { startMove } from "../../utils/startMove";
+import { pianoKeys } from "../../data/pianoKeys";
+import { UpdateNoteCommand, type NoteStateChange } from "../../utils/command";
+import { history } from "../../utils/historyManager";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import usePianoRollStore from "../store/pianoRollStore";
+import usePianoRollStore from "../../store/pianoRollStore";
 import Note from "./Note";
-import type { PianoNote } from "../data/pianoNote";
+import type { PianoNote } from "../../data/pianoNote";
 
 interface Props {
   timelineRef: HTMLDivElement;

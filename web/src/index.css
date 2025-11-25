@@ -10,8 +10,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  color: var(--text);
 }
 
 * {
@@ -27,18 +25,4 @@ button {
 body.grabbing-cursor,
 body.grabbing-cursor * {
   cursor: grabbing !important;
-}
-
-body[data-theme="light"] {
-  --primary: #00ffff;
-  --highlight: #00ffff;
-  --text: #fdfdff;
-  --bg: #000a0a;
-}
-
-body[data-theme="dark"] {
-  --primary: #00ffff;
-  --highlight: #00ffff;
-  --text: #fdfdff;
-  --bg: #000a0a;
 }

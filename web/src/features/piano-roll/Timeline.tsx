@@ -1,14 +1,14 @@
 import * as Tone from "tone";
 import { useRef } from "react";
-import { newPianoNote } from "../data/pianoNote";
-import { startMove } from "../common/startMove";
-import { pianoKeys } from "../data/pianoKeys";
-import { AddNoteCommand } from "../common/command";
-import { history } from "../common/historyManager";
+import { newPianoNote } from "../../data/pianoNote";
+import { startMove } from "../../utils/startMove";
+import { pianoKeys } from "../../data/pianoKeys";
+import { AddNoteCommand } from "../../utils/command";
+import { history } from "../../utils/historyManager";
 import Grid from "./Grid";
 import Playhead from "./Playhead";
 import NotesContainer from "./NotesContainer";
-import usePianoRollStore from "../store/pianoRollStore";
+import usePianoRollStore from "../../store/pianoRollStore";
 import "./styles/Timeline.css";
 
 interface Props {

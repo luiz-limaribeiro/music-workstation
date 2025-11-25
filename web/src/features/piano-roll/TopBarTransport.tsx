@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { buildPlayback, pausePlayback, startPlayback } from "../playback";
-import usePianoRollStore from "../store/pianoRollStore";
+import { buildPlayback, pausePlayback, startPlayback } from "../../playback";
+import usePianoRollStore from "../../store/pianoRollStore";
 import "./styles/TopBarTransport.css";
 
 export default function TopBarTransport() {

@@ -1,12 +1,13 @@
 import * as Tone from "tone";
 import { useEffect, useRef, useState } from "react";
-import Keys from "./Keys";
-import Timeline from "./Timeline";
-import { startMove } from "../common/startMove";
+import PianoKeyboard from "../features/piano-roll/PianoKeyboard";
+import Timeline from "../features/piano-roll/Timeline";
+import { startMove } from "../utils/startMove";
 import { pianoKeys, type PianoKey } from "../data/pianoKeys";
 import usePianoRollStore from "../store/pianoRollStore";
-import { newPianoSampler } from "../samples/piano";
-import "./styles/PianoRoll.css";
+import { newPianoSampler } from "../data/piano";
+import TopBar from "../features/piano-roll/TopBar";
+import "./PianoRoll.css";
 
 export default function PianoRoll() {
   const pianoRollRef = useRef<HTMLDivElement>(null);
@@ -158,7 +159,8 @@ export default function PianoRoll() {
   }
 
   return (
-    <div className="piano-roll" ref={pianoRollRef}>
+    <main className="piano-roll" ref={pianoRollRef}>
+      <TopBar />
       <div
         className="keys-container"
         ref={keysRef}
@@ -167,7 +169,7 @@ export default function PianoRoll() {
         }}
         onScrollCapture={(e) => e.preventDefault()}
       >
-        <Keys onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} />
+        <PianoKeyboard onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} />
       </div>
       <div
         className="timeline-container"
@@ -183,6 +185,6 @@ export default function PianoRoll() {
         <Timeline playNote={playNote} containerRef={timelineRef.current} />
       </div>
       {!isLoaded && <span className="loading">Loading...</span>}
-    </div>
+    </main>
   );
 }
