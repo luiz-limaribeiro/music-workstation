@@ -2,6 +2,19 @@
   min-height: 100vh;
   background-color: black;
   color: white;
+  padding-top: 2em;
+}
+
+.landing-page h1 {
+  line-height: 1em;
+  font-size: 3em;
+  text-align: center;
+}
+
+.landing-page p {
+  margin-top: 1em;
+  text-align: center;
+  opacity: 0.7;
 }
 
 .icon {
@@ -9,4 +22,39 @@
   background-color: transparent;
   color: white;
   font-size: 1.7em;
+}
+
+.featured-songs {
+  margin-top: 14em;
+}
+
+.featured-songs ul {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  gap: 8px;
+  overflow-y: scroll;
+  padding: 0 1em;
+  list-style: none;
+}
+
+.featured-songs h3 {
+  opacity: 0.7;
+  margin-left: 1em;
+  margin-bottom: 0.4em;
+}
+
+.call {
+  justify-self: center;
+  margin: 6em 0;
+}
+
+.call button {
+  border: none;
+  padding: .8em 1.2em;
+  font-size: 1em;
+  font-weight: bold;
+  background-color: #0ff;
+  color: black;
+  border-radius: 8px;
 }
