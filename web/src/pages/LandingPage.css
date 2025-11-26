@@ -11,6 +11,10 @@
   text-align: center;
 }
 
+.landing-page h2 {
+  margin-left: 1em;
+}
+
 .landing-page p {
   margin-top: 1em;
   text-align: center;
@@ -51,10 +55,69 @@
 
 .call button {
   border: none;
-  padding: .8em 1.2em;
+  padding: 0.8em 1.2em;
   font-size: 1em;
   font-weight: bold;
   background-color: #0ff;
   color: black;
   border-radius: 8px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: .4em;
+}
+
+.tech-carousel {
+  margin-top: 2em;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.headline {
+  margin: 0 1.7em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.headline a {
+  opacity: .7;
+}
+
+.tech-track {
+  display: flex;
+  margin-top: 1em;
+  width: max-content;
+  animation: scroll 30s linear infinite;
+}
+
+.tech-track span {
+  display: inline-block;
+  margin-left: 2em;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  color: #fff;
+  opacity: 0.8;
+  font-weight: bold;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.tech-track span:hover {
+  transform: translateY(-1px);
+  opacity: 1;
+}
+
+.tech-carousel:hover .tech-track {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }

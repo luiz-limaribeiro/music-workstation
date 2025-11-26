@@ -1,0 +1,18 @@
+export const tech = [
+    "React",
+    "Vanilla CSS",
+    "Zustand",
+    "Tone.js",
+    "GSAP",
+    "Java",
+    "Spring Boot",
+    "Spring Web",
+    "Spring Security",
+    "Spring Data JPA",
+    "PostgreSQL",
+    "JWT",
+    "Hostinger VPS",
+    "GitHub",
+    "Figma",
+    "Postman",
+  ];
