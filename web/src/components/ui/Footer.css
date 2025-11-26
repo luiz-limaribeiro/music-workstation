@@ -1,0 +1,26 @@
+footer {
+  min-height: 17em;
+  border-top: 1px solid#aaa;
+  margin-top: 24em;
+  padding: 1em;
+  display: flex;
+  justify-content: space-between;
+  font-size: smaller;
+}
+
+footer .icons {
+  display: flex;
+  gap: 1em;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: .7em;
+}
+
+.contact-info span {
+  display: flex;
+  align-items: center;
+  gap: .4em;
+}

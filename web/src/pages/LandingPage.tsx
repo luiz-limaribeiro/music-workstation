@@ -1,3 +1,4 @@
+import Footer from "../components/ui/Footer";
 import Navbar from "../components/ui/Navbar";
 import Playback from "../components/ui/Playback";
 import SongCard from "../components/ui/SongCard";
@@ -26,6 +27,7 @@ export default function LandingPage() {
       </div>
       <Playback />
       <Navbar />
+      <Footer />
     </main>
   );
 }
