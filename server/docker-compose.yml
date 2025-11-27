@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  config-server:
+    build: ./config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    networks:
+      - backend-net
+
+  discovery-server:
+    build: ./discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    networks:
+      - backend-net
+    depends_on:
+      - config-server
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - backend-net
+    depends_on:
+      - config-server
+      - discovery-server
+
+networks:
+  backend-net:
+    driver: bridge
